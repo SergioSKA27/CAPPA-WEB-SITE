@@ -59,7 +59,7 @@ def show_logos():
     """
 
 
-    columns1,col2,col3 = st.columns(3)
+    columns1,col2,col3 = st.columns([0.3,0.5,0.2])
 
     with col2:
         st.write('## Club de Algoritmia en Python Avanzado' )
@@ -76,6 +76,7 @@ def show_logos():
         pythonlogo()
 
 
+show_logos()
 
 
 menu_data = [
@@ -106,5 +107,3 @@ menu_id = hc.nav_bar(
 
 
 
-
-show_logos()
