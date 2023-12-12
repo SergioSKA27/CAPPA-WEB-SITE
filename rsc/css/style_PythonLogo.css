@@ -1,0 +1,57 @@
+#python-logo {
+    max-width: 60vw;
+    max-height: 60vh;
+    padding: 5px;
+    overflow: visible;
+    cursor: pointer;
+}
+#python-logo path {
+    position: relative;
+    fill: transparent;
+    stroke-width: 5px;
+    transition: all 0.2s ease-in-out;
+}
+#python-logo path:first-child {
+    stroke: #3670a0;
+    animation: border-move 2s linear forwards, fill-first 1s 2s linear forwards;
+}
+#python-logo path:last-child {
+    stroke: #fed140;
+    animation: border-move 2s linear forwards, fill-second 1s 2s linear forwards;
+}
+#python-logo:hover path:first-child {
+    transform: translate(-2%, -2%);
+    text-shadow: 0 0 20px #3670a0;
+}
+#python-logo:hover path:last-child {
+    transform: translate(2%, 2%);
+    box-shadow: 0 0 20px #fed140;
+    -webkit-transform: translate(2%, 2%);
+    -moz-transform: translate(2%, 2%);
+    -ms-transform: translate(2%, 2%);
+    -o-transform: translate(2%, 2%);
+}
+@keyframes border-move {
+    0% {
+        stroke-dasharray: 0 1600;
+   }
+    100% {
+        stroke-dasharray: 1600 1600;
+   }
+}
+@keyframes fill-first {
+    0% {
+        fill: transparent;
+   }
+    100% {
+        fill: #3670a0;
+   }
+}
+@keyframes fill-second {
+    0% {
+        fill: transparent;
+   }
+    100% {
+        fill: #fed140;
+   }
+}
