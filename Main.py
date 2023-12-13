@@ -209,6 +209,29 @@ somelottie ='https://lottie.host/c41a8ef4-fc04-4219-a774-163c87c6c677/2q1ZVNlPDJ
 with cols1[1]:
     st_lottie('https://lottie.host/5295a4fe-7a58-4245-a71a-5be321a45b6a/IdGdn1WOgB.json',quality='high')
     st_lottie('https://lottie.host/20ba4be7-6b85-4613-a152-d77cb8b1a787/vQygOL7QiX.json',quality='high')
+
+sac.divider(label='',align='center',dashed=True,icon='code')
+
+st.markdown('''
+<h4 style="padding-top: 1rem; padding-bottom: 1rem;">
+Editor de Código<br> Tu Lugar de Poder en el Club de Programación en Python Avanzado
+</h4>
+<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+En el corazón de nuestro Club reside el Editor de Código, una herramienta potente y versátil que redefine tu experiencia
+de programación en Python.Diseñado específicamente para miembros del Club de Programación en Python Avanzado, nuestro
+Editor ofrece una variedad de funciones y recursos para ayudarte a crear y editar código de manera eficiente y efectiva.
+</p>
+''',unsafe_allow_html=True)
+cols2 = st.columns([0.3,0.7])
+
+with cols2[0]:
+    #st_lottie('https://lottie.host/bb7b964f-b151-48d4-902c-f8ff5e1ea037/H2O7NOxRVS.json',quality='high')
+    st_lottie('https://lottie.host/6af7721f-9350-4ace-8260-fbc4b3c273ad/xpkqV3aV5y.json',quality='high')
+
+with cols2[1]:
+    with open('rsc/html/Main-Banner3.html') as f:
+        st.markdown(f.read(),unsafe_allow_html=True)
+
 #------------------------------------- Footer ---------------------------------------------------------
 sac.divider(label='Redes Sociales',align='center',bold=True,icon='share')
 x = sac.tags(
