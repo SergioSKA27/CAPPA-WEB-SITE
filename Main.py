@@ -2,6 +2,7 @@ import streamlit as st
 import hydralit_components as hc
 import base64
 from streamlit_lottie import st_lottie
+import streamlit_antd_components as sac
 
 st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg')
 st.markdown("""
@@ -164,15 +165,111 @@ with cols0[1]:
 
 
 
-
+sac.divider(label='',align='center',dashed=True)
 #---------------------------------#
 #Caracteristicas del sitio
 
-cols1 = st.columns([0.7,0.3])
+st.markdown('''
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mosk:wght@400;700&display=swap">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+    h4 {
+      text-align: center;
+      font-family: 'Bebas Neue' ;
+      color: #333;
+      font-size: 2.1rem;
+    }
+</style>
+<div style="padding-top: 1rem; padding-bottom: 1rem;">
+<h4>
+Descubre la Esencia de Nuestra Plataforma<br> Características que Transforman tu Experiencia de Programación
+</h4>
+</div>
+''',unsafe_allow_html=True)
+sac.divider(label='Características',align='center',bold=True,icon='rocket',)
+cols1 = st.columns([0.6,0.4])
+
+with cols1[0]:
+    st.markdown('''
+<style>
+    lista {
+        display: flex;
+        flex-direction: row;
+        column-gap: 1rem;
+        transition: all 150ms ease-out;
+        justify-content: center;
+    }
+</style>
+<h4>Explora Desafíos</h4>
+<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+Bienvenido a nuestra sección de Desafíos, diseñada para satisfacer todas tus inquietudes de programación.
+Aquí, encontrarás una variedad de problemas adaptados a todos los niveles de habilidad, desde principiantes
+hasta expertos. Nuestra plataforma te invita a sumergirte en el emocionante mundo de la resolución de problemas de
+programación.<br><span class="fancy">
+¡Aquí está lo que te ofrecemos!
+</span>
+</p>
+<ul class="lista">
+    <li>
+        <h5> Todos los Problemas </h5>
+        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
+        Descubre una amplia gama de desafíos que abarcan desde los conceptos más fundamentales hasta los problemas más complejos. Explora y elige desafíos que se adapten a tus intereses y nivel de habilidad.
+        </p>
+    </li>
+    <li>
+        <h5> Problemas Básicos</h5>
+        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
+        Ideal para aquellos que están dando sus primeros pasos en el mundo de la programación. Estos problemas proporcionan una base sólida para fortalecer tus habilidades esenciales.
+        </p>
+    </li>
+    <li>
+        <h5> Problemas Intermedios</h5>
+        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
+        Avanza a problemas más desafiantes que pondrán a prueba tu comprensión y aplicación de conceptos intermedios de programación. Perfecto para aquellos que buscan mejorar sus habilidades.
+        </p>
+    </li>
+    <li>
+        <h5> Problemas Avanzados</h5>
+        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
+        Para los programadores experimentados que buscan un desafío significativo. Estos problemas te llevarán a explorar soluciones avanzadas y técnicas más sofisticadas.
+        </p>
+    </li>
+</ul>
 
 
 
+
+
+''',unsafe_allow_html=True)
+with cols1[1]:
+    st_lottie('https://lottie.host/c41a8ef4-fc04-4219-a774-163c87c6c677/2q1ZVNlPDJ.json',quality='high')
 #------------------------------------- Footer ---------------------------------------------------------
+x = sac.tags(
+    [
+        sac.Tag(
+            label="Contacto",
+            icon="person-lines-fill",
+            color="#3670a0",
+            link="https://ant.design/components/tag",
+            bordered=True
+        ),
+        sac.Tag(
+            label="Instagram",
+            icon="instagram",
+            color="magenta",
+            link="https://www.instagram.com/proyecto_cappa/",
+        ),
+        sac.Tag(
+            label="Facebook",
+            icon="facebook",
+            color="geekblue",
+            link="https://www.facebook.com/profile.php?id=61550249080408",
+        ),
+    ],
+    format_func="title",
+    align="center",
+)
+
 st.divider()
 with open('rsc/html/footer.html') as foo:
     #components.html(foo.read(),width=1600)
