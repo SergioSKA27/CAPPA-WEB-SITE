@@ -3,7 +3,7 @@ import hydralit_components as hc
 import base64
 from streamlit_lottie import st_lottie
 
-st.set_page_config(layout="wide", page_title='CAPPA', page_icon='🐍')
+st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg')
 st.markdown("""
 <style>
 body {
@@ -159,8 +159,16 @@ with cols0[0]:
         st.markdown(f.read(), unsafe_allow_html=True)
 
 with cols0[1]:
-    st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json')
+    st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json',loop=False,quality='high')
 
+
+
+
+
+#---------------------------------#
+#Caracteristicas del sitio
+
+cols1 = st.columns([0.7,0.3])
 
 
 
