@@ -150,7 +150,7 @@ menu_id = hc.nav_bar(
         sticky_nav=False, #at the top or not
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
-
+menu_id
 #---------------------------------#
 #Welcome Message
 cols0 = st.columns([0.6,0.4])
