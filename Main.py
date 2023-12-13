@@ -1,6 +1,7 @@
 import streamlit as st
 import hydralit_components as hc
 import base64
+from streamlit_lottie import st_lottie
 
 st.set_page_config(layout="wide", page_title='CAPPA', page_icon='🐍')
 st.markdown("""
@@ -66,21 +67,22 @@ def show_logos():
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
             .fancy {
-                position: relative;
-                white-space: nowrap;
-                &:after {
-                  --deco-height: 0.3125em;
-                  content: "";
-                  position: absolute;
-                  left: 0;
-                  right: 0;
-                  bottom: calc(var(--deco-height) * -0.625);
-                  height: var(--deco-height);
-                  background-image: url("data:image/svg+xml,%3Csvg width='100' height='64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M-17 30.5C-1 22 72-4 54 13 37.9 28.2-2.5 57.5 16 55.5s72-29 104-40' stroke='%2300FDCF' stroke-width='10'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='a'%3E%3Cpath fill='%23fff' d='M0 0h100v64H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
-                  background-size: auto 100%;
-                  background-repeat: round;
-                  background-position: 0em;
-                }
+              position: relative;
+              white-space: nowrap;
+
+              &:after {
+                --deco-height: 0.3125em;
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: calc(var(--deco-height) * -0.625);
+                height: var(--deco-height);
+                background-image: url("data:image/svg+xml,%3Csvg width='100' height='64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M-17 30.5C-1 22 72-4 54 13 37.9 28.2-2.5 57.5 16 55.5s72-29 104-40' stroke='%233670a0' stroke-width='10'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='a'%3E%3Cpath fill='%23fff' d='M0 0h100v64H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
+                background-size: auto 100%;
+                background-repeat: round;
+                background-position: 0em;
+              }
             }
 
         </style>
@@ -109,7 +111,8 @@ def show_logos():
 
 
 show_logos()
-
+#---------------------------------#
+#Navigation Bar
 
 menu_data = [
     {'icon': "💻",'label':"Problemas",
@@ -148,5 +151,106 @@ menu_id = hc.nav_bar(
         sticky_mode='pinned', #jumpy or not-jumpy, but sticky or pinned
     )
 
+#---------------------------------#
+#Welcome Message
+cols0 = st.columns([0.6,0.4])
+with cols0[0]:
+
+    st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+    @import url(https://fonts.googleapis.com/css?family=Raleway:400,700,900,400italic,700italic,900italic);
+
+    .welcome {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.5em;
+      position: relative;
+      background-image: linear-gradient(gold, gold);
+      background-size: 100% 10px;
+      background-repeat: no-repeat;
+      background-position: 100% 0%;
+       transition: background-size .7s, background-position .5s ease-in-out;
+    }
+
+    .welcome:hover {
+      background-size: 100% 100%;
+      background-position: 0% 100%;
+      transition: background-position .7s, background-size .5s ease-in-out;
+    }
+    .fancy {
+      position: relative;
+      white-space: nowrap;
+      &:after {
+        --deco-height: 0.3125em;
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: calc(var(--deco-height) * -0.625);
+            height: var(--deco-height);
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M-17 30.5C-1 22 72-4 54 13 37.9 28.2-2.5 57.5 16 55.5s72-29 104-40' stroke='%233670a0' stroke-width='10'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='a'%3E%3Cpath fill='%23fff' d='M0 0h100v64H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
+            background-size: auto 100%;
+            background-repeat: round;
+            background-position: 0em;
+          }
+    }
+
+    </style>
+
+    <div style="text-align: center;padding-top: 12rem;">
+        <span class="welcome">¡Bienvenido al Club de Programación en Python Avanzado!</span>
+        <p style="font-family: 'Raleway';font-size: 1.5em;padding-top: 0.2rem;text-align: center;">
+        Bienvenido a la liga de <span class="fancy">Pythonistas avanzados</span>,
+        donde la pasión por la programación se encuentra con la <span class="fancy"> maestría en Python.</span>
+        </p>
+    </div>
+    ''',unsafe_allow_html=True)
+
+with cols0[1]:
+    st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json')
 
 
+
+
+
+x = '''
+¡Por supuesto! Aquí tienes una descripción para tu página principal basada en el contenido:
+
+---
+
+¡Bienvenido a nuestro Espacio de Desarrollo y Desafíos en Programación! Explora un mundo de posibilidades con nuestras emocionantes funciones y recursos.
+
+**Menú de Navegación:**
+- **Problemas:** Encuentra desafíos para todos los niveles, desde los más básicos hasta los más avanzados. Incluso puedes editar y resolver problemas en nuestro Editor integrado.
+  - Todos los Problemas
+  - Problemas Básicos
+  - Problemas Intermedios
+  - Problemas Avanzados
+  - Editor de Código
+
+- **Concursos:** ¡Demuestra tus habilidades compitiendo en nuestros concursos y desafíos especiales!
+
+- **Dashboard:** Obtén información valiosa sobre tu progreso y desempeño en un vistazo.
+
+- **Docs:** Accede a nuestra documentación completa para aprender y mejorar tus habilidades.
+
+- **Editor de Código:** Experimenta y crea con nuestro editor de código interactivo.
+
+- **Tests:** Desafíate a ti mismo con una variedad de pruebas clasificadas por dificultad.
+  - Pruebas Básicas
+  - Pruebas Intermedias
+  - Pruebas Avanzadas
+  - Editor de Pruebas
+
+- **FAQ:** Encuentra respuestas a preguntas frecuentes y descubre más sobre nuestra plataforma.
+
+- **Contacto:** ¿Necesitas ayuda o tienes comentarios? Contáctanos, ¡estamos aquí para ayudar!
+
+- **Logout:** Cierra sesión cuando hayas terminado tus sesiones.
+
+Explora, aprende y desafía tus límites en nuestro club. ¡Es hora de codear con pasión y creatividad!
+
+---
+
+Esta descripción destaca las diversas secciones y características disponibles en tu página principal, invitando a los usuarios a sumergirse en el mundo de la programación y los desafíos que tu plataforma ofrece. ¡Espero que encuentres útil esta descripción!
+'''
