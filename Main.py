@@ -187,15 +187,28 @@ Descubre la Esencia de Nuestra Plataforma<br> Características que Transforman t
 </div>
 ''',unsafe_allow_html=True)
 sac.divider(label='Características',align='center',bold=True,icon='rocket',)
-cols1 = st.columns([0.6,0.4])
+st.markdown('''
+<h4>Explora Desaf&iacute;os</h4>
+<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+    Bienvenido a nuestra secci&oacute;n de Desaf&iacute;os, dise&ntilde;ada para satisfacer todas tus inquietudes de programaci&oacute;n.
+    Aqu&iacute;, encontrar&aacute;s una variedad de problemas adaptados a todos los niveles de habilidad, desde principiantes
+    hasta expertos. Nuestra plataforma te invita a sumergirte en el emocionante mundo de la resoluci&oacute;n de problemas de
+    programaci&oacute;n.<br>
+    <span class="fancy">
+    &iexcl;Aqu&iacute; est&aacute; lo que te ofrecemos!
+    </span>
+</p>
+''',unsafe_allow_html=True)
+cols1 = st.columns([0.7,0.3])
 
 with cols1[0]:
     with open('rsc/html/Main-Banner2.html') as f:
         st.markdown(f.read(),unsafe_allow_html=True)
 
-
+somelottie ='https://lottie.host/c41a8ef4-fc04-4219-a774-163c87c6c677/2q1ZVNlPDJ.json'
 with cols1[1]:
-    st_lottie('https://lottie.host/c41a8ef4-fc04-4219-a774-163c87c6c677/2q1ZVNlPDJ.json',quality='high')
+    st_lottie('https://lottie.host/5295a4fe-7a58-4245-a71a-5be321a45b6a/IdGdn1WOgB.json',quality='high')
+    st_lottie('https://lottie.host/20ba4be7-6b85-4613-a152-d77cb8b1a787/vQygOL7QiX.json',quality='high')
 #------------------------------------- Footer ---------------------------------------------------------
 sac.divider(label='Redes Sociales',align='center',bold=True,icon='share')
 x = sac.tags(
