@@ -83,32 +83,6 @@ def show_logos():
                 }
             }
 
-            strong {
-                position: relative;
-            }
-            strong::after {
-              content: "";
-              position: absolute;
-              bottom: -0.125rem;
-              left: -0.5rem;
-              right: -0.5rem;
-              height: 0.75rem;
-              z-index: -1;
-              background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/664131/underline.svg");
-              background-repeat: no-repeat;
-              background-size: cover;
-            }
-
-            p > strong {
-              font-weight: 400;
-            }
-            p > strong::after {
-              bottom: -0.2rem;
-              height: 0.5rem;
-              left: -0.25rem;
-              right: -0.25rem;
-            }
-
         </style>
 
         <div style="text-align: center;">
