@@ -65,23 +65,71 @@ def show_logos():
         st.markdown('''
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+            .fancy {
+                position: relative;
+                white-space: nowrap;
+                &:after {
+                  --deco-height: 0.3125em;
+                  content: "";
+                  position: absolute;
+                  left: 0;
+                  right: 0;
+                  bottom: calc(var(--deco-height) * -0.625);
+                  height: var(--deco-height);
+                  background-image: url("data:image/svg+xml,%3Csvg width='100' height='64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M-17 30.5C-1 22 72-4 54 13 37.9 28.2-2.5 57.5 16 55.5s72-29 104-40' stroke='%2300FDCF' stroke-width='10'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='a'%3E%3Cpath fill='%23fff' d='M0 0h100v64H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
+                  background-size: auto 100%;
+                  background-repeat: round;
+                  background-position: 0em;
+                }
+            }
+
+            strong {
+                position: relative;
+            }
+            strong::after {
+              content: "";
+              position: absolute;
+              bottom: -0.125rem;
+              left: -0.5rem;
+              right: -0.5rem;
+              height: 0.75rem;
+              z-index: -1;
+              background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/664131/underline.svg");
+              background-repeat: no-repeat;
+              background-size: cover;
+            }
+
+            p > strong {
+              font-weight: 400;
+            }
+            p > strong::after {
+              bottom: -0.2rem;
+              height: 0.5rem;
+              left: -0.25rem;
+              right: -0.25rem;
+            }
+
         </style>
 
         <div style="text-align: center;">
-            <h2 style="font-family: 'Bebas Neue';">Club de Programación en Python Avanzado</h2>
+            <h2 style="font-family: 'Bebas Neue';font-size: 50px;">
+            <span class="fancy">Club de Programación en Python Avanzado</span>
+            </h2>
+
         </div>
 
         ''',unsafe_allow_html=True)
         #st.write('## Club de Algoritmia en Python Avanzado' )
     with columns1:
-        file_ = open("rsc/Logos/FESA_LOGO.png",'rb')
-        contents = file_.read()
-        data_url = base64.b64encode(contents).decode("utf-8")
-        file_.close()
-        st.markdown(
-                f'<div style="text-align: center;"><img src="data:image/gif;base64,{data_url}" alt="logo-fes-mac"></div>',
-                unsafe_allow_html=True,
-                )
+        st.image('rsc/Logos/FESA_LOGO.png',use_column_width=True)
+        #file_ = open("rsc/Logos/FESA_LOGO.png",'rb')
+        #contents = file_.read()
+        #data_url = base64.b64encode(contents).decode("utf-8")
+        #file_.close()
+        #st.markdown(
+        #        f'<div style="text-align: center;"><img src="data:image/gif;base64,{data_url}" alt="logo-fes-mac"></div>',
+        #        unsafe_allow_html=True,
+        #        )
     with col3:
         pythonlogo()
 
