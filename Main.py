@@ -140,7 +140,7 @@ menu_data = [
 
 
 
-over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#002B7A'}
+over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
 menu_id = hc.nav_bar(
         menu_definition=menu_data,
         override_theme=over_theme,
@@ -155,59 +155,13 @@ menu_id = hc.nav_bar(
 #Welcome Message
 cols0 = st.columns([0.6,0.4])
 with cols0[0]:
-
-    st.markdown('''
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-    @import url(https://fonts.googleapis.com/css?family=Raleway:400,700,900,400italic,700italic,900italic);
-
-    .welcome {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 2.5em;
-      position: relative;
-      background-image: linear-gradient(gold, gold);
-      background-size: 100% 10px;
-      background-repeat: no-repeat;
-      background-position: 100% 0%;
-       transition: background-size .7s, background-position .5s ease-in-out;
-    }
-
-    .welcome:hover {
-      background-size: 100% 100%;
-      background-position: 0% 100%;
-      transition: background-position .7s, background-size .5s ease-in-out;
-    }
-    .fancy {
-      position: relative;
-      white-space: nowrap;
-      &:after {
-        --deco-height: 0.3125em;
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: calc(var(--deco-height) * -0.625);
-            height: var(--deco-height);
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M-17 30.5C-1 22 72-4 54 13 37.9 28.2-2.5 57.5 16 55.5s72-29 104-40' stroke='%233670a0' stroke-width='10'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='a'%3E%3Cpath fill='%23fff' d='M0 0h100v64H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
-            background-size: auto 100%;
-            background-repeat: round;
-            background-position: 0em;
-          }
-    }
-
-    </style>
-
-    <div style="text-align: center;padding-top: 12rem;">
-        <span class="welcome">¡Bienvenido al Club de Programación en Python Avanzado!</span>
-        <p style="font-family: 'Raleway';font-size: 1.5em;padding-top: 0.2rem;text-align: center;">
-        Bienvenido a la liga de <span class="fancy">Pythonistas avanzados</span>,
-        donde la pasión por la programación se encuentra con la <span class="fancy"> maestría en Python.</span>
-        </p>
-    </div>
-    ''',unsafe_allow_html=True)
+    with open('rsc/html/Main-Banner1.html') as f:
+        st.markdown(f.read(), unsafe_allow_html=True)
 
 with cols0[1]:
     st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json')
+
+
 
 
 
