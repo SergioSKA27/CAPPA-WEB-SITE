@@ -225,8 +225,8 @@ Editor ofrece una variedad de funciones y recursos para ayudarte a crear y edita
 cols2 = st.columns([0.3,0.7])
 
 with cols2[0]:
-    #st_lottie('https://lottie.host/bb7b964f-b151-48d4-902c-f8ff5e1ea037/H2O7NOxRVS.json',quality='high')
-    st_lottie('https://lottie.host/6af7721f-9350-4ace-8260-fbc4b3c273ad/xpkqV3aV5y.json',quality='high')
+    st_lottie('https://lottie.host/bb7b964f-b151-48d4-902c-f8ff5e1ea037/H2O7NOxRVS.json',quality='high')
+    #st_lottie('https://lottie.host/6af7721f-9350-4ace-8260-fbc4b3c273ad/xpkqV3aV5y.json',quality='high')
 
 with cols2[1]:
     with open('rsc/html/Main-Banner3.html') as f:

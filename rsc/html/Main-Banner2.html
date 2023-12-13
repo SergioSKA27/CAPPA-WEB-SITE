@@ -3,6 +3,23 @@
 </head>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+    .fancy {
+      position: relative;
+      white-space: nowrap;
+      &:after {
+        --deco-height: 0.3125em;
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(var(--deco-height) * -0.625);
+        height: var(--deco-height);
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M-17 30.5C-1 22 72-4 54 13 37.9 28.2-2.5 57.5 16 55.5s72-29 104-40' stroke='%233670a0' stroke-width='10'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='a'%3E%3Cpath fill='%23fff' d='M0 0h100v64H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
+        background-size: auto 100%;
+        background-repeat: round;
+        background-position: 0em;
+      }
+    }
     .fancy_list{
 	    margin: 1rem;
 	    padding: 1rem;
@@ -66,27 +83,41 @@
     }
 </style>
 <div class="fancy_list">
-<ul>
-    <li>
-        <h5> Problemas B&aacute;sicos</h5>
-        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
-        Ideal para aquellos que est&aacute;n dando sus primeros pasos en el mundo de la programaci&oacute;n.<br>
-        Estos problemas proporcionan una base s&oacute;lida para fortalecer tus habilidades esenciales.
-        </p>
-    </li>
-    <li>
-        <h5> Problemas Intermedios</h5>
-        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
-        Avanza a problemas m&aacute;s desafiantes que pondr&aacute;n a prueba tu comprensi&oacute;n y aplicaci&oacute;n de conceptos
-        intermedios de programaci&oacute;n. Perfecto para aquellos que buscan mejorar sus habilidades.
-        </p>
-    </li>
-    <li>
-        <h5> Problemas Avanzados</h5>
-        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
-        Para los programadores experimentados que buscan un desaf&iacute;o significativo.<br>
-        Estos problemas te llevar&aacute;n a explorar soluciones avanzadas y t&eacute;cnicas m&aacute;s sofisticadas.
-        </p>
-    </li>
-</ul>
+    <h3>Caracter&iacute;sticas <img src="https://img.icons8.com/ios-filled/50/000000/checked.png" width="30" height="30">
+    </h3>
+    <ul>
+        <li>
+            <h5>
+                <span class="fancy">
+                    Problemas B&aacute;sicos
+                </span>
+            </h5>
+            <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
+            Ideal para aquellos que est&aacute;n dando sus primeros pasos en el mundo de la programaci&oacute;n.<br>
+            Estos problemas proporcionan una base s&oacute;lida para fortalecer tus habilidades esenciales.
+            </p>
+        </li>
+        <li>
+            <h5>
+                <span class="fancy">
+                    Problemas Intermedios
+                </span>
+            </h5>
+            <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
+            Avanza a problemas m&aacute;s desafiantes que pondr&aacute;n a prueba tu comprensi&oacute;n y aplicaci&oacute;n de conceptos
+            intermedios de programaci&oacute;n. Perfecto para aquellos que buscan mejorar sus habilidades.
+            </p>
+        </li>
+        <li>
+            <h5>
+                <span class="fancy">
+                    Problemas Avanzados
+                </span>
+            </h5>
+            <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
+            Para los programadores experimentados que buscan un desaf&iacute;o significativo.<br>
+            Estos problemas te llevar&aacute;n a explorar soluciones avanzadas y t&eacute;cnicas m&aacute;s sofisticadas.
+            </p>
+        </li>
+    </ul>
 </div>
