@@ -148,7 +148,7 @@ menu_id = hc.nav_bar(
         login_name='Admin',
         hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
         sticky_nav=False, #at the top or not
-        sticky_mode='pinned', #jumpy or not-jumpy, but sticky or pinned
+        sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
 
 #---------------------------------#
@@ -164,8 +164,11 @@ with cols0[1]:
 
 
 
-
-
+#------------------------------------- Footer ---------------------------------------------------------
+st.divider()
+with open('rsc/html/footer.html') as foo:
+    #components.html(foo.read(),width=1600)
+    st.markdown(foo.read(), unsafe_allow_html=True)
 
 x = '''
 ¡Por supuesto! Aquí tienes una descripción para tu página principal basada en el contenido:
