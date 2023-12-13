@@ -190,60 +190,14 @@ sac.divider(label='Características',align='center',bold=True,icon='rocket',)
 cols1 = st.columns([0.6,0.4])
 
 with cols1[0]:
-    st.markdown('''
-<style>
-    lista {
-        display: flex;
-        flex-direction: row;
-        column-gap: 1rem;
-        transition: all 150ms ease-out;
-        justify-content: center;
-    }
-</style>
-<h4>Explora Desafíos</h4>
-<p style="text-align: center;font-family: cursive;font-size: 1rem;">
-Bienvenido a nuestra sección de Desafíos, diseñada para satisfacer todas tus inquietudes de programación.
-Aquí, encontrarás una variedad de problemas adaptados a todos los niveles de habilidad, desde principiantes
-hasta expertos. Nuestra plataforma te invita a sumergirte en el emocionante mundo de la resolución de problemas de
-programación.<br><span class="fancy">
-¡Aquí está lo que te ofrecemos!
-</span>
-</p>
-<ul class="lista">
-    <li>
-        <h5> Todos los Problemas </h5>
-        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
-        Descubre una amplia gama de desafíos que abarcan desde los conceptos más fundamentales hasta los problemas más complejos. Explora y elige desafíos que se adapten a tus intereses y nivel de habilidad.
-        </p>
-    </li>
-    <li>
-        <h5> Problemas Básicos</h5>
-        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
-        Ideal para aquellos que están dando sus primeros pasos en el mundo de la programación. Estos problemas proporcionan una base sólida para fortalecer tus habilidades esenciales.
-        </p>
-    </li>
-    <li>
-        <h5> Problemas Intermedios</h5>
-        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
-        Avanza a problemas más desafiantes que pondrán a prueba tu comprensión y aplicación de conceptos intermedios de programación. Perfecto para aquellos que buscan mejorar sus habilidades.
-        </p>
-    </li>
-    <li>
-        <h5> Problemas Avanzados</h5>
-        <p style="text-align: justify;font-family: cursive;font-size: 1rem;">
-        Para los programadores experimentados que buscan un desafío significativo. Estos problemas te llevarán a explorar soluciones avanzadas y técnicas más sofisticadas.
-        </p>
-    </li>
-</ul>
+    with open('rsc/html/Main-Banner2.html') as f:
+        st.markdown(f.read(),unsafe_allow_html=True)
 
 
-
-
-
-''',unsafe_allow_html=True)
 with cols1[1]:
     st_lottie('https://lottie.host/c41a8ef4-fc04-4219-a774-163c87c6c677/2q1ZVNlPDJ.json',quality='high')
 #------------------------------------- Footer ---------------------------------------------------------
+sac.divider(label='Redes Sociales',align='center',bold=True,icon='share')
 x = sac.tags(
     [
         sac.Tag(
@@ -270,7 +224,6 @@ x = sac.tags(
     align="center",
 )
 
-st.divider()
 with open('rsc/html/footer.html') as foo:
     #components.html(foo.read(),width=1600)
     st.markdown(foo.read(), unsafe_allow_html=True)
