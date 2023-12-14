@@ -232,6 +232,15 @@ with cols2[1]:
     with open('rsc/html/Main-Banner3.html') as f:
         st.markdown(f.read(),unsafe_allow_html=True)
 
+sac.divider(label='',align='center',dashed=True,icon='pencil-square')
+
+st.markdown('''
+<h4 style="padding-top: 1rem; padding-bottom: 1rem;">
+Concursos.<br> Tu Fórmula para la Excelencia en el Club de Programación en Python Avanzado
+</h4>
+<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+En el vibrante Club de Programación en Python Avanzado, el Editor de Código se une a la emoción de los concursos para ofrecerte una experiencia de aprendizaje y competencia sin igual.
+</p>''' ,unsafe_allow_html=True)
 #------------------------------------- Footer ---------------------------------------------------------
 sac.divider(label='Redes Sociales',align='center',bold=True,icon='share')
 x = sac.tags(
