@@ -213,7 +213,7 @@ Descubre la Esencia de Nuestra Plataforma<br> Características que Transforman t
 </h4>
 </div>
 ''',unsafe_allow_html=True)
-sac.divider(label='Características',align='center',bold=True,icon='rocket',)
+sac.divider(label='Características',align='center',icon='rocket',)
 st.markdown('''
 <h4>Explora Desaf&iacute;os</h4>
 <p style="text-align: center;font-family: cursive;font-size: 1rem;">
@@ -269,7 +269,7 @@ Concursos.<br> Tu Fórmula para la Excelencia en el Club de Programación en Pyt
 En el vibrante Club de Programación en Python Avanzado, el Editor de Código se une a la emoción de los concursos para ofrecerte una experiencia de aprendizaje y competencia sin igual.
 </p>''' ,unsafe_allow_html=True)
 #------------------------------------- Footer ---------------------------------------------------------
-sac.divider(label='Redes Sociales',align='center',bold=True,icon='share')
+sac.divider(label='Redes Sociales',align='center',icon='share')
 x = sac.tags(
     [
         sac.Tag(
