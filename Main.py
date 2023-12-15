@@ -174,7 +174,7 @@ with cols0[1]:
 
 
 
-sac.divider(label='',align='center',dashed=True)
+sac.divider(label='',align='center')
 #---------------------------------#
 #Caracteristicas del sitio
 
