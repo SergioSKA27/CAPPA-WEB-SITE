@@ -158,8 +158,26 @@ menu_id = hc.nav_bar(
     )
 menu_id
 
+st.markdown('''
+<style>
+.warning-message {
+    display: none; /* Oculta el mensaje por defecto */
+    background-color: #ffcccb; /* Color de fondo del mensaje de advertencia */
+    padding: 10px;
+    text-align: center;
+}
 
-
+/* Media query para pantallas pequeñas */
+@media only screen and (max-width: 600px) {
+    .warning-message {
+        display: block; /* Muestra el mensaje en pantallas pequeñas */
+    }
+}
+</style>
+<div class="warning-message">
+    <p>Esta aplicación está optimizada para computadoras. Te recomendamos utilizar una pantalla más grande para una mejor experiencia.</p>
+</div>
+''', unsafe_allow_html=True)
 
 #---------------------------------#
 #Welcome Message
@@ -169,7 +187,7 @@ with cols0[0]:
         st.markdown(f.read(), unsafe_allow_html=True)
 
 with cols0[1]:
-    st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json',loop=False,quality='high')
+    st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json',quality='high')
 
 
 
