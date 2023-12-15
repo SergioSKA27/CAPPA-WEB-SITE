@@ -25,10 +25,12 @@ background-color: #e5e5f7;
 .st-emotion-cache-z5fcl4 {
   width: 100%;
   padding: 0rem 1rem 1rem;
-    padding-right: 1rem;
-    padding-left: 1rem;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    padding-bottom: 0.5rem;
   min-width: auto;
   max-width: initial;
+
 }
 
 </style>
@@ -111,7 +113,10 @@ def show_logos():
         pythonlogo()
 
 
-show_logos()
+#show_logos() deprecate this function
+#use this instead
+with open('rsc/html/headlogos.html') as f:
+    st.markdown(f.read(),unsafe_allow_html=True)
 #---------------------------------#
 #Navigation Bar
 
@@ -152,6 +157,10 @@ menu_id = hc.nav_bar(
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
 menu_id
+
+
+
+
 #---------------------------------#
 #Welcome Message
 cols0 = st.columns([0.6,0.4])
