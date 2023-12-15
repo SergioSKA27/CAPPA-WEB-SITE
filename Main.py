@@ -210,7 +210,7 @@ with cols1[1]:
     st_lottie('https://lottie.host/5295a4fe-7a58-4245-a71a-5be321a45b6a/IdGdn1WOgB.json',quality='high')
     st_lottie('https://lottie.host/20ba4be7-6b85-4613-a152-d77cb8b1a787/vQygOL7QiX.json',quality='high')
 
-sac.divider(label='',align='center',dashed=True,icon='code')
+sac.divider(label='',align='center',icon='code')
 
 st.markdown('''
 <h4 style="padding-top: 1rem; padding-bottom: 1rem;">
@@ -232,7 +232,7 @@ with cols2[1]:
     with open('rsc/html/Main-Banner3.html') as f:
         st.markdown(f.read(),unsafe_allow_html=True)
 
-sac.divider(label='',align='center',dashed=True,icon='pencil-square')
+sac.divider(label='',align='center',icon='pencil-square')
 
 st.markdown('''
 <h4 style="padding-top: 1rem; padding-bottom: 1rem;">
