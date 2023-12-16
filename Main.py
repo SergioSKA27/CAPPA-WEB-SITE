@@ -330,8 +330,11 @@ with cols5[1]:
 
 
 
-
-
+#---------------------------------#
+#Galeria de Imagenes
+sac.divider(label='',align='center',icon='image')
+with open('rsc/html/gallery.html') as f:
+    st.markdown(f.read(),unsafe_allow_html=True)
 
 
 
@@ -373,7 +376,7 @@ with open('rsc/html/footer.html') as foo:
     st.markdown(foo.read(), unsafe_allow_html=True)
 
 x = '''
-¡Por supuesto! Aquí tienes una descripción para tu página principal basada en el contenido:
+Aquí tienes una descripción para tu página principal basada en el contenido:
 
 ---
 
@@ -385,7 +388,7 @@ x = '''
   - Problemas Básicos
   - Problemas Intermedios
   - Problemas Avanzados
-  - Editor de Código
+  - Editor de Problemas
 
 - **Concursos:** ¡Demuestra tus habilidades compitiendo en nuestros concursos y desafíos especiales!
 
