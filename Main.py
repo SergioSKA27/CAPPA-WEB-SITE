@@ -280,7 +280,7 @@ with cols3[1]:
 sac.divider(label='',align='center',icon='file-earmark-check')
 st.markdown('''
 <h4 style="padding-top: 1rem; padding-bottom: 1rem;">
-Tests.<br> Desafía tus límites y evalúa tu progreso con nuestras categorías de pruebas adaptadas a tu nivel de habilidad
+Tests<br> Desafía tus límites y evalúa tu progreso con nuestras categorías de pruebas adaptadas a tu nivel de habilidad
 </h4>
 <p style="text-align: center;font-family: 'Raleway';font-size: 1rem;">
 ¡Explora las pruebas, mide tu progreso y disfruta del emocionante viaje de mejora continua en nuestro espacio de desarrollo y desafíos en programación!
@@ -296,11 +296,24 @@ with cols4[1]:
         st.markdown(f.read(),unsafe_allow_html=True)
 
 
+sac.divider(label='',align='center',icon='journal-code')
+st.markdown('''
+<h4 style="padding-top: 1rem; padding-bottom: 1rem;">
+Docs<br>Sumérgete en el conocimiento y mejora tus habilidades accediendo a nuestra documentación completa
+</h4>
+<p style="text-align: center;font-family: 'Raleway';font-size: 1rem;">
+¡Haz de nuestra documentación tu compañera constante en tu viaje de aprendizaje y mejora continua!
+</p>''' ,unsafe_allow_html=True)
 
 
+cols5 = st.columns([0.7,0.3])
 
+with cols5[0]:
+    with open('rsc/html/Main-Banner6.html') as f:
+        st.markdown(f.read(),unsafe_allow_html=True)
 
-
+with cols5[1]:
+    st_lottie('https://lottie.host/8adfe114-21e6-496e-bb67-308fb9e64e43/8JTbugAlit.json',quality='low',loop=False)
 
 
 
