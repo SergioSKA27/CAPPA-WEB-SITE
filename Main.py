@@ -187,7 +187,7 @@ with cols0[0]:
         st.markdown(f.read(), unsafe_allow_html=True)
 
 with cols0[1]:
-    st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json',quality='high')
+    st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json',quality='low')
 
 
 
@@ -217,13 +217,11 @@ sac.divider(label='Características',align='center',icon='rocket',)
 st.markdown('''
 <h4>Problemas<br> Sumérgete en un mundo de desafíos y mejora tus habilidades con nuestra amplia gama de problemas</h4>
 <p style="text-align: center;font-family: cursive;font-size: 1rem;">
-    Bienvenido a nuestra secci&oacute;n de Problemas, dise&ntilde;ada para satisfacer todas tus inquietudes de programaci&oacute;n.
-    Aqu&iacute;, encontrar&aacute;s una variedad de problemas adaptados a todos los niveles de habilidad, desde principiantes
-    hasta expertos. Nuestra plataforma te invita a sumergirte en el emocionante mundo de la resoluci&oacute;n de problemas de
-    programaci&oacute;n.<br>
-    <span class="fancy">
-    &iexcl;Aqu&iacute; est&aacute; lo que te ofrecemos!
-    </span>
+    Descubre el placer de resolver problemas y mejora constantemente tu habilidad para abordar desafíos cada vez más
+    complejos.<br>
+    ¡Prepárate para el viaje emocionante de la resolución de problemas en nuestro espacio de desarrollo
+    y desafíos en programación!
+
 </p>
 ''',unsafe_allow_html=True)
 cols1 = st.columns([0.7,0.3])
@@ -234,8 +232,8 @@ with cols1[0]:
 
 somelottie ='https://lottie.host/c41a8ef4-fc04-4219-a774-163c87c6c677/2q1ZVNlPDJ.json'
 with cols1[1]:
-    st_lottie('https://lottie.host/5295a4fe-7a58-4245-a71a-5be321a45b6a/IdGdn1WOgB.json',quality='high')
-    st_lottie('https://lottie.host/20ba4be7-6b85-4613-a152-d77cb8b1a787/vQygOL7QiX.json',quality='high')
+    st_lottie('https://lottie.host/5295a4fe-7a58-4245-a71a-5be321a45b6a/IdGdn1WOgB.json',quality='low')
+    st_lottie('https://lottie.host/20ba4be7-6b85-4613-a152-d77cb8b1a787/vQygOL7QiX.json',quality='low')
 
 sac.divider(label='',align='center',icon='code')
 
@@ -252,14 +250,14 @@ Editor ofrece una variedad de funciones y recursos para ayudarte a crear y edita
 cols2 = st.columns([0.3,0.7])
 
 with cols2[0]:
-    st_lottie('https://lottie.host/bb7b964f-b151-48d4-902c-f8ff5e1ea037/H2O7NOxRVS.json',quality='high')
+    st_lottie('https://lottie.host/bb7b964f-b151-48d4-902c-f8ff5e1ea037/H2O7NOxRVS.json',quality='low')
     #st_lottie('https://lottie.host/6af7721f-9350-4ace-8260-fbc4b3c273ad/xpkqV3aV5y.json',quality='high')
 
 with cols2[1]:
     with open('rsc/html/Main-Banner3.html') as f:
         st.markdown(f.read(),unsafe_allow_html=True)
 
-sac.divider(label='',align='center',icon='pencil-square')
+sac.divider(label='',align='center',icon='award')
 
 st.markdown('''
 <h4 style="padding-top: 1rem; padding-bottom: 1rem;">
@@ -276,7 +274,7 @@ with cols3[0]:
         st.markdown(f.read(),unsafe_allow_html=True)
 
 with cols3[1]:
-    st_lottie('https://lottie.host/485e2469-22e7-4353-80a1-4d688f651122/xQtn67pMsN.json',quality='high')
+    st_lottie('https://lottie.host/485e2469-22e7-4353-80a1-4d688f651122/xQtn67pMsN.json',quality='low')
 #------------------------------------- Footer ---------------------------------------------------------
 sac.divider(label='Redes Sociales',align='center',icon='share')
 x = sac.tags(
