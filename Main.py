@@ -216,7 +216,7 @@ Descubre la Esencia de Nuestra Plataforma<br> Características que Transforman t
 sac.divider(label='Características',align='center',icon='rocket',)
 st.markdown('''
 <h4>Problemas<br> Sumérgete en un mundo de desafíos y mejora tus habilidades con nuestra amplia gama de problemas</h4>
-<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+<p style="text-align: center;font-family: 'Raleway';font-size: 1rem;">
     Descubre el placer de resolver problemas y mejora constantemente tu habilidad para abordar desafíos cada vez más
     complejos.<br>
     ¡Prepárate para el viaje emocionante de la resolución de problemas en nuestro espacio de desarrollo
@@ -241,7 +241,7 @@ st.markdown('''
 <h4 style="padding-top: 1rem; padding-bottom: 1rem;">
 Editor de Código<br> Tu Lugar de Poder en el Club de Programación en Python Avanzado
 </h4>
-<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+<p style="text-align: center;font-family: 'Raleway';font-size: 1rem;">
 En el corazón de nuestro Club reside el Editor de Código, una herramienta potente y versátil que redefine tu experiencia
 de programación en Python.Diseñado específicamente para miembros del Club de Programación en Python Avanzado, nuestro
 Editor ofrece una variedad de funciones y recursos para ayudarte a crear y editar código de manera eficiente y efectiva.
@@ -263,7 +263,7 @@ st.markdown('''
 <h4 style="padding-top: 1rem; padding-bottom: 1rem;">
 Concursos.<br> Tu Fórmula para la Excelencia en el Club de Programación en Python Avanzado
 </h4>
-<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+<p style="text-align: center;font-family: 'Raleway';font-size: 1rem;">
 Embárcate en emocionantes desafíos y demuestra tu destreza participando en nuestros concursos regulares y eventos especiales<br>
 ¡Prepárate para la adrenalina de la competición y la oportunidad de destacar entre tus compañeros programadores!
 </p>''' ,unsafe_allow_html=True)
@@ -282,7 +282,7 @@ st.markdown('''
 <h4 style="padding-top: 1rem; padding-bottom: 1rem;">
 Tests.<br> Desafía tus límites y evalúa tu progreso con nuestras categorías de pruebas adaptadas a tu nivel de habilidad
 </h4>
-<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+<p style="text-align: center;font-family: 'Raleway';font-size: 1rem;">
 ¡Explora las pruebas, mide tu progreso y disfruta del emocionante viaje de mejora continua en nuestro espacio de desarrollo y desafíos en programación!
 </p>''' ,unsafe_allow_html=True)
 cols4 = st.columns([0.3,0.7])
