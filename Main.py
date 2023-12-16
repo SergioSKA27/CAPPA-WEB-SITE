@@ -4,6 +4,9 @@ import base64
 from streamlit_lottie import st_lottie
 import streamlit_antd_components as sac
 
+#Autor: Sergio Demis Lopez Martinez
+#This is the main file for the CAPPA project and will contain the landing page
+
 st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg')
 st.markdown("""
 <style>
@@ -120,29 +123,38 @@ with open('rsc/html/headlogos.html') as f:
 #---------------------------------#
 #Navigation Bar
 
-menu_data = [
-    {'icon': "bi bi-cpu",'label':"Problemas",
-    'submenu':[
-    {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-    {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-    {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-    {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
-    {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
-    ]},
-    {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-    {'icon': "bi bi-graph-up", 'label':"Dashboard",'ttip':"I'm the Dashboard tooltip!"}, #can add a tooltip message
-    {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs"},
-    {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-    {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-    {'label':"Basicos 1", 'icon': "🐛"},
-    {'icon':'🐍','label':"Intermedios"},
-    {'icon':'🐉','label':"Avanzados",},
-    {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ"},
-    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto"},
-    {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
 
+if 'auth_state' not in st.session_state:
+    menu_data = [
+    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
+    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
+    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
     ]
+    logname = 'Iniciar Sesión'
+else:
+    menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Dashboard",'ttip':"I'm the Dashboard tooltip!"}, #can add a tooltip message
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs"},
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Basicos 1", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",},
+            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+        {'id':'About','icon':"bi bi-question-circle",'label':"FAQ"},
+        {'id':'contact','icon':"bi bi-envelope",'label':"Contacto"},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    logname = st.session_state.username
 
 
 
@@ -151,7 +163,7 @@ menu_id = hc.nav_bar(
         menu_definition=menu_data,
         override_theme=over_theme,
         home_name='Inicio',
-        login_name='Admin',
+        login_name=logname,
         hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
         sticky_nav=False, #at the top or not
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
