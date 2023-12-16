@@ -275,6 +275,46 @@ with cols3[0]:
 
 with cols3[1]:
     st_lottie('https://lottie.host/485e2469-22e7-4353-80a1-4d688f651122/xQtn67pMsN.json',quality='low')
+
+
+sac.divider(label='',align='center',icon='file-earmark-check')
+st.markdown('''
+<h4 style="padding-top: 1rem; padding-bottom: 1rem;">
+Tests.<br> Desafía tus límites y evalúa tu progreso con nuestras categorías de pruebas adaptadas a tu nivel de habilidad
+</h4>
+<p style="text-align: center;font-family: cursive;font-size: 1rem;">
+¡Explora las pruebas, mide tu progreso y disfruta del emocionante viaje de mejora continua en nuestro espacio de desarrollo y desafíos en programación!
+</p>''' ,unsafe_allow_html=True)
+cols4 = st.columns([0.3,0.7])
+
+with cols4[0]:
+    st_lottie('https://lottie.host/81503e18-2c4d-4d1e-b84b-89b3d8352bf5/tsXAtOeFAc.json',quality='low')
+
+
+with cols4[1]:
+    with open('rsc/html/Main-Banner5.html') as f:
+        st.markdown(f.read(),unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------- Footer ---------------------------------------------------------
 sac.divider(label='Redes Sociales',align='center',icon='share')
 x = sac.tags(
