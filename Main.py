@@ -121,26 +121,26 @@ with open('rsc/html/headlogos.html') as f:
 #Navigation Bar
 
 menu_data = [
-    {'icon': "💻",'label':"Problemas",
+    {'icon': "bi bi-cpu",'label':"Problemas",
     'submenu':[
-    {'id': 'subid00','icon':'🔍','label':'Todos'},
-    {'id':' subid11','icon': "fa fa-paperclip", 'label':"Basicos"},
-    {'id':'subid22','icon': "fa fa-database", 'label':"Intermedios"},
-    {'id':'subid33','icon': "💀", 'label':"Avanzados"},
-    {'id':'subid44','icon': "🔧", 'label':"Editor"}
+    {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+    {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+    {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+    {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+    {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
     ]},
-    {'id':'contest','icon': "🏆", 'label':"Concursos"},
-    {'icon': "📊", 'label':"Dashboard",'ttip':"I'm the Dashboard tooltip!"}, #can add a tooltip message
-    {'id':'docs','icon': "📚", 'label':"Docs"},
-    {'id':'code','icon': "👨‍💻", 'label':"Editor de Código"},
-    {'icon': "📝",'label':"Tests", 'submenu':[
+    {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+    {'icon': "bi bi-graph-up", 'label':"Dashboard",'ttip':"I'm the Dashboard tooltip!"}, #can add a tooltip message
+    {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs"},
+    {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+    {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
     {'label':"Basicos 1", 'icon': "🐛"},
     {'icon':'🐍','label':"Intermedios"},
     {'icon':'🐉','label':"Avanzados",},
-    {'id':'subid144','icon': "🔧", 'label':"Editor" }]},
-    {'id':'About','icon':"❓",'label':"FAQ"},
-    {'id':'contact','icon':"📩",'label':"Contacto"},
-    {'id':'logout','icon': "🚪", 'label':"Logout"},#no tooltip message
+    {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ"},
+    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto"},
+    {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
 
     ]
 
