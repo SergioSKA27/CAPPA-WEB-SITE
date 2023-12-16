@@ -11,7 +11,7 @@ st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_
 st.markdown("""
 <style>
 body {
-background-color: #e5e5f7;
+background-color: #f4ebe8;
 
 }
 
