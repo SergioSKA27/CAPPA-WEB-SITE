@@ -215,9 +215,9 @@ Descubre la Esencia de Nuestra Plataforma<br> Características que Transforman t
 ''',unsafe_allow_html=True)
 sac.divider(label='Características',align='center',icon='rocket',)
 st.markdown('''
-<h4>Explora Desaf&iacute;os</h4>
+<h4>Problemas<br> Sumérgete en un mundo de desafíos y mejora tus habilidades con nuestra amplia gama de problemas</h4>
 <p style="text-align: center;font-family: cursive;font-size: 1rem;">
-    Bienvenido a nuestra secci&oacute;n de Desaf&iacute;os, dise&ntilde;ada para satisfacer todas tus inquietudes de programaci&oacute;n.
+    Bienvenido a nuestra secci&oacute;n de Problemas, dise&ntilde;ada para satisfacer todas tus inquietudes de programaci&oacute;n.
     Aqu&iacute;, encontrar&aacute;s una variedad de problemas adaptados a todos los niveles de habilidad, desde principiantes
     hasta expertos. Nuestra plataforma te invita a sumergirte en el emocionante mundo de la resoluci&oacute;n de problemas de
     programaci&oacute;n.<br>
@@ -266,8 +266,17 @@ st.markdown('''
 Concursos.<br> Tu Fórmula para la Excelencia en el Club de Programación en Python Avanzado
 </h4>
 <p style="text-align: center;font-family: cursive;font-size: 1rem;">
-En el vibrante Club de Programación en Python Avanzado, el Editor de Código se une a la emoción de los concursos para ofrecerte una experiencia de aprendizaje y competencia sin igual.
+Embárcate en emocionantes desafíos y demuestra tu destreza participando en nuestros concursos regulares y eventos especiales<br>
+¡Prepárate para la adrenalina de la competición y la oportunidad de destacar entre tus compañeros programadores!
 </p>''' ,unsafe_allow_html=True)
+cols3 = st.columns([0.7,0.3])
+
+with cols3[0]:
+    with open('rsc/html/Main-Banner4.html') as f:
+        st.markdown(f.read(),unsafe_allow_html=True)
+
+with cols3[1]:
+    st_lottie('https://lottie.host/485e2469-22e7-4353-80a1-4d688f651122/xQtn67pMsN.json',quality='high')
 #------------------------------------- Footer ---------------------------------------------------------
 sac.divider(label='Redes Sociales',align='center',icon='share')
 x = sac.tags(
