@@ -174,26 +174,7 @@ menu_id = hc.nav_bar(
 if menu_id == 'Iniciar Sesión':
     switch_page('login')
 
-st.markdown('''
-<style>
-.warning-message {
-    display: none; /* Oculta el mensaje por defecto */
-    background-color: #ffcccb; /* Color de fondo del mensaje de advertencia */
-    padding: 10px;
-    text-align: center;
-}
 
-/* Media query para pantallas pequeñas */
-@media only screen and (max-width: 600px) {
-    .warning-message {
-        display: block; /* Muestra el mensaje en pantallas pequeñas */
-    }
-}
-</style>
-<div class="warning-message">
-    <p>Esta aplicación está optimizada para computadoras. Te recomendamos utilizar una pantalla más grande para una mejor experiencia.</p>
-</div>
-''', unsafe_allow_html=True)
 
 #---------------------------------#
 #Welcome Message
@@ -229,6 +210,26 @@ Descubre la Esencia de Nuestra Plataforma<br> Características que Transforman t
 </h4>
 </div>
 ''',unsafe_allow_html=True)
+st.markdown('''
+<style>
+.warning-message {
+    display: none; /* Oculta el mensaje por defecto */
+    background-color: #ffcccb; /* Color de fondo del mensaje de advertencia */
+    padding: 10px;
+    text-align: center;
+}
+
+/* Media query para pantallas pequeñas */
+@media only screen and (max-width: 600px) {
+    .warning-message {
+        display: block; /* Muestra el mensaje en pantallas pequeñas */
+    }
+}
+</style>
+<div class="warning-message">
+    <p>Esta aplicación está optimizada para computadoras. Te recomendamos utilizar una pantalla más grande para una mejor experiencia.</p>
+</div>
+''', unsafe_allow_html=True)
 sac.divider(label='Características',align='center',icon='rocket',)
 st.markdown('''
 <h4>Problemas<br> Sumérgete en un mundo de desafíos y mejora tus habilidades con nuestra amplia gama de problemas</h4>
@@ -379,11 +380,10 @@ x = sac.tags(
 )
 
 opt = sac.tabs([
-sac.TabsItem(label='Ayuda',icon='question-circle'),
+sac.TabsItem(label='Información'),
 sac.TabsItem(label='Contacto',icon='phone'),
 sac.TabsItem(label='Política de Privacidad',icon='lock'),
 sac.TabsItem(label='Términos y Condiciones',icon='file-earmark-text'),
-sac.TabsItem(label='Acerca de',icon='info-circle'),
 sac.TabsItem(label='FAQ',icon='question-circle'),
 ],position='bottom',align='center',return_index=True)
 
