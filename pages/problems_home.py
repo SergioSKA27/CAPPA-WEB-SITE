@@ -45,6 +45,7 @@ def search_problem(s: str):
 
 def handle_cardClick(event):
     state.cardclicked = event.target.value
+    switch_page('Main')
 
 if 'cardclicked' not in state:
     state.cardclicked = False
@@ -434,6 +435,6 @@ with elements("demo"):
         'https://www.certus.edu.pe/blog/wp-content/uploads/2020/09/que-es-data-analytics-importancia-1-1200x720.jpg',
         tags=['tag1','tag2','tag3'],button='Ver mas',onchg=handle_cardClick)
         x = w.dashboard.layout()
-        x
+        #x
 
 state.cardclicked
