@@ -125,7 +125,7 @@ with open('rsc/html/headlogos.html') as f:
 #Navigation Bar
 
 
-if 'auth_state' not in st.session_state:
+if 'auth_state'  in st.session_state:
     menu_data = [
     {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
     {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
@@ -155,7 +155,7 @@ else:
         {'id':'contact','icon':"bi bi-envelope",'label':"Contacto"},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
     ]
-    logname = st.session_state.username
+    logname = 'st.session_state.username'
 
 
 
@@ -174,6 +174,8 @@ menu_id = hc.nav_bar(
 if menu_id == 'Iniciar Sesión':
     switch_page('login')
 
+if menu_id == 'subid00':
+    switch_page('problems_home')
 
 
 #---------------------------------#
