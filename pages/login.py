@@ -1,13 +1,26 @@
 import streamlit as st
 import streamlit_antd_components as sac
 import bcrypt as bc
+from streamlit_extras.switch_page_button import switch_page
 
-st.set_page_config(page_title='Login', page_icon=':lock:', layout='centered')
+st.set_page_config(page_title='Login', page_icon=':lock:', layout='centered', initial_sidebar_state='collapsed')
 
 st.markdown('''
 <style>
+[data-testid="collapsedControl"] {
+        display: none
+    }
 
 #MainMenu, header, footer {visibility: hidden;}
+.st-emotion-cache-152jn8i {
+  position: absolute;
+  background: rgb(244, 235, 232);
+  color: rgb(49, 51, 63);
+  inset: 0px;
+    top: 0px;
+  overflow: hidden;
+  top: 0px;
+}
 .st-emotion-cache-r421ms {
   border: 1px solid rgba(49, 51, 63, 0.0);
   border-radius: 2.5rem;
@@ -15,7 +28,6 @@ st.markdown('''
 }
 
 .bg {
-  animation:slide 20s ease-in-out infinite alternate;
   background: radial-gradient(ellipse at bottom, #0d1d31 0%, #0c0d13 100%);
   bottom:0;
   left:-50%;
@@ -107,9 +119,15 @@ with st.form(key='login_form'):
     with cols[1]:
         submit_button = st.form_submit_button(label='Iniciar sesión')
 
-sac.tabs([
-sac.TabsItem(label='Opciones', icon='gear',disabled=True),
+opt = sac.tabs([
+sac.TabsItem(label='Necesitas ayuda?', icon='question-circle-fill'),
 sac.TabsItem(label='Olvidé mi contraseña', icon='lock'),
-sac.TabsItem(label='Registrarme', icon='user-add')
+sac.TabsItem(label='Registrarme', icon='clipboard-plus'),
+sac.TabsItem(label='Inicio', icon='house-door-fill')
 
-])
+],position='bottom',align='center',return_index=True)
+
+
+
+if opt == 3:
+    switch_page('Main')

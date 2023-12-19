@@ -3,11 +3,12 @@ import hydralit_components as hc
 import base64
 from streamlit_lottie import st_lottie
 import streamlit_antd_components as sac
+from streamlit_extras.switch_page_button import switch_page
 
 #Autor: Sergio Demis Lopez Martinez
 #This is the main file for the CAPPA project and will contain the landing page
 
-st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg')
+st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg', initial_sidebar_state='collapsed')
 st.markdown("""
 <style>
 body {
@@ -168,7 +169,10 @@ menu_id = hc.nav_bar(
         sticky_nav=False, #at the top or not
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
-menu_id
+
+
+if menu_id == 'Iniciar Sesión':
+    switch_page('login')
 
 st.markdown('''
 <style>
@@ -345,6 +349,9 @@ with open('rsc/html/gallery.html') as f:
 
 #------------------------------------- Footer ---------------------------------------------------------
 sac.divider(label='Redes Sociales',align='center',icon='share')
+
+
+
 x = sac.tags(
     [
         sac.Tag(
@@ -370,6 +377,16 @@ x = sac.tags(
     format_func="title",
     align="center",
 )
+
+opt = sac.tabs([
+sac.TabsItem(label='Ayuda',icon='question-circle'),
+sac.TabsItem(label='Contacto',icon='phone'),
+sac.TabsItem(label='Política de Privacidad',icon='lock'),
+sac.TabsItem(label='Términos y Condiciones',icon='file-earmark-text'),
+sac.TabsItem(label='Acerca de',icon='info-circle'),
+sac.TabsItem(label='FAQ',icon='question-circle'),
+],position='bottom',align='center',return_index=True)
+
 
 with open('rsc/html/footer.html') as foo:
     #components.html(foo.read(),width=1600)
