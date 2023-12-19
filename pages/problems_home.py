@@ -3,7 +3,7 @@ import streamlit_antd_components as sac
 from streamlit.components.v1 import  html
 import hydralit_components as hc
 from streamlit_searchbox import st_searchbox
-
+from streamlit_pills import pills
 st.set_page_config(layout="wide", page_title="Problemas",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
 
 st.markdown('''
@@ -288,3 +288,96 @@ width: 100%;
 cols0 = st.columns([0.3,0.4,0.3])
 with cols0[1]:
     st_searchbox(search_function=search_problem, placeholder="Buscar Problema", )
+
+tags = [
+    "Todos",
+    "Programación Dinámica",
+    "Divide Y Vencerás",
+    "Backtracking",
+    "Grafos",
+    "Programación Greedy",
+    "Árboles",
+    "Listas",
+    "Pilas",
+    "Colas",
+    "Deques",
+    "Diccionarios"
+    "Matrices",
+    "Ordenamiento",
+    "Búsqueda Binaria",
+    "Cadenas",
+    "Recursividad",
+    "Geometría",
+    "Orden Topológico",
+    "String Matching",
+    "Conjuntos",
+    "Bit Manipulation",
+    "Programación De Redes",
+    "Programación Concurrente",
+    "Árboles Binarios",
+    "Gráficos",
+    "Optimización",
+    "Matemáticas",
+    "Álgebra",
+    "Teoría De Números",
+    "Programación Condicional",
+    "Programación Funcional",
+    "Combinatoria",
+    "Probabilidad",
+    "Manejo De Archivos",
+    "Inteligencia Artificial",
+    "Machine Learning",
+    "Redes Neuronales",
+    "Visión Por Computadora",
+    "Procesamiento De Lenguaje Natural",
+    "Automatización",
+
+]
+
+emojis_tags = [
+    "💊",
+    "💡",  # Programación Dinámica
+    "🔍",  # Divide Y Vencerás
+    "🔄",  # Backtracking
+    "📊",  # Grafos
+    "🤔",  # Programación Greedy
+    "🌲",  # Árboles
+    "📑",  # Listas
+    "🔄",  # Pilas
+    "🔄",  # Colas
+    "🔄",  # Deques
+    "📚",  # Diccionarios
+    "🧮",  # Matrices
+    "🔍",  # Ordenamiento
+    "👾",  # Búsqueda Binaria
+    "🔄",  # Cadenas
+    "📐",  # Recursividad
+    "🔼",  # Geometría
+    "🔄",  # Orden Topológico
+    "🔄",  # String Matching
+    "💡",  # Conjuntos
+    "🌐",  # Bit Manipulation
+    "🔄",  # Programación De Redes
+    "🌳",  # Programación Concurrente
+    "📊",  # Árboles Binarios
+    "⚙️",  # Gráficos
+    "🔢",  # Optimización
+    "🧮",  # Matemáticas
+    "🔢",  # Álgebra
+    "🔄",  # Teoría De Números
+    "📜",  # Programación Condicional
+    "♾️",  # Programación Funcional
+    "🎲",  # Combinatoria
+    "📂",  # Probabilidad
+    "🤖",  # Manejo De Archivos
+    "🧠",  # Inteligencia Artificial
+    "🌐",  # Machine Learning
+    "👀",  # Redes Neuronales
+    "🗣️",  # Visión Por Computadora
+    "⚡ ",  # Procesamiento De Lenguaje Natural
+
+]
+
+
+
+tagss = pills('Categorías',tags, emojis_tags)
