@@ -92,7 +92,8 @@ menu_id = hc.nav_bar(
 if menu_id == 'Inicio':
   switch_page('Main')
 
-
+if menu_id == 'logout':
+    switch_page('Login')
 
 
 st.markdown('''
