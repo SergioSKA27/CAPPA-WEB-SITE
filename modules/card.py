@@ -43,7 +43,7 @@ class Card(Dashboard.Item):
 
             if button != None:
                 if onchg != None:
-                    mui.Button(button, variant='outlined', color='primary',onChange=onchg)
+                    mui.Button(button, variant='outlined', color='primary',onClick=onchg)
                 else:
                     mui.Button(button, variant='outlined', color='primary')
 

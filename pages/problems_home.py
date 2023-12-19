@@ -43,9 +43,10 @@ def search_problem(s: str):
     return []
 
 
-def handle_cardClick(event):
-    state.cardclicked = event.target.value
-    switch_page('Main')
+def handle_cardClick():
+    state.cardclicked = True
+    #switch_page('Main')
+
 
 if 'cardclicked' not in state:
     state.cardclicked = False
