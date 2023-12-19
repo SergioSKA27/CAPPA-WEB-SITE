@@ -45,11 +45,14 @@ def search_problem(s: str):
 
 def handle_cardClick():
     state.cardclicked = True
-    #switch_page('Main')
+    switch_page('Main')
 
 
 if 'cardclicked' not in state:
     state.cardclicked = False
+else:
+    del state['cardclicked']
+    switch_page('Main')
 
 
 #---------------------------------
@@ -564,4 +567,6 @@ with elements("demo"):
         x = w.dashboard.layout()
         #x
 
-state.cardclicked
+if state.cardclicked:
+  switch_page('Main')
+
