@@ -51,7 +51,7 @@ if 'cardclicked' not in state:
     state.cardclicked = False
 
 
-
+#---------------------------------
 #Navbar
 menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",
@@ -95,7 +95,8 @@ if menu_id == 'Inicio':
 if menu_id == 'logout':
     switch_page('Login')
 
-
+#---------------------------------
+#Main
 st.markdown('''
 <style>
 .col {
@@ -402,7 +403,130 @@ emojis_tags = [
 
 tagss = pills('Categorías',tags, emojis_tags)
 
+sac.divider('',icon='hypnotize',align='center',)
 
+cols1 = st.columns([0.3,0.7])
+
+with cols1[0]:
+  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
+  use_column_width=True)
+
+with cols1[1]:
+  st.markdown('### Problema 1')
+  sac.tags(
+  [
+    sac.Tag("Fácil", color="green",icon="snow"),
+    sac.Tag("Árboles", color="blue",bordered=True),
+    sac.Tag("Divide y Vencerás", color="red",bordered=True),
+    sac.Tag("Programación Dinámica", color="orange",bordered=True)
+
+  ],align="start",key='t1'
+  )
+  st.markdown('''
+  **Descripción:**
+  Dado un árbol binario, encuentre el número de nodos en el árbol.
+  ''')
+  renderp = st.button('Ver Problema',key='b1')
+
+st.divider()
+
+cols2 = st.columns([0.3,0.7])
+
+with cols2[0]:
+  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
+  use_column_width=True)
+
+with cols2[1]:
+  st.markdown('### Problema 1')
+  sac.tags(
+  [
+    sac.Tag("Fácil", color="green",icon="snow"),
+    sac.Tag("Árboles", color="blue",bordered=True),
+    sac.Tag("Divide y Vencerás", color="red",bordered=True),
+
+  ],align="start",key='t2'
+  )
+  st.markdown('''
+  **Descripción:**
+  Dado un árbol binario, encuentre el número de nodos en el árbol.
+  ''')
+  renderp = st.button('Ver Problema',key='b2')
+
+st.divider()
+cols3 = st.columns([0.3,0.7])
+
+with cols3[0]:
+  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
+  use_column_width=True)
+
+with cols3[1]:
+  st.markdown('### Problema 1')
+  sac.tags(
+  [
+    sac.Tag("Fácil", color="green",icon="snow"),
+    sac.Tag("Árboles", color="blue",bordered=True),
+    sac.Tag("Divide y Vencerás", color="red",bordered=True),
+    sac.Tag("Programación Dinámica", color="orange",bordered=True)
+
+  ],align="start",key='t3'
+  )
+  st.markdown('''
+  **Descripción:**
+  Dado un árbol binario, encuentre el número de nodos en el árbol.
+  ''')
+  renderp = st.button('Ver Problema',key='b3')
+
+st.divider()
+cols4 = st.columns([0.3,0.7])
+
+with cols4[0]:
+  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
+  use_column_width=True)
+
+with cols4[1]:
+  st.markdown('### Problema 1')
+  sac.tags(
+  [
+    sac.Tag("Fácil", color="green",icon="snow"),
+    sac.Tag("Árboles", color="blue",bordered=True),
+    sac.Tag("Divide y Vencerás", color="red",bordered=True),
+    sac.Tag("Programación Dinámica", color="orange",bordered=True)
+
+  ],align="start",key='t4'
+  )
+  st.markdown('''
+  **Descripción:**
+  Dado un árbol binario, encuentre el número de nodos en el árbol.
+  ''')
+  renderp = st.button('Ver Problema',key='b4')
+
+st.divider()
+cols5 = st.columns([0.3,0.7])
+
+with cols5[0]:
+  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
+  use_column_width=True)
+
+with cols5[1]:
+  st.markdown('### Problema 1')
+  sac.tags(
+  [
+    sac.Tag("Fácil", color="green",icon="snow"),
+    sac.Tag("Árboles", color="blue",bordered=True),
+    sac.Tag("Divide y Vencerás", color="red",bordered=True),
+    sac.Tag("Programación Dinámica", color="orange",bordered=True)
+
+  ],align="start",key='t5'
+  )
+  st.markdown('''
+  **Descripción:**
+  Dado un árbol binario, encuentre el número de nodos en el árbol.
+  ''')
+  renderp = st.button('Ver Problema',key='b5')
+
+st.divider()
+
+sac.pagination(total=100,page_size=5,align='center',jump=True,show_total=True)
 
 if "w" not in state:
     board = Dashboard()
