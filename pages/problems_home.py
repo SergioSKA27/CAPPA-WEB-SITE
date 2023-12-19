@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit_antd_components as sac
 from streamlit.components.v1 import  html
 import hydralit_components as hc
+from streamlit_searchbox import st_searchbox
 
 st.set_page_config(layout="wide", page_title="Problemas",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
 
@@ -30,7 +31,8 @@ st.markdown('''
 
 
 
-
+def search_problem(s: str):
+    return []
 
 
 
@@ -282,3 +284,7 @@ width: 100%;
     </div>
 </div>
 ''', unsafe_allow_html=True)
+
+cols0 = st.columns([0.3,0.4,0.3])
+with cols0[1]:
+    st_searchbox(search_function=search_problem, placeholder="Buscar Problema", )
