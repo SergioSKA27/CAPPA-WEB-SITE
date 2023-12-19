@@ -35,7 +35,8 @@ class Card(Dashboard.Item):
 
             with mui.CardContent(sx={"flex": 1}):
                 mui.Typography(content)
-                with mui.Stack(direction="row", spacing=1, sx={"marginTop": "auto"}):
+                with mui.Stack(direction="row", spacing=1, sx={"marginTop": "1rem",
+                "flexWrap":"wrap"}):
                     if tags != []:
                         for tag in tags:
                             mui.Chip(label=tag,variant="outlined",color="primary",icon=mui.icon.Code)

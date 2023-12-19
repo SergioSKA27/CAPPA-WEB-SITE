@@ -433,7 +433,8 @@ with elements("demo"):
         w.card4('Anuncio 4','https://www.certus.edu.pe/blog/wp-content/uploads/2020/09/que-es-data-analytics-importancia-1-1200x720.jpg')
         w.card5('Anuncio 5',
         'https://www.certus.edu.pe/blog/wp-content/uploads/2020/09/que-es-data-analytics-importancia-1-1200x720.jpg',
-        tags=['tag1','tag2','tag3'],button='Ver mas',onchg=handle_cardClick)
+        tags=['tag1','tag2','tag3','tag4','tag5']
+        ,button='Ver mas',onchg=handle_cardClick)
         x = w.dashboard.layout()
         #x
 
