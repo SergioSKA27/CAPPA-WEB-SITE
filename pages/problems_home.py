@@ -50,7 +50,7 @@ def handle_cardClick():
 
 if 'cardclicked' not in state:
     state.cardclicked = False
-else:
+elif state.cardclicked:
     del state['cardclicked']
     switch_page('Main')
 
@@ -359,7 +359,7 @@ with elements("demo"):
         w.card5('Anuncio 5',
         'https://www.certus.edu.pe/blog/wp-content/uploads/2020/09/que-es-data-analytics-importancia-1-1200x720.jpg',
         tags=['tag1','tag2','tag3','tag4','tag5']
-        ,button='Ver mas',onchg=handle_cardClick)
+        ,button='Ver mas')
         x = w.dashboard.layout()
         #x
 
