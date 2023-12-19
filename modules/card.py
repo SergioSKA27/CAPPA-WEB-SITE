@@ -1,4 +1,4 @@
-from streamlit_elements import mui
+from streamlit_elements import mui, sync
 from .dashboard import Dashboard
 
 
@@ -11,7 +11,7 @@ class Card(Dashboard.Item):
         "if you like."
     )
 
-    def __call__(self, content,img,title='Card',subheader='September 14, 2016',avatar='R'):
+    def __call__(self, content,img,title='Card',subheader='September 14, 2016',avatar='R', tags=[],button=None,onchg=None):
         """
         The function creates a card component with a title, subheader, image, content, and action buttons.
 
@@ -35,6 +35,16 @@ class Card(Dashboard.Item):
 
             with mui.CardContent(sx={"flex": 1}):
                 mui.Typography(content)
+                with mui.Stack(direction="row", spacing=1, sx={"marginTop": "auto"}):
+                    if tags != []:
+                        for tag in tags:
+                            mui.Chip(label=tag,variant="outlined",color="primary",icon=mui.icon.Code)
+
+            if button != None:
+                if onchg != None:
+                    mui.Button(button, variant='outlined', color='primary',onChange=onchg)
+                else:
+                    mui.Button(button, variant='outlined', color='primary')
 
             with mui.CardActions(disableSpacing=True):
                 mui.IconButton(mui.icon.Favorite)
