@@ -99,6 +99,11 @@ if menu_id == 'Inicio':
 if menu_id == 'logout':
     switch_page('Login')
 
+if menu_id == 'code':
+    switch_page('code_editor')
+
+if menu_id == 'subid44':
+    switch_page('problems_editor')
 #---------------------------------
 #Main
 
