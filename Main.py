@@ -36,9 +36,7 @@ background-color: #f4ebe8;
   max-width: initial;
 
 }
-
 </style>
-
 """,unsafe_allow_html=True)
 
 

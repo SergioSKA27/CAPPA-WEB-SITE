@@ -43,8 +43,24 @@ st.markdown('''
     padding-right: 0.5rem;
   }
 
+
+
+.bg-image {
+        background-color: #f4ebe8;
+        background-image: repeating-linear-gradient(0deg, #444cf7, #444cf7 1px, #e5e5f7 1px, #e5e5f7);
+        bottom:0;
+        left:-50%;
+        position:fixed;
+        right:-50%;
+        top:0;
+        background-size: 20px 20px;
+        background-position: center center;
+        background-repeat: repeat;
+        opacity: 0.1;
+}
+
 .title-word {
-  animation: color-animation 4s linear infinite;
+  animation: color-animation 60s linear infinite;
 }
 
 .title-word-1 {
@@ -97,6 +113,7 @@ st.markdown('''
   text-transform: uppercase;
 }
 </style>
+<div class="bg-image"></div>
 <div class="container">
   <h2 class="title">
     <span class="title-word title-word-1">Editor</span>
@@ -113,7 +130,7 @@ st.markdown('''
 ##---------------------------------
 #Navbar
 menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",
+        {'icon': "bi bi-cpu",'label':"Problemas","ttip":"Seccion de problemas",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
             {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
