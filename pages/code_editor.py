@@ -42,7 +42,69 @@ st.markdown('''
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
+
+.title-word {
+  animation: color-animation 4s linear infinite;
+}
+
+.title-word-1 {
+  --color-1: #DF8453;
+  --color-2: #3D8DAE;
+  --color-3: #E4A9A8;
+}
+
+.title-word-2 {
+  --color-1: #DBAD4A;
+  --color-2: #ACCFCB;
+  --color-3: #17494D;
+}
+
+.title-word-3 {
+  --color-1: #ACCFCB;
+  --color-2: #E4A9A8;
+  --color-3: #ACCFCB;
+}
+
+.title-word-4 {
+  --color-1: #3D8DAE;
+  --color-2: #DF8453;
+  --color-3: #E4A9A8;
+}
+
+@keyframes color-animation {
+  0%    {color: var(--color-1)}
+  32%   {color: var(--color-1)}
+  33%   {color: var(--color-2)}
+  65%   {color: var(--color-2)}
+  66%   {color: var(--color-3)}
+  99%   {color: var(--color-3)}
+  100%  {color: var(--color-1)}
+}
+
+/* Here are just some visual styles. 🖌 */
+
+.container {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  height: 10vh
+}
+
+.title {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 3.5vw;
+  text-transform: uppercase;
+}
 </style>
+<div class="container">
+  <h2 class="title">
+    <span class="title-word title-word-1">Editor</span>
+    <span class="title-word title-word-2">de</span>
+    <span class="title-word title-word-3">Código</span>
+    <span class="title-word title-word-4">🖌</span>
+  </h2>
+</div>
 ''', unsafe_allow_html=True)
 
 
@@ -91,6 +153,9 @@ if menu_id == 'Inicio':
 
 if menu_id == 'logout':
     switch_page('Login')
+
+if menu_id == 'subid00':
+	switch_page('problems_home')
 
 
 code1 = r'''
@@ -227,13 +292,11 @@ editor0 = code_editor(code1,theme="contrast",buttons=bts,lang='python',height=[1
 
 
 if editor0['type'] == "submit" and len(editor0['text']) != 0:
-# Run the Python code and capture the output
+	# Run the Python code and capture the output
     with Profiler():
         result = subprocess.run(['python', '-c', editor0['text']], capture_output=True, text=True)
-        output = result.stdout
-        error = result.stderr
         with st.expander(label=":blue[Output: ]",expanded=True):
-          st.write(output, error)
+          st.write(result.stdout, result.stderr)
 
 
 

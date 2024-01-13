@@ -177,6 +177,9 @@ if menu_id == 'Iniciar Sesión':
 if menu_id == 'subid00':
     switch_page('problems_home')
 
+if menu_id == 'subid44':
+    switch_page('problems_editor')
+
 
 #---------------------------------#
 #Welcome Message
