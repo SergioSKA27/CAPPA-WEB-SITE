@@ -67,6 +67,18 @@ class Editor(Dashboard.Item):
         """
         return self._tabs[label]["content"]
 
+    def create_tab(self, label, default_content, language):
+        """
+        The function `create_tab` creates a new tab with a given label, default content, and language.
+
+        :param label: The label parameter is a string that represents the label or name of the tab
+        :param default_content: The default content parameter is the initial content that will be displayed in the tab
+        :param language: The "language" parameter is used to specify the programming language of the content in the tab. It
+        can be any string that represents a programming language, such as "Python", "JavaScript", "Java", etc
+        """
+        mui.TextField(label="Tab label", value=label, onChange=sync())
+        self.add_tab(label, default_content, language)
+
     def __call__(self):
         """
         The function creates a graphical editor with multiple tabs and a button to apply changes or a keyboard shortcut to
@@ -97,5 +109,6 @@ class Editor(Dashboard.Item):
                     )
 
             with mui.Stack(direction="row", spacing=2, alignItems="center", sx={"padding": "10px"}):
-                mui.Button("Apply", variant="contained", onClick=sync())
-                mui.Typography("Or press ctrl+s", sx={"flex": 1})
+                mui.Button("Ejecutar", variant="contained", onClick=sync(),icon= mui.icon.PlayArrow)
+                mui.Typography("O pulse ctrl+r", sx={"flex": 1})
+

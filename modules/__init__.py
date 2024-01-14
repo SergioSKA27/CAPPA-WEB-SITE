@@ -6,3 +6,4 @@ from .pie import Pie
 from .player import Player
 from .radar import Radar
 from .bar import Bar
+from .timer import Timer

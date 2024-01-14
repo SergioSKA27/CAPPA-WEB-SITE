@@ -178,7 +178,8 @@ if menu_id == 'subid00':
 if menu_id == 'subid44':
     switch_page('problems_editor')
 
-
+if menu_id == 'code':
+    switch_page('code_editor')
 #---------------------------------#
 #Welcome Message
 cols0 = st.columns([0.6,0.4])
