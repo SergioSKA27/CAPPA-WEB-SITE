@@ -34,7 +34,7 @@ class Timer(Dashboard.Item):
 
 
         with mui.Paper(key=self._key, sx={"display": "flex", "flexDirection": "column", "borderRadius": 3, "overflow": "hidden"}, elevation=1):
-            with self.title_bar("0px 15px 0px 15px",dark_switcher=False):
+            with self.title_bar("10px 15px 10px 15px",dark_switcher=False):
                 mui.icon.Code()
                 mui.Typography("Entorno de ejecución", sx={"fontSize": "1.2rem"})
             mui.Divider()
@@ -86,6 +86,6 @@ class Timer(Dashboard.Item):
                 mui.icon.Memory()
                 mui.Typography("Memoria", sx={"paddingLeft": "10px", "fontSize": "1.2rem"})
             mui.Divider()
-            mui.Typography(f"Memoria Utilizada:\t\t {current / 10**6:.6f} MB \n")
-            mui.Typography(f"Memoria Pico:\t\t {peak / 10**6:.6f} MB \n")
+            mui.Typography(f"Memoria Utilizada:\t\t {current / 10**6:.6f} MB \n", sx={"padding": "10px"})
+            mui.Typography(f"Memoria Pico:\t\t {peak / 10**6:.6f} MB \n", sx={"padding": "10px"})
 

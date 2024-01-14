@@ -98,9 +98,17 @@ def run_code(code, timeout=1, test_file: bytes = None):
                 ["python", "-c", code], capture_output=True, text=True, timeout=timeout
             )
         return result.stdout, result.stderr
-    except subprocess.TimeoutExpired:
-        return None, None
+    except subprocess.TimeoutExpired or Exception as e:
+        return "", "TimeoutExpired"
 
+
+
+def execute_code(code, timeout=1, test_file: bytes = None):
+	s = perf_counter()
+	result = run_code(code, timeout, test_file)
+	cu, p = tracemalloc.get_traced_memory()
+	e = perf_counter()
+	return result, e-s, cu, p
 
 ##---------------------------------
 # Navbar
@@ -194,8 +202,15 @@ if "w" not in state:
             11,
             0,
             4,
-            5,
+            6,
         ),
+        card=Card(
+			board,
+			11,
+			5,
+			4,
+			6,
+		),
     )
     state.w = w
     w.editor.add_tab("Code", "print('Hello world!')", "python")
@@ -208,21 +223,8 @@ with elements("workspace"):
     event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
     with w.dashboard(rowHeight=57):
         w.editor()
-        w.timer()
+        content = w.editor.get_content("Code")
+        result =  execute_code(w.editor.get_content("Code"), timeout=3)
+        w.timer(result[0],str(result[1]),result[2],result[3])
+        w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
 
-
-
-with elements("workspace-running"):
-    with mui.Box(
-        sx={
-            "display": "flex",
-            "flexDirection": "row",
-            "alignItems": "center",
-            "padding": "0px 15px 0px 15px",
-            "backgroundColor": "#3670a0",
-            "color": "#FFFFFF",
-            "borderRadius": 3,
-        }
-    ):
-        mui.icon.Terminal()
-        mui.Typography("Output", sx={"paddingLeft": "10px", "fontSize": "1.2rem"})
