@@ -110,5 +110,5 @@ class Editor(Dashboard.Item):
 
             with mui.Stack(direction="row", spacing=2, alignItems="center", sx={"padding": "10px"}):
                 mui.Button("Ejecutar", variant="contained", onClick=sync(),icon= mui.icon.PlayArrow)
-                mui.Typography("O pulse ctrl+r", sx={"flex": 1})
+                mui.Typography("O pulse ctrl+s", sx={"flex": 1})
 

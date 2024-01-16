@@ -101,8 +101,6 @@ def run_code(code, timeout=1, test_file: bytes = None):
     except subprocess.TimeoutExpired or Exception as e:
         return "", "TimeoutExpired"
 
-
-
 def execute_code(code, timeout=1, test_file: bytes = None):
 	s = perf_counter()
 	result = run_code(code, timeout, test_file)
@@ -207,7 +205,7 @@ if "w" not in state:
         card=Card(
 			board,
 			11,
-			5,
+			6,
 			4,
 			6,
 		),

@@ -3,15 +3,24 @@ import hydralit_components as hc
 from streamlit_extras.switch_page_button import switch_page
 from code_editor import code_editor
 import subprocess
+import tracemalloc
+from types import SimpleNamespace
 from time import perf_counter
 from streamlit_profiler import Profiler
+from streamlit_quill import st_quill
+from streamlit import session_state as state
+from streamlit_elements import elements, event, lazy, mui, sync
+from streamlit_extras.switch_page_button import switch_page
+from streamlit_profiler import Profiler
+
+from modules import Card, Dashboard, DataGrid, Editor, Pie, Player, Radar, Timer
 #Autor: Sergio Lopez
 
 #--------------------------------------------- page config ---------------------------------------------
 #basic page configuration
 st.set_page_config(
     page_title='CAPA',
-    page_icon=":snake:",
+    page_icon="rsc/Logos/LOGO_CAPPA.jpg",
     layout="wide",
     initial_sidebar_state="collapsed",
     menu_items={
@@ -44,6 +53,35 @@ st.markdown('''
   }
 </style>
 ''', unsafe_allow_html=True)
+
+
+
+
+def run_code(code, timeout=1, test_file: bytes = None):
+    """Run code and capture the output"""
+    try:
+        if test_file:
+            result = subprocess.run(
+                ["python", "-c", code],
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                stdin=test_file,
+            )
+        else:
+            result = subprocess.run(
+                ["python", "-c", code], capture_output=True, text=True, timeout=timeout
+            )
+        return result.stdout, result.stderr
+    except subprocess.TimeoutExpired or Exception as e:
+        return "", "TimeoutExpired"
+
+def execute_code(code, timeout=1, test_file: bytes = None):
+	s = perf_counter()
+	result = run_code(code, timeout, test_file)
+	cu, p = tracemalloc.get_traced_memory()
+	e = perf_counter()
+	return result, e-s, cu, p
 
 
 ##---------------------------------
@@ -80,7 +118,7 @@ menu_id = hc.nav_bar(
         hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
         sticky_nav=True, #at the top or not
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
-        first_select=50,
+        first_select=10,
     )
 
 
@@ -91,25 +129,82 @@ if menu_id == 'logout':
     switch_page('Login')
 
 #------------------------------------- body ---------------------------------------------------------
-st.header('Problemas Editor')
+st.title('Editor de Problemas 👨‍💻')
+st.divider()
 
 
+pname =st.text_input('Ingrese el nombre del Problema',placeholder="Problema 1")
 
-pname =st.text_input('Ingrese el nombre del Problema','problema uno')
+tags = [
+    "Programación Dinámica",
+    "Divide Y Vencerás",
+    "Backtracking",
+    "Grafos",
+    "Programación Greedy",
+    "Árboles",
+    "Listas",
+    "Pilas",
+    "Colas",
+    "Deques",
+    "Diccionarios"
+    "Matrices",
+    "Ordenamiento",
+    "Búsqueda Binaria",
+    "Cadenas",
+    "Recursividad",
+    "Geometría",
+    "Orden Topológico",
+    "String Matching",
+    "Conjuntos",
+    "Bit Manipulation",
+    "Programación De Redes",
+    "Programación Concurrente",
+    "Árboles Binarios",
+    "Gráficos",
+    "Optimización",
+    "Matemáticas",
+    "Álgebra",
+    "Teoría De Números",
+    "Programación Condicional",
+    "Programación Funcional",
+    "Combinatoria",
+    "Probabilidad",
+    "Manejo De Archivos",
+    "Inteligencia Artificial",
+    "Machine Learning",
+    "Redes Neuronales",
+    "Visión Por Computadora",
+    "Procesamiento De Lenguaje Natural",
+    "Automatización",
 
-if 'pname' not in st.session_state:
-    st.session_state['pname']= pname
-else:
-    if st.session_state['pname'] != pname:
-        st.session_state['pname'] = pname
+]
+tags = st.multiselect("Seleccione las etiquetas", tags,placeholder="Listas, Grafos, Programación Dinámica, etc",max_selections=5)
 
+
+ops = st.columns(3)
+
+dificulty = ops[0].selectbox('Dificultad',['Basico','Intermedio','Avanzado'])
+score = ops[1].number_input('Puntaje',min_value=100,max_value=1000,step=1)
+timelimit = ops[2].number_input('Tiempo limite',min_value=1,max_value=5,step=1)
 
 st.write('### Ingrese la descripción del Problema')
-p_desc = st.text_area('Descripción del Problema','**Descripción del Problema**', height=200)
+
+with st.form(key='my_form'):
+  desc = st_quill(placeholder='Descripción del Problema', html=True,key='quill1')
+  editcols = st.columns([0.8,0.2])
+
+  with editcols[1]:
+    savedesc = st.form_submit_button(label='Guardar Descripción 💾',use_container_width=True)
+  if savedesc:
+    st.markdown("##### Preview")
+    st.markdown(desc, unsafe_allow_html=True)
+
 
 cols = st.columns(2)
 graph = cols[0].checkbox('Añadir grafica')
-img = cols[1].checkbox('Añadir imagen')
+
+
+
 
 if graph:
   g_desc = st.text_area('Grafica','''
@@ -145,164 +240,49 @@ if graph:
   st.graphviz_chart(g_desc)
 
 
-if img:
-  im = st.file_uploader('Imagen', type=['png', 'jpg', 'jpeg'])
-  try:
-    st.image(im)
-  except:
-    pass
 
-code1 = r'''
-#Ingresa tu propio código de python y  prueba tus conocimientos :D!
-#¡Recuerda que todo lo que ingreses el editor se borrara una vez que cierres la pagina!
-'''
-bts = [
- {
-   "name": "Copy",
-   "feather": "Copy",
-   "hasText": True,
-   "alwaysOn": True,
-   "commands": ["copyAll"],
-   "style": {"top": "0.46rem", "right": "0.4rem"}
- },
- {
-   "name": "Shortcuts",
-   "feather": "Type",
-   "class": "shortcuts-button",
-   "hasText": True,
-   "commands": ["toggleKeyboardShortcuts"],
-   "style": {"bottom": "calc(50% + 1.75rem)", "right": "0.4rem"}
- },
- {
-   "name": "Collapse",
-   "feather": "Minimize2",
-   "hasText": True,
-   "commands": ["selectall",
-                "toggleSplitSelectionIntoLines",
-                "gotolinestart",
-                "gotolinestart",
-                "backspace"],
-   "style": {"bottom": "calc(50% - 1.25rem)", "right": "0.4rem"}
- },
- {
-   "name": "Guardar",
-   "feather": "Save",
-   "hasText": True,
-   "commands": ["save-state", ["response","saved"]],
-   "response": "saved",
-   "style": {"bottom": "calc(50% - 4.25rem)", "right": "0.4rem"}
- },
- {
-   "name": "Ejecutar",
-   "feather": "Play",
-   "primary": True,
-   "hasText": True,
-   "showWithIcon": True,
-   "commands": ["submit"],
-   "style": {"bottom": "0.44rem", "right": "0.4rem"}
- },
- {
-   "name": "Comandos",
-   "feather": "Terminal",
-   "primary": True,
-   "hasText": True,
-   "commands": ["openCommandPallete"],
-   "style": {"bottom": "3.5rem", "right": "0.4rem"}
- }
-]
-
-css_string = '''
-background-color: #bee1e5;
-
-body > #root .ace-streamlit-dark~& {
-   background-color: #262830;
-}
-
-.ace-streamlit-dark~& span {
-   color: #fff;
-   opacity: 0.6;
-}
-
-span {
-   color: #000;
-   opacity: 0.5;
-}
-
-.code_editor-info.message {
-   width: inherit;
-   margin-right: 75px;
-   order: 2;
-   text-align: center;
-   opacity: 0;
-   transition: opacity 0.7s ease-out;
-}
-
-.code_editor-info.message.show {
-   opacity: 0.6;
-}
-
-.ace-streamlit-dark~& .code_editor-info.message.show {
-   opacity: 0.5;
-}
-'''
-# create info bar dictionary
-info_bar = {
-  "name": "language info",
-  "css": css_string,
-  "style": {
-            "order": "1",
-            "display": "flex",
-            "flexDirection": "row",
-            "alignItems": "center",
-            "width": "100%",
-            "height": "2.5rem",
-            "padding": "0rem 0.75rem",
-            "borderRadius": "8px 8px 0px 0px",
-            "zIndex": "9993"
-           },
-  "info": [{
-            "name": "python",
-            "style": {"width": "100px"}
-           }]
-}
-# CSS string for Code Editor
-css_string2 = '''
-font-weight: 600;
-&.streamlit_code-editor .ace-streamlit-dark.ace_editor {
-  background-color: #111827;
-  color: rgb(255, 255, 255);
-}
-&.streamlit_code-editor .ace-streamlit-light.ace_editor {
-        background-color: #eeeeee;
-        color: rgb(0, 0, 0);
-}
-'''
-# style dict for Ace Editor
-ace_style = {"borderRadius": "0px 0px 8px 8px"}
-
-# style dict for Code Editor
-code_style = {"width": "100%"}
-editor0 = code_editor(code1,theme="contrast",buttons=bts,lang='python',height=[15, 30],focus=True,info=info_bar,props={"style": ace_style}, component_props={"style": code_style, "css": css_string2})
+if "w" not in state:
+    board = Dashboard()
+    w = SimpleNamespace(
+        dashboard=board,
+        editor=Editor(
+            board,
+            0,
+            0,
+            8,
+            11,
+        ),
+        timer=Timer(
+            board,
+            11,
+            0,
+            4,
+            6,
+        ),
+        card=Card(
+			board,
+			11,
+			6,
+			4,
+			6,
+		),
+    )
+    state.w = w
+    w.editor.add_tab("Code", "print('Hello world!')", "python")
 
 
-if editor0['type'] == "submit" and len(editor0['text']) != 0:
-# Run the Python code and capture the output
-    start = perf_counter()
-    result = subprocess.run(['python', '-c', editor0['text']], capture_output=True, text=True)
-    cpu_time = perf_counter() - start
-    output = result.stdout
-    error = result.stderr
-    with st.expander(label=":blue[Output: ]",expanded=True):
-        st.write(output, error)
-        st.write(f"CPU Time: {cpu_time}")
+else:
+    w = state.w
 
-if editor0['type'] == "saved" and len(editor0['text']) != 0:
-    filename = st.text_input('Ingrese el nombre del archivo sin la extension .py','example')
-    st.download_button(
-        label="Descargar",
-        data=editor0['text'],
-        file_name=filename+'.py',
-        mime='text/python',)
+with elements("workspace"):
+    event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
+    with w.dashboard(rowHeight=57):
+        w.editor()
+        content = w.editor.get_content("Code")
+        result =  execute_code(w.editor.get_content("Code"), timeout=3)
+        w.timer(result[0],str(result[1]),result[2],result[3])
+        w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
+
 
 
 
@@ -310,8 +290,9 @@ st.write('### Ingrese la respuesta correcta')
 useoutput = st.checkbox('Usar la salida del código como respuesta correcta')
 p_desc = st.text_area('Respuesta correcta','**Respuesta correcta(puede ser una expresion regular)**', height=200)
 
+upcols = st.columns([0.3,0.4,0.3])
 
+if upcols[1].button('Subir Problema 🚀',use_container_width=True):
+  pass
 
-
-st.button('Guardar Problema')# Needs DataBase):
-
+st.session_state['quill1']
