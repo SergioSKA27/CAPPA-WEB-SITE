@@ -55,6 +55,8 @@ st.markdown('''
 ''', unsafe_allow_html=True)
 
 
+if 'auth_state' not in st.session_state:
+    switch_page('login')
 
 
 def run_code(code, timeout=1, test_file: bytes = None):
@@ -125,8 +127,21 @@ menu_id = hc.nav_bar(
 if menu_id == 'Inicio':
   switch_page('Main')
 
+if menu_id == 'subid00':
+    switch_page('problems_home')
+
+
+if menu_id == 'code':
+    switch_page('code_editor')
+
+if menu_id == 'subid144':
+    switch_page('test_editor')
+
 if menu_id == 'logout':
-    switch_page('Login')
+    st.session_state.pop('auth_state')
+    st.session_state.pop('userinfo')
+    st.session_state.pop('username')
+    switch_page('login')
 
 #------------------------------------- body ---------------------------------------------------------
 st.title('Editor de Problemas 👨‍💻')

@@ -131,7 +131,7 @@ if 'auth_state' not  in st.session_state:
     ]
     logname = 'Iniciar Sesión'
 else:
-    st.session_state['userinfo']
+    #st.session_state['userinfo']
     menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",
         'submenu':[
@@ -184,6 +184,13 @@ if menu_id == 'code':
 
 if menu_id == 'subid144':
     switch_page('test_editor')
+
+if menu_id == 'logout':
+    st.session_state.pop('auth_state')
+    st.session_state.pop('userinfo')
+    st.session_state.pop('username')
+    switch_page('login')
+
 
 #---------------------------------#
 #Welcome Message

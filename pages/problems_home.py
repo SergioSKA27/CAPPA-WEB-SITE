@@ -333,7 +333,7 @@ st.divider()
 
 sac.pagination(total=100,page_size=5,align='center',jump=True,show_total=True)
 
-if "w" not in state:
+if "wphome" not in state:
     board = Dashboard()
     args = {}
     args["board"] = board
@@ -346,9 +346,9 @@ if "w" not in state:
         card4=Card(board, 8, 6, 4, 6, minW=4, minH=6),
         card5=Card(board, 8, 12, 4, 6, minW=4, minH=6),
     )
-    state.w = w
+    state.wphome = w
 else:
-    w = state.w
+    w = state.wphome
 with elements("demo"):
     event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
     def handle_layout_change(updated_layout):

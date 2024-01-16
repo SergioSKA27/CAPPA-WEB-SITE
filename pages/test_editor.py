@@ -97,9 +97,22 @@ menu_id = hc.nav_bar(
 if menu_id == 'Inicio':
   switch_page('Main')
 
-if menu_id == 'logout':
-    switch_page('Login')
+if menu_id == 'subid00':
+    switch_page('problems_home')
 
+if menu_id == 'subid44':
+    switch_page('problems_editor')
+
+if menu_id == 'code':
+    switch_page('code_editor')
+
+
+
+if menu_id == 'logout':
+    st.session_state.pop('auth_state')
+    st.session_state.pop('userinfo')
+    st.session_state.pop('username')
+    switch_page('login')
 
 #------------------------------------- body ---------------------------------------------------------
 st.title('Editor de tests 📝')
