@@ -31,6 +31,7 @@ def check_username(usr):
     return False
 
 
+
 st.markdown('''
 <style>
 [data-testid="collapsedControl"] {
@@ -133,6 +134,9 @@ if 'auth_state' not in st.session_state:
 if 'username' not in st.session_state:
     st.session_state.username = None
 
+if 'userinfo' not in st.session_state:
+    st.session_state.userinfo = None
+
 def validar_correo(correo):
     patron = r'\b[A-Za-z0-9._%+-]+@pcpuma\.acatlan\.unam\.mx\b'
     if re.match(patron, correo):
@@ -177,6 +181,7 @@ with st.form(key='login_form'):
                 st.toast(f'Bienvenido {username}',icon='🎉')
                 st.session_state['username'] = username
                 st.session_state['auth_state'] = True
+                st.session_state['userinfo'] = xata.get("Usuario",username)
                 switch_page('Main')
             else:
                 st.error('Usuario o contraseña incorrectos')

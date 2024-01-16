@@ -39,7 +39,7 @@ background-color: #f4ebe8;
 </style>
 """,unsafe_allow_html=True)
 
-
+#
 #---------------------------------#
 #Functions
 def pythonlogo():
@@ -131,6 +131,7 @@ if 'auth_state' not  in st.session_state:
     ]
     logname = 'Iniciar Sesión'
 else:
+    st.session_state['userinfo']
     menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",
         'submenu':[
@@ -153,7 +154,7 @@ else:
         {'id':'contact','icon':"bi bi-envelope",'label':"Contacto"},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
     ]
-    logname = st.session_state['username']
+    logname = st.session_state['userinfo']['username']
 
 
 
