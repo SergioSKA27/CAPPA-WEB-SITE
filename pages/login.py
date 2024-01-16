@@ -4,6 +4,8 @@ import bcrypt as bc
 from streamlit_extras.switch_page_button import switch_page
 from st_xatadb_connection import XataConnection
 import datetime
+import bcrypt as bc
+import re
 
 
 st.set_page_config(page_title='Login', page_icon=':lock:', layout='centered', initial_sidebar_state='collapsed')
@@ -12,12 +14,21 @@ xata = st.connection('xata',type=XataConnection)
 
 
 
-def register(data: dict):
+def register(data: dict, idunam: str, ):
   try:
-    ans = xata.insert("Usuario", data)
+    with st.spinner("Registrando..."):
+      ans = xata.insert("Usuario", data, idunam)
   except Exception as e:
     st.error(e)
     return ans
+
+
+def check_username(usr):
+  try:
+    ans = xata.get("Usuario",usr)
+    return True
+  except Exception as e:
+    return False
 
 
 st.markdown('''
@@ -116,6 +127,29 @@ with open('rsc/css/backgroundLogin.css') as f:
 </div>''',unsafe_allow_html=True)
 
 
+if 'auth_state' not in st.session_state:
+    st.session_state.auth_state = False
+
+if 'username' not in st.session_state:
+    st.session_state.username = None
+
+def validar_correo(correo):
+    patron = r'\b[A-Za-z0-9._%+-]+@pcpuma\.acatlan\.unam\.mx\b'
+    if re.match(patron, correo):
+        return True
+    else:
+        return False
+
+def validate_login(username, password):
+    try:
+        ans = xata.get("Usuario",username)
+        if bc.checkpw(password.encode('utf-8'), ans['password'].encode('utf-8')):
+            return True
+        else:
+            return False
+    except Exception as e:
+        return False
+
 with st.form(key='login_form'):
     st.markdown('''
     <style>
@@ -128,11 +162,25 @@ with st.form(key='login_form'):
     Iniciar sesión
     </h1>
     ''', unsafe_allow_html=True)
-    username = st.text_input('Usuario',placeholder='Usuario')
+    username = st.text_input('Usuario',placeholder='No. de cuenta')
     password = st.text_input('Contraseña', type='password',placeholder='Contraseña')
-    cols = st.columns([0.4,0.3,0.3])
+    cols = st.columns([0.3,0.4,0.3])
     with cols[1]:
-        submit_button = st.form_submit_button(label='Iniciar sesión')
+        submit_button = st.form_submit_button(label='Iniciar sesión',use_container_width=True)
+
+    if submit_button:
+        if username == "" or password == "":
+            st.error('El usuario o la contraseña no pueden estar vacíos')
+        else:
+            response = validate_login(username,password)
+            if response == True:
+                st.toast(f'Bienvenido {username}',icon='🎉')
+                st.session_state['username'] = username
+                st.session_state['auth_state'] = True
+                switch_page('Main')
+            else:
+                st.error('Usuario o contraseña incorrectos')
+
 
 opt = sac.tabs([
 sac.TabsItem(label='Necesitas ayuda?', icon='question-circle-fill'),
@@ -151,11 +199,36 @@ if opt == 3:
     switch_page('Main')
 
 if opt == 2:
-    no_cuenta = st.text_input('Número de cuenta',placeholder='Número de cuenta')
-    username = st.text_input('Usuario',placeholder='Usuario')
-    password = st.text_input('Contraseña', type='password',placeholder='Contraseña')
-    rpassword = st.text_input('Repetir contraseña', type='password',placeholder='Repetir contraseña')
-    correo = st.text_input('Correo electrónico',placeholder='Correo electrónico', help="usa un correo de pcpuma")
-    colssreg = st.columns([.6,.4])
-    cname = colssreg[0].text_input('Nombre completo',placeholder='Nombre completo')
-    bdate = colssreg[1].date_input('Fecha de nacimiento',max_value=datetime.date.today(),min_value=datetime.date(1900,1,1))
+    with st.form(key='register_form'):
+      no_cuenta = st.text_input('Número de cuenta',placeholder='Número de cuenta')
+      username = st.text_input('Usuario',placeholder='Usuario')
+      password = st.text_input('Contraseña', type='password',placeholder='Contraseña')
+      rpassword = st.text_input('Repetir contraseña', type='password',placeholder='Repetir contraseña')
+      correo = st.text_input('Correo electrónico',placeholder='Correo electrónico', help="usa un correo de pcpuma")
+      colssreg = st.columns([.6,.4])
+      cname = colssreg[0].text_input('Nombre completo',placeholder='Nombre completo')
+      bdate = colssreg[1].date_input('Fecha de nacimiento',max_value=datetime.date.today(),min_value=datetime.date  (1900,1,1))
+
+      data = {'username': username,'password': bc.hashpw(password.encode('utf-8'), bc.gensalt()).decode('utf-8'),
+      "correo":correo,"nombre_completo":cname,"fechaNacimiento":bdate.strftime("%Y-%m-%dT%H:%M:%SZ")
+      ,"rol": "Estudiante"}
+      flag = True
+      if validar_correo(correo) == False and correo != "":
+          st.error('El correo debe ser de pcpuma')
+          flag = False
+      if password != rpassword:
+          st.error('Las contraseñas no coinciden')
+          flag = False
+      if len(no_cuenta) < 9 and no_cuenta != "":
+          st.error('El número de cuenta no puede estar vacío')
+          flag = False
+
+      if check_username(username) == True:
+          st.error('El usuario ya existe')
+          flag = False
+
+      if st.form_submit_button(label='Registrarme',help='Regístrate para poder acceder a la plataforma',  use_container_width=True):
+          if flag == True:
+              response = register(data,no_cuenta)
+          else:
+              st.error('No se pudo registrar')
