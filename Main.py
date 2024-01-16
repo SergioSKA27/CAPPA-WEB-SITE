@@ -123,7 +123,7 @@ with open('rsc/html/headlogos.html') as f:
 #Navigation Bar
 
 
-if 'auth_state'  in st.session_state:
+if 'auth_state' not  in st.session_state:
     menu_data = [
     {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
     {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},

@@ -2,8 +2,23 @@ import streamlit as st
 import streamlit_antd_components as sac
 import bcrypt as bc
 from streamlit_extras.switch_page_button import switch_page
+from st_xatadb_connection import XataConnection
+import datetime
+
 
 st.set_page_config(page_title='Login', page_icon=':lock:', layout='centered', initial_sidebar_state='collapsed')
+
+xata = st.connection('xata',type=XataConnection)
+
+
+
+def register(data: dict):
+  try:
+    ans = xata.insert("Usuario", data)
+  except Exception as e:
+    st.error(e)
+    return ans
+
 
 st.markdown('''
 <style>
@@ -129,5 +144,18 @@ sac.TabsItem(label='Inicio', icon='house-door-fill')
 
 
 
+
+
+
 if opt == 3:
     switch_page('Main')
+
+if opt == 2:
+    no_cuenta = st.text_input('Número de cuenta',placeholder='Número de cuenta')
+    username = st.text_input('Usuario',placeholder='Usuario')
+    password = st.text_input('Contraseña', type='password',placeholder='Contraseña')
+    rpassword = st.text_input('Repetir contraseña', type='password',placeholder='Repetir contraseña')
+    correo = st.text_input('Correo electrónico',placeholder='Correo electrónico', help="usa un correo de pcpuma")
+    colssreg = st.columns([.6,.4])
+    cname = colssreg[0].text_input('Nombre completo',placeholder='Nombre completo')
+    bdate = colssreg[1].date_input('Fecha de nacimiento',max_value=datetime.date.today(),min_value=datetime.date(1900,1,1))
