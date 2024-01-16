@@ -129,7 +129,7 @@ if 'qnum' not in st.session_state:
   st.session_state['qnum'] = 0
 
 if 'questions_data' not in st.session_state:
-  st.session_state['questions_data'] = {}
+  st.session_state['questions_data'] = []
 
 
 
@@ -154,7 +154,7 @@ if t == 'opcion multiple':
       correct_ans = i
     answer_text = st.text_area('Texto de la respuesta','Respuesta '+str(i+1), height=50,key='answ'+str(i)+str(st.session_state['qnum']))
     ans.append(answer_text)
-  st.session_state['questions_data'][st.session_state['qnum']] = {
+  quest= {
     'question_text':question_text,
     'answers':np.random.permutation(np.array(ans)),
     'correct_answer':correct_ans,
@@ -176,7 +176,7 @@ if t == 'selccion multiple':
       correct_ans.append(i)
     answer_text = st.text_area('Texto de la respuesta','Respuesta '+str(i+1), height=50,key='answ'+str(i)+str(st.session_state['qnum']))
     ans.append(answer_text)
-  st.session_state['questions_data'][st.session_state['qnum']] = {
+  quest = {
     'question_text':question_text,
     'answers':ans,
     'correct_answer':correct_ans,
@@ -195,7 +195,7 @@ if t == 'ordenacion':
     st.write('Ingrese el texto de la respuesta '+str(i+1))
     answer_text = st.text_area('Texto de la respuesta','Respuesta '+str(i+1), height=50,key='answ'+str(i)+str(st.session_state['qnum']))
     ans.append(answer_text)
-  st.session_state['questions_data'][st.session_state['qnum']] = {
+  quest = {
     'question_text':question_text,
     'answers':ans,
     'correct_answer':ans,
@@ -210,14 +210,14 @@ if t == 'entrada libre':
   answ = st.text_area('Ingresa la respuesta exacta(o una expresion regular)',r'\b{palabra|python}\b', height=100,key='text'+str(st.session_state['qnum']+1))
 
   if leftoev:
-    st.session_state['questions_data'][st.session_state['qnum']] = {
+    quest = {
     'question_text':question_text,
     'answers':'',
     'correct_answer':'left to evalute',
     'qtype': 'text'
     }
   else:
-    st.session_state['questions_data'][st.session_state['qnum']] = {
+    quest = {
     'question_text':question_text,
     'answers':answ,
     'correct_answer':answ,
@@ -225,9 +225,11 @@ if t == 'entrada libre':
     }
 
 if st.button('Añadir pregunta'):
+    st.session_state['questions_data'].append(quest)
     st.session_state['qnum'] += 1
     st.rerun()
 
+st.write(st.session_state['questions_data'])
 st.write('# Preview')
 for i in range(st.session_state['qnum']):
     st.divider()
@@ -261,4 +263,3 @@ for i in range(st.session_state['qnum']):
 
 
 
-#st.write(st.session_state)
