@@ -153,7 +153,7 @@ else:
         {'id':'contact','icon':"bi bi-envelope",'label':"Contacto"},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
     ]
-    logname = 'st.session_state.username'
+    logname = st.session_state['username']
 
 
 
