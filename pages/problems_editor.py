@@ -219,6 +219,7 @@ with st.form(key='my_form'):
     st.markdown(desc, unsafe_allow_html=True)
 
 
+
 cols = st.columns(2)
 graph = cols[0].checkbox('Añadir grafica')
 
@@ -337,6 +338,7 @@ if upcols[1].button('Subir Problema 🚀',use_container_width=True):
     "desc": desc,
     "graph_code": g_desc,
     "correct_ans": str(result[0]) if useoutput else cans,
+    "creador": st.session_state['username'],
   })
     st.success('Problema subido correctamente')
     st.write(r)

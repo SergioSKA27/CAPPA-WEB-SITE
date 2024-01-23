@@ -11,9 +11,14 @@ from types import SimpleNamespace
 from modules import Dashboard,Editor, Card, DataGrid, Radar, Pie, Player,Bar
 import asyncio
 import concurrent.futures
+from st_xatadb_connection import XataConnection
+
+
+COLORS = ['red', 'blue', 'green', 'yellow', 'white', 'purple', 'orange', 'pink', 'brown', 'gray', 'cyan','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
 
 st.set_page_config(layout="wide", page_title="Problemas",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
 
+xata = st.connection('xata',type=XataConnection)
 st.markdown('''
 <style>
 [data-testid="collapsedControl"] {
@@ -53,6 +58,79 @@ if 'cardclicked' not in state:
 elif state.cardclicked:
     del state['cardclicked']
     switch_page('Main')
+
+
+if 'problems' not in state or state.problems is None:
+    state.problems = [xata.query("Problema", {
+    "columns": [
+        "id",
+        "nombre",
+        "tags",
+        "dificultad",
+        "score",
+        "creador.username"
+    ],
+    "page": {
+        "size": 5
+    }
+})]
+
+
+def update_problems():
+    state.problems = [xata.query("Problema", {
+    "columns": [
+        "id",
+        "nombre",
+        "tags",
+        "dificultad",
+        "score",
+        "creador.username"
+    ],
+    "page": {
+        "size": 5
+    }
+})]
+
+if 'page' not in state:
+    state.page = 0
+
+
+
+def render_problem(problem: dict,k : int):
+    cols = st.columns([0.3, 0.7])
+    with cols[0]:
+        st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
+                 use_column_width=True)
+
+    with cols[1]:
+        st.markdown(f'### {problem["nombre"]}')
+        if problem["dificultad"] == 1:
+            pl = sac.Tag("Fácil", color="green", icon="snow")
+        elif problem["dificultad"] == 2:
+            pl = sac.Tag("Medio", color="orange", icon="snow")
+        else:
+            pl = sac.Tag("Difícil", color="red", icon="snow")
+        tagss = [pl]
+        for tag in problem["tags"]:
+            tagss.append(sac.Tag(tag, color=COLORS[problem["tags"].index(tag)], bordered=True))
+
+        sac.tags(tagss, align="start", key='t1')
+        st.markdown(f'''
+        **Score:** {problem['score']}
+
+        **Creador:** {problem['creador']['username']}
+
+        **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
+        ''')
+        renderp = st.button('Ver Problema', key=f'b{k}')
+        if renderp:
+            if 'query' not in state:# Query for rendering problem
+                state.query = {'Table': 'Problema', 'id': problem['id']}
+            else:
+                state.query['Table'] = 'Problema'
+                state.query['id'] = problem['id']
+
+
 
 
 #---------------------------------
@@ -208,128 +286,17 @@ emojis_tags = [
 
 tagss = pills('Categorías',tags, emojis_tags)
 
+
+
+colls = st.columns([0.8,0.2])
+
+colls[1].button(':refresh:',key='refresh',on_click=update_problems)
+
 sac.divider('',icon='hypnotize',align='center',)
 
-cols1 = st.columns([0.3,0.7])
 
-with cols1[0]:
-  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
-  use_column_width=True)
-
-with cols1[1]:
-  st.markdown('### Problema 1')
-  sac.tags(
-  [
-    sac.Tag("Fácil", color="green",icon="snow"),
-    sac.Tag("Árboles", color="blue",bordered=True),
-    sac.Tag("Divide y Vencerás", color="red",bordered=True),
-    sac.Tag("Programación Dinámica", color="orange",bordered=True)
-
-  ],align="start",key='t1'
-  )
-  st.markdown('''
-  **Descripción:**
-  Dado un árbol binario, encuentre el número de nodos en el árbol.
-  ''')
-  renderp = st.button('Ver Problema',key='b1')
-
-st.divider()
-
-cols2 = st.columns([0.3,0.7])
-
-with cols2[0]:
-  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
-  use_column_width=True)
-
-with cols2[1]:
-  st.markdown('### Problema 1')
-  sac.tags(
-  [
-    sac.Tag("Fácil", color="green",icon="snow"),
-    sac.Tag("Árboles", color="blue",bordered=True),
-    sac.Tag("Divide y Vencerás", color="red",bordered=True),
-
-  ],align="start",key='t2'
-  )
-  st.markdown('''
-  **Descripción:**
-  Dado un árbol binario, encuentre el número de nodos en el árbol.
-  ''')
-  renderp = st.button('Ver Problema',key='b2')
-
-st.divider()
-cols3 = st.columns([0.3,0.7])
-
-with cols3[0]:
-  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
-  use_column_width=True)
-
-with cols3[1]:
-  st.markdown('### Problema 1')
-  sac.tags(
-  [
-    sac.Tag("Fácil", color="green",icon="snow"),
-    sac.Tag("Árboles", color="blue",bordered=True),
-    sac.Tag("Divide y Vencerás", color="red",bordered=True),
-    sac.Tag("Programación Dinámica", color="orange",bordered=True)
-
-  ],align="start",key='t3'
-  )
-  st.markdown('''
-  **Descripción:**
-  Dado un árbol binario, encuentre el número de nodos en el árbol.
-  ''')
-  renderp = st.button('Ver Problema',key='b3')
-
-st.divider()
-cols4 = st.columns([0.3,0.7])
-
-with cols4[0]:
-  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
-  use_column_width=True)
-
-with cols4[1]:
-  st.markdown('### Problema 1')
-  sac.tags(
-  [
-    sac.Tag("Fácil", color="green",icon="snow"),
-    sac.Tag("Árboles", color="blue",bordered=True),
-    sac.Tag("Divide y Vencerás", color="red",bordered=True),
-    sac.Tag("Programación Dinámica", color="orange",bordered=True)
-
-  ],align="start",key='t4'
-  )
-  st.markdown('''
-  **Descripción:**
-  Dado un árbol binario, encuentre el número de nodos en el árbol.
-  ''')
-  renderp = st.button('Ver Problema',key='b4')
-
-st.divider()
-cols5 = st.columns([0.3,0.7])
-
-with cols5[0]:
-  st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
-  use_column_width=True)
-
-with cols5[1]:
-  st.markdown('### Problema 1')
-  sac.tags(
-  [
-    sac.Tag("Fácil", color="green",icon="snow"),
-    sac.Tag("Árboles", color="blue",bordered=True),
-    sac.Tag("Divide y Vencerás", color="red",bordered=True),
-    sac.Tag("Programación Dinámica", color="orange",bordered=True)
-
-  ],align="start",key='t5'
-  )
-  st.markdown('''
-  **Descripción:**
-  Dado un árbol binario, encuentre el número de nodos en el árbol.
-  ''')
-  renderp = st.button('Ver Problema',key='b5')
-
-st.divider()
+for problem in range(len(state.problems[state.page]['records'])):
+    render_problem(state.problems[state.page]['records'][problem],problem)
 
 sac.pagination(total=100,page_size=5,align='center',jump=True,show_total=True)
 
@@ -371,3 +338,4 @@ with elements("demo"):
 if state.cardclicked:
   switch_page('Main')
 
+state.problems
