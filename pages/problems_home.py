@@ -130,6 +130,8 @@ def render_problem(problem: dict,k : int):
                 state.query['Table'] = 'Problema'
                 state.query['id'] = problem['id']
 
+    st.divider()
+
 
 
 
