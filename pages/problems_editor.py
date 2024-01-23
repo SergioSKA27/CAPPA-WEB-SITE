@@ -12,9 +12,12 @@ from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_profiler import Profiler
+from st_xatadb_connection import XataConnection
 
 from modules import Card, Dashboard, DataGrid, Editor, Pie, Player, Radar, Timer
 #Autor: Sergio Lopez
+
+
 
 #--------------------------------------------- page config ---------------------------------------------
 #basic page configuration
@@ -30,7 +33,7 @@ st.set_page_config(
                         Todos los derechos reservados 2023, CAPA."""
     }
 )
-
+xata = st.connection('xata',type=XataConnection)
 st.markdown('''
 <style>
 [data-testid="collapsedControl"] {
@@ -197,13 +200,14 @@ tags = st.multiselect("Seleccione las etiquetas", tags,placeholder="Listas, Graf
 
 
 ops = st.columns(3)
-
+dif = {'Basico': 1,'Intermedio': 2,'Avanzado': 3}
 dificulty = ops[0].selectbox('Dificultad',['Basico','Intermedio','Avanzado'])
 score = ops[1].number_input('Puntaje',min_value=100,max_value=1000,step=1)
-timelimit = ops[2].number_input('Tiempo limite',min_value=1,max_value=5,step=1)
+timelimit = ops[2].number_input('Tiempo limite(en segundos)',min_value=1,max_value=5,step=1)
 
 st.write('### Ingrese la descripción del Problema')
 
+desc = ""
 with st.form(key='my_form'):
   desc = st_quill(placeholder='Descripción del Problema', html=True,key='quill1')
   editcols = st.columns([0.8,0.2])
@@ -219,7 +223,7 @@ cols = st.columns(2)
 graph = cols[0].checkbox('Añadir grafica')
 
 
-
+g_desc = ""
 
 if graph:
   g_desc = st.text_area('Grafica','''
@@ -302,12 +306,43 @@ with elements("workspace"):
 
 
 st.write('### Ingrese la respuesta correcta')
-useoutput = st.checkbox('Usar la salida del código como respuesta correcta')
-p_desc = st.text_area('Respuesta correcta','**Respuesta correcta(puede ser una expresion regular)**', height=200)
+useoutput = st.checkbox('Usar la salida del código como respuesta correcta(Maximo 250 caracteres)')
+cans = st.text_area('Respuesta correcta(250 caracteres maximo)','**Respuesta correcta(puede ser una expresion regular)**', height=200)
 
 upcols = st.columns([0.3,0.4,0.3])
 
 if upcols[1].button('Subir Problema 🚀',use_container_width=True):
-  pass
+  if desc == "":
+    st.warning('Debe ingresar una descripción y guardarla antes de subir el problema')
+    st.stop()
+  if pname == "":
+    st.warning('Debe ingresar un nombre para el problema')
+    st.stop()
+  if useoutput and cans == "":
+    st.warning('El codigo no tiene salida, por favor ingrese una respuesta correcta')
+    st.stop()
+  if tags == []:
+    st.warning('Debe ingresar al menos una etiqueta')
+    st.stop()
+  if cans == "" and not useoutput:
+    st.warning('Debe ingresar una respuesta correcta')
+    st.stop()
+  try:
+    r = xata.insert("Problema", {
+    "nombre": pname,
+    "tags": tags,
+    "dificultad": dif[dificulty],
+    "socore": score,
+    "time_limit": timelimit,
+    "desc": desc,
+    "graph_code": g_desc,
+    "correct_ans": str(result[0]) if useoutput else cans,
+  })
+    st.success('Problema subido correctamente')
+    st.write(r)
+    st.balloons()
+  except Exception as e:
+    st.error(f'Error al subir el problema: {e}')
 
-st.session_state['quill1']
+
+
