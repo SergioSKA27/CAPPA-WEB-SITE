@@ -35,10 +35,12 @@ st.markdown('''
   overflow: hidden;
   top: 0px;
 }
+
 .st-emotion-cache-z5fcl4 {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-bottom: 0;
+}
 </style>
 ''', unsafe_allow_html=True)
 
@@ -372,3 +374,7 @@ with elements("demo"):
 if state.cardclicked:
   switch_page('Main')
 
+
+
+with open('rsc/html/minimal_footer.html') as f:
+    st.markdown(f.read(), unsafe_allow_html=True)
