@@ -14,7 +14,7 @@ import concurrent.futures
 from st_xatadb_connection import XataConnection
 
 
-COLORS = ['red', 'blue', 'green', 'yellow', 'white', 'purple', 'orange', 'pink', 'brown', 'gray', 'cyan','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
+COLORS = ['blue', 'yellow', 'purple', 'cyan', 'pink', 'brown', 'gray','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
 
 st.set_page_config(layout="wide", page_title="Problemas",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
 
@@ -85,11 +85,13 @@ def update_problems():
         "dificultad",
         "score",
         "creador.username"
-    ],
+      ],
     "page": {
         "size": 5
-    }
-})]
+      }})
+    ]
+    state.page = 0
+    st.rerun()
 
 if 'page' not in state:
     state.page = 0
@@ -118,7 +120,7 @@ def render_problem(problem: dict,k : int):
         st.markdown(f'''
         **Score:** {problem['score']}
 
-        **Creador:** {problem['creador']['username']}
+        **Creador:** {problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
 
         **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
         ''')
@@ -290,9 +292,12 @@ tagss = pills('Categorías',tags, emojis_tags)
 
 
 
-colls = st.columns([0.8,0.2])
+colls = st.columns([0.7,0.2,0.1])
 
-colls[1].button(':refresh:',key='refresh',on_click=update_problems)
+colls[2].button('🔄',key='refresh',on_click=update_problems,use_container_width=True)
+order = colls[1].selectbox('Ordenar',['Más Recientes','Más Antiguos','Score ↑','Score ↓',
+'Dificultad ↑','Dificultad ↓'],
+index=0,placeholder='Ordenar por',label_visibility='collapsed')
 
 sac.divider('',icon='hypnotize',align='center',)
 
@@ -300,7 +305,34 @@ sac.divider('',icon='hypnotize',align='center',)
 for problem in range(len(state.problems[state.page]['records'])):
     render_problem(state.problems[state.page]['records'][problem],problem)
 
-sac.pagination(total=100,page_size=5,align='center',jump=True,show_total=True)
+pgcols = st.columns([0.8,0.1,0.1])
+
+if pgcols[1].button('<',use_container_width=True):
+    if state.page > 0:
+        state.page -= 1
+        st.rerun()
+
+if pgcols[2].button('\>',use_container_width=True):
+    nxt = xata.next_page("Problema",state.problems[state.page],pagesize=5)
+    if nxt is not None:
+        state.page += 1
+        state.problems.append(nxt)
+        st.rerun()
+
+
+
+
+
+
+#---------------------------------
+st.markdown('''
+<h1 style="font-family: 'Roboto', sans-serif; color: #787878; font-size: 2.5em; text-align: left;padding-bottom: 0;">Anuncios
+<hr style="border: 1px solid #C7C7C7; width: 50%; margin-top: 0.5em; margin-bottom: 0.5em;"/>
+</h1>
+
+
+''', unsafe_allow_html=True)
+
 
 if "wphome" not in state:
     board = Dashboard()
@@ -340,4 +372,3 @@ with elements("demo"):
 if state.cardclicked:
   switch_page('Main')
 
-state.problems
