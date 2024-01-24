@@ -1,6 +1,5 @@
 import streamlit as st
 import streamlit_antd_components as sac
-from streamlit.components.v1 import  html
 import hydralit_components as hc
 from streamlit_searchbox import st_searchbox
 from streamlit_pills import pills
@@ -8,13 +7,10 @@ from streamlit_extras.switch_page_button import switch_page
 from streamlit import session_state as state
 from streamlit_elements import elements, sync, event
 from types import SimpleNamespace
-from modules import Dashboard,Editor, Card, DataGrid, Radar, Pie, Player,Bar
-import asyncio
-import concurrent.futures
+from modules import Dashboard, Card, Player
 from st_xatadb_connection import XataConnection
 
 
-COLORS = ['blue', 'yellow', 'purple', 'cyan', 'pink', 'brown', 'gray','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
 
 st.set_page_config(layout="wide", page_title="Problemas",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
 
@@ -45,38 +41,11 @@ st.markdown('''
 ''', unsafe_allow_html=True)
 
 
+#--------------------------------- Funciones ---------------------------------
+
 
 def search_problem(s: str):
     return []
-
-
-def handle_cardClick():
-    state.cardclicked = True
-    switch_page('Main')
-
-
-if 'cardclicked' not in state:
-    state.cardclicked = False
-elif state.cardclicked:
-    del state['cardclicked']
-    switch_page('Main')
-
-
-if 'problems' not in state or state.problems is None:
-    state.problems = [xata.query("Problema", {
-    "columns": [
-        "id",
-        "nombre",
-        "tags",
-        "dificultad",
-        "score",
-        "creador.username"
-    ],
-    "page": {
-        "size": 5
-    }
-})]
-
 
 def update_problems():
     state.problems = [xata.query("Problema", {
@@ -95,12 +64,8 @@ def update_problems():
     state.page = 0
     st.rerun()
 
-if 'page' not in state:
-    state.page = 0
-
-
-
 def render_problem(problem: dict,k : int):
+    COLORS = ['blue', 'yellow', 'purple', 'cyan', 'pink', 'brown', 'gray','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
     cols = st.columns([0.3, 0.7])
     with cols[0]:
         st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
@@ -137,12 +102,40 @@ def render_problem(problem: dict,k : int):
     st.divider()
 
 
+#--------------------------------- Variables de Estado ---------------------------------
+if 'page' not in state:
+    state.page = 0
 
 
-#---------------------------------
-#Navbar
-menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",
+if 'problems' not in state or state.problems is None:
+    state.problems = [xata.query("Problema", {
+    "columns": [
+        "id",
+        "nombre",
+        "tags",
+        "dificultad",
+        "score",
+        "creador.username"
+    ],
+    "page": {
+        "size": 5
+    }
+})]
+
+
+#---------------------------------Navbar---------------------------------
+if 'auth_state' not  in st.session_state:
+    menu_data = [
+    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
+    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
+    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
+    ]
+    logname = 'Iniciar Sesión'
+else:
+    #st.session_state['userinfo']
+    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
             {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
@@ -151,18 +144,42 @@ menu_data = [
             {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
         ]},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Dashboard",'ttip':"I'm the Dashboard tooltip!"}, #can add a tooltip message
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        'submenu':[
+            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+        },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
             {'label':"Basicos 1", 'icon': "🐛"},
             {'icon':'🐍','label':"Intermedios"},
             {'icon':'🐉','label':"Avanzados",},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'About','icon':"bi bi-question-circle",'label':"FAQ"},
-        {'id':'contact','icon':"bi bi-envelope",'label':"Contacto"},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
     ]
+    else:
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
+            {'label':"Basicos", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",}]},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    logname = st.session_state['userinfo']['username']
+
 
 over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
 menu_id = hc.nav_bar(
@@ -180,17 +197,35 @@ menu_id = hc.nav_bar(
 if menu_id == 'Inicio':
   switch_page('Main')
 
-if menu_id == 'logout':
-    switch_page('Login')
+
+if menu_id == 'subid44':
+    switch_page('problems_editor')
 
 if menu_id == 'code':
     switch_page('code_editor')
 
 if menu_id == 'subid44':
     switch_page('problems_editor')
-#---------------------------------
-#Main
 
+if menu_id == 'subid144':
+    switch_page('test_editor')
+
+if menu_id == 'logout':
+    st.session_state.pop('auth_state')
+    st.session_state.pop('userinfo')
+    st.session_state.pop('username')
+    switch_page('login')
+
+if 'userinfo' in st.session_state:
+    if menu_id == st.session_state['userinfo']['username']:
+        if 'query' not in st.session_state:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        else:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        switch_page('profile_render')
+
+
+#---------------------------------Body---------------------------------
 with open('rsc/html/ProblemaHome-Banner.html') as f:
     st.markdown(f.read(), unsafe_allow_html=True)
 
@@ -326,7 +361,7 @@ if pgcols[2].button('\>',use_container_width=True):
 
 
 
-#---------------------------------
+#--------------------------------- Anuncios ---------------------------------
 st.markdown('''
 <h1 style="font-family: 'Roboto', sans-serif; color: #787878; font-size: 2.5em; text-align: left;padding-bottom: 0;">Anuncios
 <hr style="border: 1px solid #C7C7C7; width: 50%; margin-top: 0.5em; margin-bottom: 0.5em;"/>
@@ -366,15 +401,11 @@ with elements("demo"):
         w.card4('Anuncio 4','https://www.certus.edu.pe/blog/wp-content/uploads/2020/09/que-es-data-analytics-importancia-1-1200x720.jpg')
         w.card5('Anuncio 5',
         'https://www.certus.edu.pe/blog/wp-content/uploads/2020/09/que-es-data-analytics-importancia-1-1200x720.jpg',
-        tags=['tag1','tag2','tag3','tag4','tag5']
-        ,button='Ver mas')
+        tags=['tag1','tag2','tag3','tag4','tag5'])
         x = w.dashboard.layout()
         #x
 
-if state.cardclicked:
-  switch_page('Main')
 
-
-
+#---------------------------------Footer---------------------------------#
 with open('rsc/html/minimal_footer.html') as f:
     st.markdown(f.read(), unsafe_allow_html=True)
