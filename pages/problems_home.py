@@ -66,6 +66,96 @@ def update_problems():
 
 def render_problem(problem: dict,k : int):
     COLORS = ['blue', 'yellow', 'purple', 'cyan', 'pink', 'brown', 'gray','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
+
+    tags = [
+        "Todos",
+        "Programación Dinámica",
+        "Divide Y Vencerás",
+        "Backtracking",
+        "Grafos",
+        "Programación Greedy",
+        "Árboles",
+        "Listas",
+        "Pilas",
+        "Colas",
+        "Deques",
+        "Diccionarios"
+        "Matrices",
+        "Ordenamiento",
+        "Búsqueda Binaria",
+        "Cadenas",
+        "Recursividad",
+        "Geometría",
+        "Orden Topológico",
+        "String Matching",
+        "Conjuntos",
+        "Bit Manipulation",
+        "Programación De Redes",
+        "Programación Concurrente",
+        "Árboles Binarios",
+        "Gráficos",
+        "Optimización",
+        "Matemáticas",
+        "Álgebra",
+        "Teoría De Números",
+        "Programación Condicional",
+        "Programación Funcional",
+        "Combinatoria",
+        "Probabilidad",
+        "Manejo De Archivos",
+        "Inteligencia Artificial",
+        "Machine Learning",
+        "Redes Neuronales",
+        "Visión Por Computadora",
+        "Procesamiento De Lenguaje Natural",
+        "Automatización",
+
+    ]
+
+    emojis_tags = [
+        "💊",
+        "💡",  # Programación Dinámica
+        "🔍",  # Divide Y Vencerás
+        "🔄",  # Backtracking
+        "📊",  # Grafos
+        "🤔",  # Programación Greedy
+        "🌲",  # Árboles
+        "📑",  # Listas
+        "🔄",  # Pilas
+        "🔄",  # Colas
+        "🔄",  # Deques
+        "📚",  # Diccionarios
+        "🧮",  # Matrices
+        "🔍",  # Ordenamiento
+        "👾",  # Búsqueda Binaria
+        "🔄",  # Cadenas
+        "📐",  # Recursividad
+        "🔼",  # Geometría
+        "🔄",  # Orden Topológico
+        "🔄",  # String Matching
+        "💡",  # Conjuntos
+        "🌐",  # Bit Manipulation
+        "🔄",  # Programación De Redes
+        "🌳",  # Programación Concurrente
+        "📊",  # Árboles Binarios
+        "⚙️",  # Gráficos
+        "🔢",  # Optimización
+        "🧮",  # Matemáticas
+        "🔢",  # Álgebra
+        "🔄",  # Teoría De Números
+        "📜",  # Programación Condicional
+        "♾️",  # Programación Funcional
+        "🎲",  # Combinatoria
+        "📂",  # Probabilidad
+        "🤖",  # Manejo De Archivos
+        "🧠",  # Inteligencia Artificial
+        "🌐",  # Machine Learning
+        "👀",  # Redes Neuronales
+        "🗣️",  # Visión Por Computadora
+        "⚡ ",  # Procesamiento De Lenguaje Natural
+    ]
+
+
     cols = st.columns([0.3, 0.7])
     with cols[0]:
         st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
@@ -73,17 +163,28 @@ def render_problem(problem: dict,k : int):
 
     with cols[1]:
         st.markdown(f'### {problem["nombre"]}')
+        pls = []
+        pls_icon = []
         if problem["dificultad"] == 1:
-            pl = sac.Tag("Fácil", color="green", icon="snow")
-        elif problem["dificultad"] == 2:
-            pl = sac.Tag("Medio", color="orange", icon="snow")
-        else:
-            pl = sac.Tag("Difícil", color="red", icon="snow")
-        tagss = [pl]
-        for tag in problem["tags"]:
-            tagss.append(sac.Tag(tag, color=COLORS[problem["tags"].index(tag)], bordered=True))
+            pls.append("Fácil")
+            pls_icon.append("🐛")
 
-        sac.tags(tagss, align="start", key=f'tags{k}')
+        elif problem["dificultad"] == 2:
+            pls.append("Intermedio")
+            pls_icon.append("🐍")
+        else:
+            pls.append("Difícil")
+            pls_icon.append("🐉")
+
+        for tag in problem["tags"]:
+            if tag not in tags:
+                tags.append(tag)
+                emojis_tags.append("💊")
+            else:
+                pls.append(tag)
+                pls_icon.append(emojis_tags[tags.index(tag)])
+
+        pills('Etiquetas', pls, pls_icon,key=f'pills{k}',clearable=True)
         st.markdown(f'''
         **Score:** {problem['score']}
 
