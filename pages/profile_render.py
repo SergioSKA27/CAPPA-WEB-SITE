@@ -134,6 +134,9 @@ menu_id = hc.nav_bar(
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
         first_select=80
     )
+if menu_id == "Inicio":
+    switch_page("Main")
+
 
 if menu_id == 'Iniciar Sesión':
     switch_page('login')
