@@ -122,7 +122,7 @@ if 'auth_state' not  in st.session_state:
     ]
     logname = 'Iniciar Sesión'
 else:
-    if st.session_state['userinfo']['rol'] == "Administador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
         #Navbar para administradores, Profesores y Moderadores
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",

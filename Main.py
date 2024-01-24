@@ -129,7 +129,7 @@ if 'auth_state' not  in st.session_state:
     logname = 'Iniciar Sesión'
 else:
     #st.session_state['userinfo']
-    if st.session_state['userinfo']['rol'] == "Administador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
