@@ -1,10 +1,8 @@
 import streamlit as st
 import hydralit_components as hc
-import base64
 from streamlit_lottie import st_lottie
 import streamlit_antd_components as sac
 from streamlit_extras.switch_page_button import switch_page
-import extra_streamlit_components as stx
 
 #Autor: Sergio Demis Lopez Martinez
 #This is the main file for the CAPPA project and will contain the landing page
@@ -149,7 +147,7 @@ else:
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
+            {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
             {'label':"Basicos 1", 'icon': "🐛"},
             {'icon':'🐍','label':"Intermedios"},
             {'icon':'🐉','label':"Avanzados",},
