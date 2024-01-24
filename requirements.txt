@@ -8,3 +8,4 @@ streamlit-searchbox
 streamlit-pills
 st-xatadb-connection
 streamlit-quill
+bcrypt
