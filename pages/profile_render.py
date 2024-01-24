@@ -6,15 +6,53 @@ from streamlit import session_state as state
 from streamlit_elements import elements, sync, event
 from types import SimpleNamespace
 from modules import Card, Dashboard, DataGrid, Editor, Pie, Player, Radar, Timer
+import hydralit_components as hc
+from streamlit_extras.switch_page_button import switch_page
 
+
+
+#---------------------------------Page config---------------------------------
+st.set_page_config(layout="wide", page_title="Problemas",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
 
 xata = st.connection('xata',type=XataConnection)
+st.markdown('''
+<style>
+[data-testid="collapsedControl"] {
+        display: none
+    }
+#MainMenu, header, footer {visibility: hidden;}
+.st-emotion-cache-ocqkz7 {
+  display: flex;
+  flex-wrap: wrap;
+  -moz-box-flex: 1;
+  flex-grow: 1;
+  -moz-box-align: stretch;
+  align-items: stretch;
+  gap: 0rem;
+  padding-top: 2rem;
+}
+.st-emotion-cache-z5fcl4 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-bottom: 0;
+}
+.appview-container .main .block-container {
+  padding-top: 1rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  padding-bottom: 0rem;
+}
+</style>
+''', unsafe_allow_html=True)
 
-
+#---------------------------------Funciones---------------------------------
 def get_user(id):
     return xata.get("Usuario", id)
 
 
+
+
+#---------------------------------Variables de estado---------------------------------
 if 'query' in st.session_state and st.session_state.query['Table'] == 'Usuario':
     if 'profile_data' not in st.session_state :
         st.session_state.profile_data = get_user(st.session_state.query['id'])
@@ -27,7 +65,100 @@ else:
 
 
 
+if 'auth_state' not  in st.session_state:
+    menu_data = [
+    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
+    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
+    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
+    ]
+    logname = 'Iniciar Sesión'
+else:
+    #st.session_state['userinfo']
+    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        'submenu':[
+            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+        },
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
+            {'label':"Basicos 1", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",},
+            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    else:
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
+            {'label':"Basicos", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",}]},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    logname = st.session_state['userinfo']['username']
 
+
+
+over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
+menu_id = hc.nav_bar(
+        menu_definition=menu_data,
+        override_theme=over_theme,
+        home_name='Inicio',
+        login_name=logname,
+        hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
+        sticky_nav=True, #at the top or not
+        sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
+        first_select=80
+    )
+
+if menu_id == 'Iniciar Sesión':
+    switch_page('login')
+
+if menu_id == 'subid00':
+    switch_page('problems_home')
+
+if menu_id == 'subid44':
+    switch_page('problems_editor')
+
+if menu_id == 'code':
+    switch_page('code_editor')
+
+if menu_id == 'subid144':
+    switch_page('test_editor')
+
+if menu_id == 'logout':
+    st.session_state.pop('auth_state')
+    st.session_state.pop('userinfo')
+    st.session_state.pop('username')
+    switch_page('login')
+
+
+
+#---------------------------------Body---------------------------------
 cols = st.columns([0.3,0.7])
 
 with cols[0]:
@@ -141,4 +272,7 @@ with cols[1]:
 
 
 
+#---------------------------------Footer---------------------------------
+with open('rsc/html/minimal_footer.html') as f:
+    st.markdown(f.read(), unsafe_allow_html=True)
 

@@ -150,16 +150,15 @@ else:
 
 over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
 menu_id = hc.nav_bar(
-        menu_definition=menu_data,
-        override_theme=over_theme,
-        home_name='Inicio',
-        login_name=st.session_state['userinfo']['username'],
-        hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
-        sticky_nav=True, #at the top or not
-        sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
-        first_select=10,
-    )
-
+    menu_definition=menu_data,
+    override_theme=over_theme,
+    home_name="Inicio",
+    login_name=st.session_state['userinfo']['username'],
+    hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
+    sticky_nav=True,  # at the top or not
+    sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
+    first_select=50,
+)
 
 
 if menu_id == 'Inicio':

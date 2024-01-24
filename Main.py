@@ -189,7 +189,6 @@ menu_id = hc.nav_bar(
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
 
-#--------------------------------- Variables de Estado ---------------------------------#
 if menu_id == 'Iniciar Sesión':
     switch_page('login')
 

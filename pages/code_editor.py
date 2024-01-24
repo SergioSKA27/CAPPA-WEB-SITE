@@ -184,7 +184,6 @@ menu_id = hc.nav_bar(
     first_select=50,
 )
 
-#---------------------------------Variables de estado---------------------------------
 if menu_id == "Inicio":
     switch_page("Main")
 
