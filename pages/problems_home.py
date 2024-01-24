@@ -188,7 +188,7 @@ def render_problem(problem: dict,k : int):
         st.markdown(f'''
         **Score:** {problem['score']}
 
-        **Creador:** {problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
+        **Creador:** @{problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
 
         **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
         ''')
