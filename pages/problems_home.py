@@ -83,7 +83,7 @@ def render_problem(problem: dict,k : int):
         for tag in problem["tags"]:
             tagss.append(sac.Tag(tag, color=COLORS[problem["tags"].index(tag)], bordered=True))
 
-        sac.tags(tagss, align="start", key='t1')
+        sac.tags(tagss, align="start", key=f'tags{k}')
         st.markdown(f'''
         **Score:** {problem['score']}
 
