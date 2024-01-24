@@ -45,6 +45,11 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
+if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
+    #Si no hay un usuario logeado, se muestra la pagina de login
+    switch_page('login')
+
+
 #---------------------------------Funciones---------------------------------
 def get_user(id):
     return xata.get("Usuario", id)
@@ -215,7 +220,8 @@ with cols[1]:
                 tabs = st.tabs(["Editor de texto", 'Markdown'])
                 with tabs[0]:
                     with st.form(key='my_form'):
-                        desc = st_quill(placeholder='Mi biografía',html=True,key='quill-profile')
+                        desc = st_quill(placeholder='Mi biografía',html=True,key='quill-profile',
+                        value=st.session_state.profile_data['feed'] if 'feed' in st.session_state.profile_data else '')
                         editcols = st.columns([0.8,0.2])
 
                         with editcols[1]:
@@ -238,7 +244,10 @@ with cols[1]:
                             )
                         )
                         state.w_profile = w
-                        w.editor.add_tab("Markdown", "# Hola Mundo!", "markdown")
+                        if 'feed' in st.session_state.profile_data:
+                            w.editor.add_tab("Markdown", st.session_state.profile_data['feed'], "markdown")
+                        else:
+                            w.editor.add_tab("Markdown", "# Hola Mundo!", "markdown")
 
 
                     else:
@@ -257,7 +266,7 @@ with cols[1]:
 
                 savedesc = st.button("Guardar cambios")
                 if savedesc:
-                    st.write(desc)
+                    #st.write(desc)
                     try:
                         result = xata.update("Usuario", st.session_state.username, {"feed": desc})
                         st.success("Cambios guardados")
