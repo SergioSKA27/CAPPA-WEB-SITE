@@ -24,10 +24,6 @@ background-color: #f4ebe8;
 #MainMenu, header, footer {visibility: hidden;}
 
 .st-emotion-cache-z5fcl4 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-.st-emotion-cache-z5fcl4 {
   width: 100%;
   padding: 0rem 1rem 1rem;
     padding-right: 0.5rem;
@@ -135,8 +131,9 @@ if 'auth_state' not  in st.session_state:
     logname = 'Iniciar Sesión'
 else:
     #st.session_state['userinfo']
-    menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",
+    if st.session_state['userinfo']['rol'] == "Administador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
             {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
@@ -145,16 +142,38 @@ else:
             {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
         ]},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Dashboard",'ttip':"I'm the Dashboard tooltip!"}, #can add a tooltip message
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        'submenu':[
+            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+        },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
             {'label':"Basicos 1", 'icon': "🐛"},
             {'icon':'🐍','label':"Intermedios"},
             {'icon':'🐉','label':"Avanzados",},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'About','icon':"bi bi-question-circle",'label':"FAQ"},
-        {'id':'contact','icon':"bi bi-envelope",'label':"Contacto"},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    else:
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
+            {'label':"Basicos", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",}]},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
     ]
     logname = st.session_state['userinfo']['username']
@@ -172,7 +191,7 @@ menu_id = hc.nav_bar(
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
 
-
+#--------------------------------- Variables de Estado ---------------------------------#
 if menu_id == 'Iniciar Sesión':
     switch_page('login')
 
@@ -376,7 +395,7 @@ with open('rsc/html/gallery.html') as f:
 
 
 #------------------------------------- Footer ---------------------------------------------------------
-sac.divider(label='Redes Sociales',align='center',icon='share')
+sac.divider(label='',align='center',icon='share')
 
 
 
