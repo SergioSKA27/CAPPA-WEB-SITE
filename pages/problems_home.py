@@ -184,7 +184,7 @@ def render_problem(problem: dict,k : int):
                 pls.append(tag)
                 pls_icon.append(emojis_tags[tags.index(tag)])
 
-        pills('Etiquetas', pls, pls_icon,key=f'pills{k}',clearable=True)
+        pills('Etiquetas', pls, pls_icon,key=f'pills{k}')
         st.markdown(f'''
         **Score:** {problem['score']}
 
