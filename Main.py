@@ -428,7 +428,7 @@ sac.TabsItem(label='Contacto',icon='phone'),
 sac.TabsItem(label='Política de Privacidad',icon='lock'),
 sac.TabsItem(label='Términos y Condiciones',icon='file-earmark-text'),
 sac.TabsItem(label='FAQ',icon='question-circle'),
-],position='bottom',align='center',return_index=True,grow=True)
+],position='bottom',align='center',return_index=True)
 
 
 with open('rsc/html/footer.html') as foo:
