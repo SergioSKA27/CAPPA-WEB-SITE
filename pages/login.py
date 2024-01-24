@@ -1,4 +1,5 @@
 import streamlit as st
+import extra_streamlit_components as stx
 import streamlit_antd_components as sac
 import bcrypt as bc
 from streamlit_extras.switch_page_button import switch_page
@@ -7,11 +8,9 @@ import datetime
 import bcrypt as bc
 import re
 
-
 st.set_page_config(page_title='Login', page_icon=':lock:', layout='centered', initial_sidebar_state='collapsed')
 
 xata = st.connection('xata',type=XataConnection)
-
 
 
 def register(data: dict, idunam: str, ):
@@ -154,6 +153,8 @@ def validate_login(username, password):
     except Exception as e:
         return False
 
+
+#------------------------Login------------------------
 with st.form(key='login_form'):
     st.markdown('''
     <style>

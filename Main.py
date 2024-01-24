@@ -4,6 +4,7 @@ import base64
 from streamlit_lottie import st_lottie
 import streamlit_antd_components as sac
 from streamlit_extras.switch_page_button import switch_page
+import extra_streamlit_components as stx
 
 #Autor: Sergio Demis Lopez Martinez
 #This is the main file for the CAPPA project and will contain the landing page
@@ -38,6 +39,8 @@ background-color: #f4ebe8;
 }
 </style>
 """,unsafe_allow_html=True)
+
+
 
 #
 #---------------------------------#
