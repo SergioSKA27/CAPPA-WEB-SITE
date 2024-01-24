@@ -157,7 +157,7 @@ if 'userinfo' in st.session_state:
 st.title('Editor de tests 📝')
 
 #st.text(st.session_state)
-test =st.text_input('Ingrese el nombre del test','Test uno')
+test =st.text_input('Ingrese el nombre del test',placeholder='Test uno')
 t = test_e.test(test)
 if 'test' not in st.session_state:
     st.session_state['test']= t
@@ -201,7 +201,7 @@ if t == 'opcion multiple':
   correct_ans = 0
   for i in range(answ_num):
     st.write('Ingrese el texto de la respuesta '+str(i+1))
-    correcta = st_toggle_switch('Respuesta correcta',key='ans'+str(i)+str(st.session_state['qnum']))
+    correcta = st.toggle('Respuesta correcta',key='ans'+str(i)+str(st.session_state['qnum']))
     if correcta:
       correct_ans = i
     answer_text = st.text_area('Texto de la respuesta','Respuesta '+str(i+1), height=50,key='answ'+str(i)+str(st.session_state['qnum']))
@@ -223,7 +223,7 @@ if t == 'selccion multiple':
   correct_ans = []
   for i in range(answ_num):
     st.write('Ingrese el texto de la respuesta '+str(i+1))
-    correcta = st_toggle_switch('Respuesta correcta',key='ans'+str(i)+str(st.session_state['qnum']))
+    correcta = st.toggle('Respuesta correcta',key='ans'+str(i)+str(st.session_state['qnum']))
     if correcta:
       correct_ans.append(i)
     answer_text = st.text_area('Texto de la respuesta','Respuesta '+str(i+1), height=50,key='answ'+str(i)+str(st.session_state['qnum']))

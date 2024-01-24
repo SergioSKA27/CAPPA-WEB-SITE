@@ -1,11 +1,9 @@
 import streamlit as st
-import extra_streamlit_components as stx
 import streamlit_antd_components as sac
 import bcrypt as bc
 from streamlit_extras.switch_page_button import switch_page
 from st_xatadb_connection import XataConnection
 import datetime
-import bcrypt as bc
 import re
 
 st.set_page_config(page_title='Login', page_icon=':lock:', layout='centered', initial_sidebar_state='collapsed')
