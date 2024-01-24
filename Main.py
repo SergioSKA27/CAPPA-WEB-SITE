@@ -35,6 +35,9 @@ background-color: #f4ebe8;
 """,unsafe_allow_html=True)
 
 
+if 'auth_state' not in st.session_state:
+    st.session_state.auth_state = False
+
 
 #
 #---------------------------------#
