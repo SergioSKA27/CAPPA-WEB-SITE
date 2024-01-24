@@ -1,5 +1,4 @@
 streamlit-extras
-streamlit-code-editor
 hydralit-components
 streamlit-calendar
 streamlit-elements
@@ -7,4 +6,5 @@ streamlit-antd-components
 streamlit-lottie
 streamlit-searchbox
 streamlit-pills
-streamlit-profiler
+st-xatadb-connection
+streamlit-quill
