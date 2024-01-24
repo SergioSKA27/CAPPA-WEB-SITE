@@ -12,7 +12,7 @@ from streamlit_extras.switch_page_button import switch_page
 
 
 #---------------------------------Page config---------------------------------
-st.set_page_config(layout="wide", page_title="Problemas",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
+st.set_page_config(layout="wide", page_title="Perfil",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
 
 xata = st.connection('xata',type=XataConnection)
 st.markdown('''
