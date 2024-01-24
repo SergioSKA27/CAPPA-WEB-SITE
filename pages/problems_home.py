@@ -41,6 +41,9 @@ st.markdown('''
 ''', unsafe_allow_html=True)
 
 
+if 'auth_state' not in st.session_state or not st.session_state['auth_state']:
+    switch_page('login')
+
 #--------------------------------- Funciones ---------------------------------
 
 
