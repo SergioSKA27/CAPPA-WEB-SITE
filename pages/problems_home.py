@@ -165,45 +165,45 @@ def render_problem(problem: dict,k : int):
                  use_column_width=True)
 
     with cols[1]:
-        st.markdown(f'### {problem["nombre"]}')
-        pls = []
-        pls_icon = []
-        if problem["dificultad"] == 1:
-            pls.append("Fácil")
-            pls_icon.append("🐛")
+        with st.container(border=True):
+            st.markdown(f'### {problem["nombre"]}')
+            pls = []
+            pls_icon = []
+            if problem["dificultad"] == 1:
+                pls.append("Fácil")
+                pls_icon.append("🐛")
 
-        elif problem["dificultad"] == 2:
-            pls.append("Intermedio")
-            pls_icon.append("🐍")
-        else:
-            pls.append("Difícil")
-            pls_icon.append("🐉")
-
-        for tag in problem["tags"]:
-            if tag not in tags:
-                tags.append(tag)
-                emojis_tags.append("💊")
+            elif problem["dificultad"] == 2:
+                pls.append("Intermedio")
+                pls_icon.append("🐍")
             else:
-                pls.append(tag)
-                pls_icon.append(emojis_tags[tags.index(tag)])
+                pls.append("Difícil")
+                pls_icon.append("🐉")
 
-        pills('Etiquetas', pls, pls_icon,key=f'pills{k}')
-        st.markdown(f'''
-        **Score:** {problem['score']}
+            for tag in problem["tags"]:
+                if tag not in tags:
+                    tags.append(tag)
+                    emojis_tags.append("💊")
+                else:
+                    pls.append(tag)
+                    pls_icon.append(emojis_tags[tags.index(tag)])
 
-        **Creador:** @{problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
+            pills('Etiquetas', pls, pls_icon,key=f'pills{k}')
+            st.markdown(f'''
+            **Score:** {problem['score']}
 
-        **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
-        ''')
-        renderp = st.button('Ver Problema', key=f'b{k}')
-        if renderp:
-            if 'query' not in state:# Query for rendering problem
-                state.query = {'Table': 'Problema', 'id': problem['id']}
-            else:
-                state.query['Table'] = 'Problema'
-                state.query['id'] = problem['id']
+            **Creador:** @{problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
 
-    st.divider()
+            **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
+            ''')
+            renderp = st.button('Ver Problema', key=f'b{k}')
+            if renderp:
+                if 'query' not in state:# Query for rendering problem
+                    state.query = {'Table': 'Problema', 'id': problem['id']}
+                else:
+                    state.query['Table'] = 'Problema'
+                    state.query['id'] = problem['id']
+
 
 
 #--------------------------------- Variables de Estado ---------------------------------
