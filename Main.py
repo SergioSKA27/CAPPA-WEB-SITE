@@ -207,6 +207,8 @@ if menu_id == 'code':
 if menu_id == 'subid144':
     switch_page('test_editor')
 
+if menu_id == 'Analisis de Datos':
+    switch_page('data_analysis_home')
 if menu_id == 'logout':
     st.session_state.pop('auth_state')
     st.session_state.pop('userinfo')
