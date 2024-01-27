@@ -145,8 +145,46 @@ with open("rsc/html/DataAHomeBanner.html") as f:
 
 st.divider()
 
+cols = st.columns(2)
 
+with cols[0]:
+    with st.container(border=True):
+        st.image('https://user-images.githubusercontent.com/8137814/221879671-70379d15-81ac-44b9-b267-a8fa3842a0d9.png',use_column_width=True)
+        st.caption('''
+**Simplificando el Análisis de Datos con PyGWalker**
 
+En el cambiante mundo del análisis de datos, la eficiencia y la simplicidad son fundamentales. Ingresa PyGWalker,
+una herramienta revolucionaria que transforma datos crudos en aplicaciones de visualización interactiva con solo una
+línea de código. Lo que distingue a PyGWalker es su compromiso de hacer que el análisis de datos sea accesible
+y escalable, simplificando tareas complejas con un conjunto de funciones poderosas.
+''')
+        if st.button('Prueba PyGWalker 📊',use_container_width=True):
+            switch_page('pgwalker_sandbox')
+
+with cols[1]:
+    with st.container(border=True):
+        st.image('https://blog.streamlit.io/content/images/2023/08/Announcement.svg',use_column_width=True)
+        st.caption('''
+**Mito: Potenciando tus Hojas de Cálculo en la Universidad**
+
+Explora Mito, la herramienta que lleva tus hojas de cálculo a un nuevo nivel. En el entorno universitario,
+simplifica la edición de hojas de cálculo y genera código Python automáticamente con cada ajuste en Mito.
+Describe tus cambios en inglés simple y deja que Mito traduzca todo a código. Transforma tus procesos de manera rápida
+y eficiente con Mito.
+
+**Características Principales**
+
+- **Edición de Hojas de Cálculo Simplificada**.
+
+- **Generación Instantánea de Código Python**.
+
+- **Accesible para Todos**.
+
+- **Transforma tus Datos con IA**.
+
+''')
+        if st.button('Prueba Mito 📈',use_container_width=True):
+            switch_page('spreadsheets_sandbox')
 #---------------------------------Footer---------------------------------
 with open('rsc/html/minimal_footer.html') as f:
     st.markdown(f.read(), unsafe_allow_html=True)
