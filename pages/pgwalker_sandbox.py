@@ -150,7 +150,6 @@ if 'userinfo' in st.session_state:
 # Add a title
 st.title("Pygwalker Sandbox",help='Esta es una herramienta de analisis de datos para la plataforma CAPPA usando Pygwalker')
 st.divider()
-
 datasetspths = [
     'Default',
     "datasets/pop-by-zip-code.csv",
@@ -174,6 +173,8 @@ renderer = get_pyg_renderer(data)
 
 # Render your data exploration interface. Developers can use it to build charts by drag and drop.
 renderer.render_explore(width=1300)
+
+
 
 #---------------------------------Footer---------------------------------
 with open('rsc/html/minimal_footer.html') as f:
