@@ -145,8 +145,22 @@ if 'userinfo' in st.session_state:
 
 #---------------------------------Body---------------------------------
 st.title("Mitosheet Sandbox")
-CSV_URL = 'https://raw.githubusercontent.com/plotly/datasets/master/tesla-stock-price.csv'
-new_dfs, code = spreadsheet(CSV_URL)
+st.divider()
+datasetspths = [
+    'Default',
+    ]
+data = st.selectbox("Selecciona un Dataset", datasetspths,)
+
+
+if data == 'Default':
+    datas = 'https://raw.githubusercontent.com/plotly/datasets/master/tesla-stock-price.csv'
+else:
+    if  data.endswith('.csv'):
+        datas = pd.read_csv(data)
+    elif data.endswith('.xlsx'):
+        datas = pd.read_excel(data)
+
+new_dfs, code = spreadsheet(datas)
 
 if st.checkbox('Mostrar Dataframes'):
     for k , df in new_dfs.items():
