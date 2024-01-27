@@ -146,7 +146,7 @@ else:
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
         'submenu':[
-            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" }]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
@@ -209,6 +209,10 @@ if menu_id == 'subid144':
 
 if menu_id == 'Analisis de Datos':
     switch_page('data_analysis_home')
+
+if menu_id == 'doceditor':
+    switch_page('doc_editor')
+
 if menu_id == 'logout':
     st.session_state.pop('auth_state')
     st.session_state.pop('userinfo')

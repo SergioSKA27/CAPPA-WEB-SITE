@@ -2,7 +2,6 @@ import streamlit as st
 import hydralit_components as hc
 from streamlit_extras.switch_page_button import switch_page
 import pages.modules.test_edit as test_e
-from streamlit_toggle import st_toggle_switch
 import numpy as np
 #Autor: Sergio Lopez
 
