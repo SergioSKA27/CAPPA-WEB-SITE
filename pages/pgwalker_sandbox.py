@@ -1,24 +1,25 @@
 from pygwalker.api.streamlit import StreamlitRenderer, init_streamlit_comm
 import pandas as pd
 import streamlit as st
+import hydralit_components as hc
+from streamlit_lottie import st_lottie
+import streamlit_antd_components as sac
+from streamlit_extras.switch_page_button import switch_page
 # Adjust the width of the Streamlit page
-st.set_page_config(
-    page_title="Pygwalker",
-    layout="wide"
-)
+st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg', initial_sidebar_state='collapsed')
 
 # Establish communication between pygwalker and streamlit
 init_streamlit_comm()
 
 
 # Add a title
-st.title("Use Pygwalker In Streamlit")
+st.title("Pygwalker Sandbox")
 datasetspths = [
     'Default',
     "datasets/pop-by-zip-code.csv",
     "datasets/Coronavirus_daily_data.csv"
     ]
-data = st.selectbox("Select a dataset", datasetspths, placeholder="Select a dataset")
+data = st.selectbox("Selecciona un Dataset", datasetspths,)
 # Get an instance of pygwalker's renderer. You should cache this instance to effectively prevent the growth of in-process memory.
 @st.cache_resource
 def get_pyg_renderer(data) -> "StreamlitRenderer":
@@ -36,3 +37,9 @@ renderer = get_pyg_renderer(data)
 
 # Render your data exploration interface. Developers can use it to build charts by drag and drop.
 renderer.render_explore(width=1200)
+
+
+
+#---------------------------------Footer---------------------------------
+with open('rsc/html/minimal_footer.html') as f:
+    st.markdown(f.read(), unsafe_allow_html=True)
