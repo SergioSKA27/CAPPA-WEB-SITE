@@ -10,8 +10,47 @@ from st_xatadb_connection import XataConnection
 from streamlit_tags import st_tags
 
 
-from modules import Card, Dashboard, Editor,  Timer
+from modules import Card, Dashboard, Editor,  Timer,Player
 #Autor: Sergio Lopez
+
+#--------------------------------------------- page config ---------------------------------------------
+#basic page configuration
+st.set_page_config(
+    page_title='CAPA',
+    page_icon="rsc/Logos/LOGO_CAPPA.jpg",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': """# Web Site Club de Algoritmia Avanzada en Python.
+                        Todos los derechos reservados 2023, CAPA."""
+    }
+)
+xata = st.connection('xata',type=XataConnection)
+st.markdown('''
+<style>
+[data-testid="collapsedControl"] {
+        display: none
+    }
+
+#MainMenu, header, footer {visibility: hidden;}
+.st-emotion-cache-152jn8i {
+  position: absolute;
+  background: rgb(244, 235, 232);
+  color: rgb(49, 51, 63);
+  inset: 0px;
+    top: 0px;
+  overflow: hidden;
+  top: 0px;
+}
+.st-emotion-cache-z5fcl4 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0;
+  }
+</style>
+''', unsafe_allow_html=True)
 
 
 
@@ -21,6 +60,9 @@ def merge_text(text: list):
 def format_code(code: str, lang: str):
     return f"```{lang}\n{code}\n```"
 
+def format_video(url: str):
+    return f"```video\n{url}\n```"
+
 st.title('Editor de Problemas 👨‍💻')
 st.divider()
 
@@ -28,28 +70,155 @@ st.divider()
 if 'gtoast' not in state:
     state.gtoast = 0
 
+if 'tabs' not in state:
+    state.tabs = ["Editor de texto", 'Código','Video']
+
+if 'doc_sections' not in state:
+    state.doc_sections = {}
+
+if 'videolinks' not in state:
+    state.videolinks = []
+
 if state.gtoast == 1:
     st.toast("Puedes ver el gráfico en la pestaña de código")
     state.gtoast = 2
 
 
+##---------------------------------Navbar---------------------------------
+if 'auth_state' not  in st.session_state:
+    menu_data = [
+    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
+    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
+    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
+    ]
+    logname = 'Iniciar Sesión'
+else:
+    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+        #Navbar para administradores, Profesores y Moderadores
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        'submenu':[
+            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+        },
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
+            {'label':"Basicos 1", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",},
+            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    else:
+    #Navbar para Estudiantes
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
+            {'label':"Basicos", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",}]},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    logname = st.session_state['userinfo']['username']
+
+
+over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
+menu_id = hc.nav_bar(
+    menu_definition=menu_data,
+    override_theme=over_theme,
+    home_name="Inicio",
+    login_name=st.session_state['userinfo']['username'],
+    hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
+    sticky_nav=True,  # at the top or not
+    sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
+    first_select=40,
+)
+
+
+if menu_id == 'Inicio':
+  switch_page('Main')
+
+if menu_id == 'subid00':
+    switch_page('problems_home')
+
+if menu_id == 'subid44':
+    switch_page('problems_editor')
+
+if menu_id == 'code':
+    switch_page('code_editor')
+
+if menu_id == 'subid144':
+    switch_page('test_editor')
+
+if menu_id == 'logout':
+    st.session_state.pop('auth_state')
+    st.session_state.pop('userinfo')
+    st.session_state.pop('username')
+    switch_page('login')
+
+if 'userinfo' in st.session_state:
+    if menu_id == st.session_state['userinfo']['username']:
+        if 'query' not in st.session_state:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        else:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        switch_page('profile_render')
+
+
+
+#---------------------------------Body---------------------------------
 pname =st.text_input('Titulo del Documento',placeholder="Principios de Programación en Python")
+
+tags = st_tags([], suggestions=['Python', 'Básico', 'Intermedio', 'Avanzado'],
+                label='Etiquetas', maxtags=10,text='Presiona enter para añadir una etiqueta',)
 
 doc_types = ["Artículo", "Tutorial", "Video"]
 
 doc_type = st.selectbox("Tipo de Documento", doc_types)
 
-tabs = st.tabs(["Editor de texto", 'Código'])
+#---------------------------------Editor---------------------------------
+tabs = st.tabs(state.tabs)
 with tabs[0]:
     desc = ''
     with st.form(key='my_form'):
         desc = st_quill(placeholder='Contenido del Documento',html=True,key='quill-docs')
         editcols = st.columns([0.8,0.2])
         with editcols[1]:
-            savedesc = st.form_submit_button(label='Preview',use_container_width=True)
+            action = st.selectbox("Acción", ["Preview", "Añadir Sección"])
+            savedesc = st.form_submit_button(label=':floppy_disk: '
+            ,use_container_width=True)
         if savedesc:
-            st.markdown("##### Preview")
-            st.markdown(desc, unsafe_allow_html=True)
+            if action == "Añadir Sección":
+                if desc != '':
+                    k = 1
+                    while f"Sección {k}" in state.doc_sections:
+                        k += 1
+                    state.doc_sections[f"Sección {k}"] = desc
+                    st.success("Sección añadida")
+            else:
+                st.markdown("##### Preview")
+                st.markdown(desc, unsafe_allow_html=True)
 with tabs[1]:
     if "w_docs" not in state:
         board = Dashboard()
@@ -59,8 +228,8 @@ with tabs[1]:
                 board,
                 0,
                 0,
+                10,
                 8,
-                6,
             )
         )
         state.w_docs = w
@@ -151,19 +320,58 @@ with tabs[1]:
                     st.code(w.editor.get_content(tab), language=tab.split(" ")[1].lower())
 
 
+with tabs[2]:
+    if "w_video" not in state:
+        board = Dashboard()
+        wv = SimpleNamespace(
+            dashboard=board,
+            player=Player(
+                board,
+                0,
+                0,
+                10,
+                6,
+            )
+        )
+        state.w_video = wv
+    else:
+        wv = state.w_video
 
-layout = st.multiselect("Selecciona las seciones del documento en orden",['Editor de texto']+list(w.editor._tabs.keys()))
+    with st.container(border=True):
+        with elements("video"):
+            with wv.dashboard(rowHeight=57):
+                wv.player()
+        st.caption("Para añadir un video, copia el link del video y reprodúcelo en el reproductor para tener una vista previa.")
+        st.caption("Una vez que estés satisfecho con el video, presiona el botón de añadir video para añadirlo al documento.")
+        if st.button("Añadir Video"):
+            if wv.player._url not in state.videolinks:
+                state.videolinks.append(wv.player._url)
+
+
+st.subheader("Layout del Documento")
+layout = st.multiselect("Selecciona las seciones del documento en orden",list(w.editor._tabs.keys())+[f"Link {k}" for k in range(len(state.videolinks))]+list(state.doc_sections.keys()))
 
 if layout:
     lay = []
     for i, l in enumerate(layout):
-        if l == "Editor de texto":
-            st.markdown(desc, unsafe_allow_html=True)
-            lay.append(desc)
+        if "Sección" in l:
+            st.markdown(state.doc_sections[l], unsafe_allow_html=True)
         elif "Gráfica" in l:
             st.graphviz_chart(w.editor.get_content(l))
             lay.append(format_code(w.editor.get_content(l), "dot"))
+        elif "Markdown" in l:
+            st.markdown(w.editor.get_content(l), unsafe_allow_html=True)
+            lay.append(w.editor.get_content(l))
+        elif "Link" in l:
+            colv = st.columns([0.2,0.6,0.2])
+            colv[1].video(state.videolinks[int(l.split(" ")[1])],)
+            lay.append(format_video(state.videolinks[int(l.split(" ")[1])]))
         else:
             st.code(w.editor.get_content(l), language=l.split(" ")[1].lower())
+            lay.append(format_code(w.editor.get_content(l), l.split(" ")[1].lower()))
 
+    merged = merge_text(lay)
 
+#---------------------------------Footer---------------------------------
+with open('rsc/html/minimal_footer.html') as f:
+    st.markdown(f.read(), unsafe_allow_html=True)
