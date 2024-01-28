@@ -10,3 +10,4 @@ st-xatadb-connection
 streamlit-quill
 bcrypt
 pygwalker
+mitosheet
