@@ -202,8 +202,10 @@ tabs = st.tabs(state.tabs)
 with tabs[0]:
     desc = ''
     with st.form(key='my_form'):
-        desc = st_quill(placeholder='Contenido del Documento',html=True,key='quill-docs')
+
         editcols = st.columns([0.8,0.2])
+        with editcols[0]:
+            desc = st_quill(placeholder='Contenido del Documento',html=True,key='quill-docs')
         with editcols[1]:
             action = st.selectbox("Acción", ["Preview", "Añadir Sección"])
             savedesc = st.form_submit_button(label=':floppy_disk: '
@@ -356,6 +358,7 @@ if layout:
     for i, l in enumerate(layout):
         if "Sección" in l:
             st.markdown(state.doc_sections[l], unsafe_allow_html=True)
+            lay.append(state.doc_sections[l])
         elif "Gráfica" in l:
             st.graphviz_chart(w.editor.get_content(l))
             lay.append(format_code(w.editor.get_content(l), "dot"))
@@ -371,6 +374,29 @@ if layout:
             lay.append(format_code(w.editor.get_content(l), l.split(" ")[1].lower()))
 
     merged = merge_text(lay)
+    with st.expander("Ver Raw"):
+        st.code(merged,language="markdown")
+
+    subcols = st.columns([0.3,0.4,0.3])
+    if subcols[1].button("Subir Documento",use_container_width=True):
+        if pname != '' and merged != '' and tags != []:
+            try:
+                r = xata.insert("Documento", {
+                "titulo": pname,
+                "tags": tags,
+                "content": merged,
+                "tipo": doc_type,
+                "autor": st.session_state['username'],
+                })
+                st.success("Documento subido con éxito")
+                st.balloons()
+                st.write(r)
+                state.doc_sections = {}
+                state.videolinks = []
+                del state.w_docs
+            except Exception as e:
+                st.error(f'Error al subir el documento: {e}')
+
 
 #---------------------------------Footer---------------------------------
 with open('rsc/html/minimal_footer.html') as f:
