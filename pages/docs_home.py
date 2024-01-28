@@ -256,8 +256,9 @@ img.left {
 /* Floating action button */
 .fab {
   position: absolute;
+  display: flex;
+  justify-content: center;
   right: 50px;
-  bottom: -40px;
   box-sizing: border-box;
   padding-top: 18px;
   background-color: #1875D0;
@@ -269,6 +270,7 @@ img.left {
   -webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
   box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+  align-items: center;
 }
 </style>
 ''', unsafe_allow_html=True)
@@ -286,5 +288,7 @@ st.markdown(f'''
         <h5>28</h5>
         <h6>Aug</h6>
     </div>
+    <div class="fab"><img src="https://cdn-icons-png.flaticon.com/128/1565/1565867.png" width="60"></div>
 </div>
+
 ''', unsafe_allow_html=True)
