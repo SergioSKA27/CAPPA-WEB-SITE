@@ -1,6 +1,49 @@
 import streamlit as st
 from streamlit_searchbox import st_searchbox
+from st_xatadb_connection import XataConnection
+import hydralit_components as hc
+from streamlit_extras.switch_page_button import switch_page
 
+
+
+#--------------------------------------------- page config ---------------------------------------------
+#basic page configuration
+st.set_page_config(
+    page_title='CAPA',
+    page_icon="rsc/Logos/LOGO_CAPPA.jpg",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': """# Web Site Club de Algoritmia Avanzada en Python.
+                        Todos los derechos reservados 2023, CAPA."""
+    }
+)
+xata = st.connection('xata',type=XataConnection)
+st.markdown('''
+<style>
+[data-testid="collapsedControl"] {
+        display: none
+    }
+
+#MainMenu, header, footer {visibility: hidden;}
+.st-emotion-cache-152jn8i {
+  position: absolute;
+  background: rgb(244, 235, 232);
+  color: rgb(49, 51, 63);
+  inset: 0px;
+    top: 0px;
+  overflow: hidden;
+  top: 0px;
+}
+.st-emotion-cache-z5fcl4 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-bottom: 0;
+  }
+</style>
+''', unsafe_allow_html=True)
 
 def render_docs(docs:list):
 
@@ -22,17 +65,127 @@ def search_doc(s: str):
     return []
 
 
+
+##---------------------------------Navbar---------------------------------
+if 'auth_state' not  in st.session_state:
+    menu_data = [
+    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
+    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
+    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
+    ]
+    logname = 'Iniciar Sesión'
+else:
+    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+        #Navbar para administradores, Profesores y Moderadores
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        'submenu':[
+            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+        },
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
+            {'label':"Basicos 1", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",},
+            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    else:
+    #Navbar para Estudiantes
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
+        'submenu':[
+            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
+            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
+            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
+            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
+        ]},
+        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
+        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
+        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
+            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
+            {'label':"Basicos", 'icon': "🐛"},
+            {'icon':'🐍','label':"Intermedios"},
+            {'icon':'🐉','label':"Avanzados",}]},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+    ]
+    logname = st.session_state['userinfo']['username']
+
+
+over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
+menu_id = hc.nav_bar(
+    menu_definition=menu_data,
+    override_theme=over_theme,
+    home_name="Inicio",
+    login_name=st.session_state['userinfo']['username'],
+    hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
+    sticky_nav=True,  # at the top or not
+    sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
+    first_select=40,
+)
+
+
+if menu_id == 'Inicio':
+  switch_page('Main')
+
+if menu_id == 'subid00':
+    switch_page('problems_home')
+
+if menu_id == 'subid44':
+    switch_page('problems_editor')
+
+if menu_id == 'code':
+    switch_page('code_editor')
+
+if menu_id == 'subid144':
+    switch_page('test_editor')
+
+if menu_id == 'logout':
+    st.session_state.pop('auth_state')
+    st.session_state.pop('userinfo')
+    st.session_state.pop('username')
+    switch_page('login')
+
+if 'userinfo' in st.session_state:
+    if menu_id == st.session_state['userinfo']['username']:
+        if 'query' not in st.session_state:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        else:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        switch_page('profile_render')
+
+
+
 #------------------------------------------BODY------------------------------------------------------------
 
-headcols = st.columns([0.7,0.3])
+headcols = st.columns([0.6,0.4])
 with headcols[0]:
     with open('rsc/html/docs_home_header.html') as f:
         st.markdown(f.read(), unsafe_allow_html=True)
 
+
+
+
 headcols[1].markdown('''
-<div style="display: flex; justify-content: center; align-items: center;padding-top: 50px;">
-    <h1 style="font-family: 'Roboto'; font-size: 10vw;text-align: center;align-items: center;justify-content: center;">
-    Blog
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;900&display=swap');
+</style>
+<div style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #4B4B4B; font-weight: 900; text-align: center; padding-top: 10vh;">
+    <h1 style="font-size: 10rem;shadow-color: #000000;text-shadow: 4px 4px 8px #000000;">
+    BLOG
     </h1>
 </div>
 ''', unsafe_allow_html=True)
@@ -318,3 +471,9 @@ st.markdown(f'''
   </div>
 </div>
 ''', unsafe_allow_html=True)
+
+
+
+#---------------------------------Footer---------------------------------
+with open('rsc/html/minimal_footer.html') as f:
+    st.markdown(f.read(), unsafe_allow_html=True)
