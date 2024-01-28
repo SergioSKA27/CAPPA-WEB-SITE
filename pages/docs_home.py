@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_searchbox import st_searchbox
 
 
 def render_docs(docs:list):
@@ -15,6 +16,10 @@ def render_docs(docs:list):
         with fc1[1]:
             with st.container(border=True):
                 st.write(f"## {docs[1]}")
+
+
+def search_doc(s: str):
+    return []
 
 
 #------------------------------------------BODY------------------------------------------------------------
@@ -34,6 +39,9 @@ headcols[1].markdown('''
 
 st.divider()
 
+cols0 = st.columns([0.3,0.4,0.3])
+with cols0[1]:
+    st_searchbox(search_function=search_doc, placeholder="Buscar en el blog",label="",key="searchbox-blog")
 
 
 st.markdown('''
