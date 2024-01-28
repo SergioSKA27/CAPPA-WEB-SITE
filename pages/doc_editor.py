@@ -195,6 +195,13 @@ tags = st_tags([], suggestions=['Python', 'Básico', 'Intermedio', 'Avanzado'],
 
 doc_types = ["Artículo", "Tutorial", "Video"]
 
+bannerimage = st.file_uploader("Imagen de Portada", type=["png", "jpg", "jpeg"])
+
+if bannerimage is not None:
+    st.image(bannerimage, width=300)
+
+desc_basic = st.text_area('Ingresa un resumen para mostrar en la página principal')
+
 doc_type = st.selectbox("Tipo de Documento", doc_types)
 
 #---------------------------------Editor---------------------------------
