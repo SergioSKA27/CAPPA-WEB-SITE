@@ -17,129 +17,22 @@ def render_docs(docs:list):
                 st.write(f"## {docs[1]}")
 
 
-st.markdown('''
-<style>
-@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
-.containercard {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  max-width: 1300px;
-  margin-block: 2rem;
-  gap: 2rem;
-}
+#------------------------------------------BODY------------------------------------------------------------
 
-img {
-  max-width: 100%;
-  display: block;
-  object-fit: cover;
-}
+headcols = st.columns([0.7,0.3])
+with headcols[0]:
+    with open('rsc/html/docs_home_header.html') as f:
+        st.markdown(f.read(), unsafe_allow_html=True)
 
-.card {
-  display: flex;
-  flex-direction: column;
-  width: clamp(20rem, calc(20rem + 2vw), 22rem);
-  overflow: hidden;
-  box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);
-  border-radius: 1em;
-  background: #ECE9E6;
-background: linear-gradient(to right, #FFFFFF, #ECE9E6);
-
-}
-.card h4 {
-  margin-block: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #333;
-  padding: 1rem 1rem 0 1rem;
-}
-.card p {
-    margin-block: 0.5rem;
-    font-size: 1rem;
-    font-weight: 400;
-    color: #333;
-    padding: 0 1rem 1rem 1rem;
-    }
-.card__footer {
-    padding: 1rem 1rem 0 1rem;
-}
-.card__footer h5 {
-    padding-bottom:0;
-    }
-.tag {
-    padding: 1rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.1rem;
-    }
-</style>
-''', unsafe_allow_html=True)
-
-
-st.markdown(f'''
-<div class="containercard">
-  <div class="card">
-    <div class="card__header">
-      <img src="https://source.unsplash.com/600x400/?computer" alt="card__image" class="card__image" width="600">
-    </div>
-    <div class="card__body">
-      <span class="tag">Technology</span>
-      <h4>What's new in 2022 Tech</h4>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
-    </div>
-    <div class="card__footer">
-      <div class="user">
-        <img src="https://i.pravatar.cc/40?img=1" alt="user__image" class="user__image">
-        <div class="user__info">
-          <h5>Jane Doe</h5>
-          <small>2h ago</small>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card__header">
-      <img src="https://source.unsplash.com/600x400/?food" alt="card__image" class="card__image" width="600">
-    </div>
-    <div class="card__body">
-      <span class="tag">Food</span>
-      <h4>Delicious Food</h4>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
-    </div>
-    <div class="card__footer">
-      <div class="user">
-        <img src="https://i.pravatar.cc/40?img=2" alt="user__image" class="user__image">
-        <div class="user__info">
-          <h5>Jony Doe</h5>
-          <small>Yesterday</small>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card__header">
-      <img src="https://source.unsplash.com/600x400/?car,automobile" alt="card__image" class="card__image" width="600">
-    </div>
-    <div class="card__body">
-      <span class="tag">Automobile</span>
-      <h4>Race to your heart content</h4>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
-    </div>
-    <div class="card__footer">
-      <div class="user">
-        <img src="https://i.pravatar.cc/40?img=3" alt="user__image" class="user__image">
-        <div class="user__info">
-          <h5>John Doe</h5>
-          <small>2d ago</small>
-        </div>
-      </div>
-    </div>
-  </div>
+headcols[1].markdown('''
+<div style="display: flex; justify-content: center; align-items: center;padding-top: 50px;">
+    <h1 style="font-family: 'Roboto'; font-size: 10vw;text-align: center;align-items: center;justify-content: center;">
+    Blog
+    </h1>
 </div>
 ''', unsafe_allow_html=True)
 
+st.divider()
 
 
 
@@ -291,4 +184,129 @@ st.markdown(f'''
     <div class="fab"><img src="https://cdn-icons-png.flaticon.com/128/1565/1565867.png" width="60"></div>
 </div>
 
+''', unsafe_allow_html=True)
+
+
+
+st.markdown('''
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
+.containercard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1300px;
+  margin-block: 2rem;
+  gap: 2rem;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: clamp(20rem, calc(20rem + 2vw), 22rem);
+  overflow: hidden;
+  box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);
+  border-radius: 1em;
+  background: #ECE9E6;
+background: linear-gradient(to right, #FFFFFF, #ECE9E6);
+
+}
+.card h4 {
+  margin-block: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  padding: 1rem 1rem 0 1rem;
+}
+.card p {
+    margin-block: 0.5rem;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #333;
+    padding: 0 1rem 1rem 1rem;
+    }
+.card__footer {
+    padding: 1rem 1rem 0 1rem;
+}
+.card__footer h5 {
+    padding-bottom:0;
+    }
+.tag {
+    padding: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    }
+</style>
+''', unsafe_allow_html=True)
+
+
+st.markdown(f'''
+<div class="containercard">
+  <div class="card">
+    <div class="card__header">
+      <img src="https://source.unsplash.com/600x400/?computer" alt="card__image" class="card__image" width="600">
+    </div>
+    <div class="card__body">
+      <span class="tag">Technology</span>
+      <h4>What's new in 2022 Tech</h4>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+    </div>
+    <div class="card__footer">
+      <div class="user">
+        <img src="https://i.pravatar.cc/40?img=1" alt="user__image" class="user__image">
+        <div class="user__info">
+          <h5>Jane Doe</h5>
+          <small>2h ago</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card__header">
+      <img src="https://source.unsplash.com/600x400/?food" alt="card__image" class="card__image" width="600">
+    </div>
+    <div class="card__body">
+      <span class="tag">Food</span>
+      <h4>Delicious Food</h4>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+    </div>
+    <div class="card__footer">
+      <div class="user">
+        <img src="https://i.pravatar.cc/40?img=2" alt="user__image" class="user__image">
+        <div class="user__info">
+          <h5>Jony Doe</h5>
+          <small>Yesterday</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card__header">
+      <img src="https://source.unsplash.com/600x400/?car,automobile" alt="card__image" class="card__image" width="600">
+    </div>
+    <div class="card__body">
+      <span class="tag">Automobile</span>
+      <h4>Race to your heart content</h4>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+    </div>
+    <div class="card__footer">
+      <div class="user">
+        <img src="https://i.pravatar.cc/40?img=3" alt="user__image" class="user__image">
+        <div class="user__info">
+          <h5>John Doe</h5>
+          <small>2d ago</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 ''', unsafe_allow_html=True)
