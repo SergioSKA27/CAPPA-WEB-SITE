@@ -202,6 +202,12 @@ if 'userinfo' in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
         switch_page('profile_render')
 
+if "aitoast" not in state:
+    state.aitoast = 0
+
+if state.aitoast == 1:
+    st.toast("Respuesta añadida con éxito puedes verla en la pestaña de código",icon="👾")
+    state.aitoast = 0
 
 
 #---------------------------------Body---------------------------------
@@ -382,6 +388,7 @@ if asiscols[1].checkbox("Preguntar al Asistente de IA 👾 "):
         while f'Respuesta {k}'  in w.editor._tabs:
             k += 1
         w.editor.add_tab(f'Respuesta {k}', r.text, "markdown")
+        state.aitoast = 1
         st.rerun()
 
 
