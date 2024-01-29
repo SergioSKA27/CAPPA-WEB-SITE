@@ -7,6 +7,7 @@ import streamlit_antd_components as stac
 import datetime
 import google.generativeai as genai
 import markdown
+import streamlit_antd_components as sac
 
 #--------------------------------------------- page config ---------------------------------------------
 #basic page configuration
@@ -55,6 +56,12 @@ def load_genmodel():
     return genai.GenerativeModel('gemini-pro')
 
 
+def format_date(date):
+    dt = date.split('-')
+    meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre', 'Octubre','Noviembre','Diciembre']
+
+    return f'{dt[2]} de {meses[int(dt[1])-1]} del {dt[0]}'
+
 def render_docs(docs:list):
 
     #First column
@@ -72,10 +79,14 @@ def render_docs(docs:list):
                 bcols0 = st.columns([0.7,0.3])
                 with bcols0[0]:
                     st.write(f"{docs[0]['autor']['nombre_completo']}")
-                    st.write(f"{docs[0]['xata']['createdAt'][0:10]}")
+                    st.write(format_date(docs[0]['xata']['createdAt'][0:10]))
                 with bcols0[1]:
-                    st.button('Leer',key=f"doc0",use_container_width=True)
-
+                    if st.button('Leer',key=f"doc0",use_container_width=True):
+                        if 'query' not in st.session_state:
+                            st.session_state.query = {'Table':'Documento','id':docs[0]['id']}
+                        else:
+                            st.session_state.query = {'Table':'Documento','id':docs[0]['id']}
+                        switch_page('docs_render')
     if len (docs) > 1:
         with fc1[1]:
             with st.container(border=True):
@@ -86,7 +97,7 @@ def render_docs(docs:list):
                 bcols1 = st.columns([0.7,0.3])
                 with bcols1[0]:
                     st.write(f"{docs[1]['autor']['nombre_completo']}")
-                    st.write(f"{docs[1]['xata']['createdAt'][0:10]}")
+                    st.write(format_date(docs[1]['xata']['createdAt'][0:10]))
                 with bcols1[1]:
                     st.button('Leer',key=f"doc1",use_container_width=True)
     if len (docs) > 2:
@@ -99,7 +110,7 @@ def render_docs(docs:list):
                 bcols2 = st.columns([0.7,0.3])
                 with bcols2[0]:
                     st.write(f"{docs[2]['autor']['nombre_completo']}")
-                    st.write(f"{docs[2]['xata']['createdAt'][0:10]}")
+                    st.write(format_date(docs[2]['xata']['createdAt'][0:10]))
                 with bcols2[1]:
                     st.button('Leer',key=f"doc2",use_container_width=True)
 
@@ -113,7 +124,7 @@ def render_docs(docs:list):
                 bcols3 = st.columns([0.7,0.3])
                 with bcols3[0]:
                     st.write(f"{docs[3]['autor']['nombre_completo']}")
-                    st.write(f"{docs[3]['xata']['createdAt'][0:10]}")
+                    st.write(format_date(docs[3]['xata']['createdAt'][0:10]))
                 with bcols3[1]:
                     st.button('Leer',key=f"doc3",use_container_width=True)
 
@@ -127,7 +138,7 @@ def render_docs(docs:list):
                 bcols4 = st.columns([0.7,0.3])
                 with bcols4[0]:
                     st.write(f"{docs[4]['autor']['nombre_completo']}")
-                    st.write(f"{docs[4]['xata']['createdAt'][0:10]}")
+                    st.write(format_date(docs[4]['xata']['createdAt'][0:10]))
                 with bcols4[1]:
                     st.button('Leer',key=f"doc0",use_container_width=True)
 
@@ -139,7 +150,7 @@ def render_docs(docs:list):
                 st.write(f"## {docs[5]['titulo']}")
                 st.write(f"{docs[5]['shortdesc']}")
                 st.write(f"{docs[5]['autor']['nombre_completo']}")
-                st.write(f"{docs[5]['xata']['createdAt'][0:10]}")
+                st.write(format_date(docs[5]['xata']['createdAt'][0:10]))
 
 def render_daylycard(title, body, day, month):
     meses = {'January':'Enero','February':'Febrero','March':'Marzo','April':'Abril','May':'Mayo','June':'Junio','July':'Julio','August':'Agosto','September':'Septiembre','October':'Octubre','November':'Noviembre','December':'Diciembre'}
@@ -373,7 +384,7 @@ background: linear-gradient(to right, #FFFFFF, #ECE9E6);
     if len (docs) > 0:
         typedoc = docs[0]['tipo']
         autor = docs[0]['autor']['nombre_completo']
-        fecha = docs[0]['xata']['createdAt'][0:10]
+        fecha = format_date(docs[0]['xata']['createdAt'][0:10])
         if len(docs[0]['titulo']) > 20:
             titulo = docs[0]['titulo'][0:20]+'...'
         else:
@@ -390,7 +401,7 @@ background: linear-gradient(to right, #FFFFFF, #ECE9E6);
     if len (docs) > 1:
         typedoc1 = docs[1]['tipo']
         autor1 = docs[1]['autor']['nombre_completo']
-        fecha1 = docs[1]['xata']['createdAt'][0:10]
+        fecha1 = format_date(docs[1]['xata']['createdAt'][0:10])
         if len(docs[1]['titulo']) > 20:
             titulo1 = docs[1]['titulo'][0:20]+'...'
         else:
@@ -407,7 +418,7 @@ background: linear-gradient(to right, #FFFFFF, #ECE9E6);
     if len (docs) > 2:
         typedoc2 = docs[2]['tipo']
         autor2 = docs[2]['autor']['nombre_completo']
-        fecha2 = docs[2]['xata']['createdAt'][0:10]
+        fecha2 = format_date(docs[2]['xata']['createdAt'][0:10])
         if len(docs[2]['titulo']) > 20:
             titulo2 = docs[2]['titulo'][0:20]+'...'
         else:
