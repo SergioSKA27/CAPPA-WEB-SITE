@@ -404,6 +404,9 @@ if layout:
             colv = st.columns([0.2,0.6,0.2])
             colv[1].video(state.videolinks[int(l.split(" ")[1])],)
             lay.append(format_video(state.videolinks[int(l.split(" ")[1])]))
+        elif "Respuesta" in l:
+            st.markdown(w.editor.get_content(l), unsafe_allow_html=True)
+            lay.append(w.editor.get_content(l))
         else:
             st.code(w.editor.get_content(l), language=l.split(" ")[1].lower())
             lay.append(format_code(w.editor.get_content(l), l.split(" ")[1].lower()))
