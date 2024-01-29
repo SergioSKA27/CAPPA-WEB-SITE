@@ -8,6 +8,8 @@ streamlit-searchbox
 streamlit-pills
 st-xatadb-connection
 streamlit-quill
+streamlit_tags
+google-generativeai
 bcrypt
 pygwalker
 mitosheet
