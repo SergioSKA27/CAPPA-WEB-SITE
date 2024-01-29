@@ -8,7 +8,7 @@ from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
 from st_xatadb_connection import XataConnection
 from streamlit_tags import st_tags
-
+import google.generativeai as genai
 
 from modules import Card, Dashboard, Editor,  Timer,Player
 #Autor: Sergio Lopez
@@ -28,6 +28,8 @@ st.set_page_config(
     }
 )
 xata = st.connection('xata',type=XataConnection)
+genai.configure(api_key=st.secrets['GEN_AI_KEY'])
+
 st.markdown('''
 <style>
 [data-testid="collapsedControl"] {
@@ -51,6 +53,21 @@ st.markdown('''
   }
 </style>
 ''', unsafe_allow_html=True)
+
+
+@st.cache_resource
+def load_genmodel():
+    return genai.GenerativeModel('gemini-pro')
+
+def ask_AI():
+    model = load_genmodel()
+    response = ''
+    with st.container(border=True):
+        question = st.text_area('Escribe tu petición',help='Escribe tu petición para generar un documento',height=250)
+        if st.button(label='Generar Documento ✨'):
+            with st.spinner("Generando documento..."):
+                response = model.generate_content(question)
+    return response
 
 
 
@@ -325,10 +342,10 @@ with tabs[1]:
                     st.write(w.editor.get_content(tab))
                 elif  "Gráfica" in tab:
                     st.graphviz_chart(w.editor.get_content(tab))
+                elif "Respuesta" in tab:
+                    st.markdown(w.editor.get_content(tab), unsafe_allow_html=True)
                 else:
                     st.code(w.editor.get_content(tab), language=tab.split(" ")[1].lower())
-
-
 with tabs[2]:
     if "w_video" not in state:
         board = Dashboard()
@@ -355,6 +372,17 @@ with tabs[2]:
         if st.button("Añadir Video"):
             if wv.player._url not in state.videolinks:
                 state.videolinks.append(wv.player._url)
+
+asiscols = st.columns([0.7,0.3])
+
+if asiscols[1].checkbox("Preguntar al Asistente de IA 👾 "):
+    r = ask_AI()
+    if r != '':
+        k = 1
+        while f'Respuesta {k}'  in w.editor._tabs:
+            k += 1
+        w.editor.add_tab(f'Respuesta {k}', r.text, "markdown")
+        st.rerun()
 
 
 st.subheader("Layout del Documento")
