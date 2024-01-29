@@ -6,6 +6,7 @@ from streamlit_extras.switch_page_button import switch_page
 import streamlit_antd_components as stac
 import datetime
 import google.generativeai as genai
+import markdown
 
 #--------------------------------------------- page config ---------------------------------------------
 #basic page configuration
@@ -150,7 +151,7 @@ def render_daylycard(title, body, day, month):
   position: relative;
   height: 450px;
   width: 900px;
-  margin: 200px auto;
+  margin: 10px auto;
   background-color: #FFF;
   -webkit-box-shadow: 10px 10px 93px 0px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 10px 10px 93px 0px rgba(0, 0, 0, 0.75);
@@ -242,15 +243,10 @@ img.left {
   color: #C3C3C3;
   bottom: -10px;
 }
-/* Those futur buttons */
-.right ul {
-  margin-left: 250px;
-}
+
 .right li {
-  display: inline;
-  list-style: none;
-  padding-right: 40px;
-  color: #7B7B7B;
+    text-align: justify;
+    font-size: 0.6rem;
 }
 /* Floating action button */
 .fab {
@@ -283,7 +279,7 @@ img.left {
     <div class="right">
         <h1>{title}</h1>
         <div class="separator"></div>
-        <p>{body}</p>
+        {markdown.markdown(body).strip()}
         <h5>{day}</h5>
         <h6>{meses[month]}</h6>
     </div>
@@ -506,7 +502,7 @@ def update_pagedocs():
 def update_daylycard():
     model = load_genmodel()
     title = model.generate_content('Dame un solo titulo para un articulo de blog sobre algun tema de programacion en python en texto plano sin nada adicional')
-    bdy = model.generate_content(f'Dame un articulo de blog sobre {title.text} de no mas de 50 palabras en texto plano solo el cuerpo del articulo sin el titulo')
+    bdy = model.generate_content(f'Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo')
     st.session_state.daylycard = {'title':title.text,'body':bdy.text,'day':datetime.date.today().day,'month':datetime.date.today().strftime("%B")}
     st.rerun()
 
@@ -519,11 +515,13 @@ if 'docspage' not in st.session_state:
     }}
     )]
 
+if 'pagenumdocs' not in st.session_state:
+    st.session_state.pagenumdocs = 0
 
 if 'daylycard' not in st.session_state:
     model = load_genmodel()
     title = model.generate_content('Dame un solo titulo para un articulo de blog sobre algun tema de programacion en texto plano sin nada adicional')
-    bdy = model.generate_content(f'Dame un articulo de blog sobre {title.text} de no mas de 50 palabras en texto plano solo el cuerpo del articulo sin el titulo')
+    bdy = model.generate_content(f'Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo')
     st.session_state.daylycard = {'title':title.text,'body':bdy.text,'day':datetime.date.today().day,'month':datetime.date.today().strftime("%B")}
 ##---------------------------------Navbar---------------------------------
 if 'auth_state' not  in st.session_state:
@@ -751,24 +749,55 @@ cols0 = st.columns([0.3,0.4,0.3])
 with cols0[1]:
     st_searchbox(search_function=search_doc, placeholder="Buscar en el blog",label="",key="searchbox-blog")
 
-if st.button('Actualizar'):
-    update_pagedocs()
 #st.write(st.session_state.docspage)
 
 
 
-render_docs(st.session_state.docspage[0]['records'])
+render_docs(st.session_state.docspage[st.session_state.pagenumdocs]['records'])
+pagecols = st.columns([0.7,0.1,0.1,0.1])
+
+with pagecols[1]:
+    if st.button('<',use_container_width=True):
+        if st.session_state.pagenumdocs > 0:
+            st.session_state.pagenumdocs -= 1
+            st.rerun()
+with pagecols[2]:
+    if st.button('\>',use_container_width=True):
+        result = xata.next_page('Documento',st.session_state.docspage[st.session_state.pagenumdocs],pagesize=6)
+        if result is not None:
+            st.session_state.docspage.append(result)
+            st.session_state.pagenumdocs += 1
+            st.rerun()
+
+with pagecols[3]:
+    if st.button('Actualizar',use_container_width=True):
+        update_pagedocs()
+
 #------------------------------------------CARDS------------------------------------------------------------
 #today = datetime.date.today()
 
-render_recentdocs(st.session_state.docspage[0]['records'])
+st.markdown('''
+---
 
+<h1 style="text-align: center;">Artículos Recientes</h1>
+''', unsafe_allow_html=True)
+render_recentdocs(st.session_state.docspage[st.session_state.pagenumdocs]['records'])
 
-#st.session_state.daylycard
+st.divider()
+
+st.markdown('''
+---
+
+<h1 style="text-align: center;">Tip del día</h1>
+''', unsafe_allow_html=True)
+
 render_daylycard(st.session_state.daylycard['title'], st.session_state.daylycard['body'], st.session_state.daylycard['day'], st.session_state.daylycard['month'])
 
-if st.button('Nuevo'):
-    update_daylycard()
+daylycardcols = st.columns([0.6,0.2,0.2])
+with daylycardcols[1]:
+    if st.button('Generar otro tip del dia 💡',use_container_width=True):
+        update_daylycard()
+
 
 
 
