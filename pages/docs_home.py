@@ -794,8 +794,6 @@ st.markdown('''
 ''', unsafe_allow_html=True)
 render_recentdocs(st.session_state.docspage[st.session_state.pagenumdocs]['records'])
 
-st.divider()
-
 st.markdown('''
 ---
 
