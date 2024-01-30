@@ -125,7 +125,7 @@ with open('rsc/html/headlogos.html') as f:
 
 if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
     menu_data = [
-    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
+    {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información"},
     {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
     {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
     ]
@@ -169,7 +169,7 @@ else:
         ]},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
+        {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
@@ -216,6 +216,11 @@ if menu_id == 'docshome':
 
 if menu_id == 'doceditor':
     switch_page('doc_editor')
+
+
+if menu_id == 'Blog':
+    switch_page('docs_home')
+
 
 if menu_id == 'logout':
     st.session_state.pop('auth_state')

@@ -432,6 +432,7 @@ if layout:
                 "content": merged,
                 "tipo": doc_type,
                 "autor": st.session_state['username'],
+                "shortdesc": desc_basic,
                 })
                 st.success("Documento subido con éxito")
                 st.balloons()
@@ -441,6 +442,15 @@ if layout:
                 del state.w_docs
             except Exception as e:
                 st.error(f'Error al subir el documento: {e}')
+
+            if bannerimage is not None:
+                try:
+                    r = xata.upload_file("Documento",r['id'],'banner_pic',bannerimage.read(),content_type=bannerimage.type)
+                    st.success("Imagen subida con éxito")
+                    st.balloons()
+                    st.write(r)
+                except Exception as e:
+                    st.error(f'Error al subir la imagen: {e}')
 
 
 #---------------------------------Footer---------------------------------

@@ -180,11 +180,11 @@ menu_id = hc.nav_bar(
     menu_definition=menu_data,
     override_theme=over_theme,
     home_name="Inicio",
-    login_name=st.session_state['userinfo']['username'],
+    login_name=st.session_state['userinfo']['username'] if 'auth_state' in st.session_state else "Iniciar Sesión",
     hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
     sticky_nav=True,  # at the top or not
     sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
-    first_select=40,
+    first_select=40 if 'auth_state' in st.session_state else 10,
 )
 
 

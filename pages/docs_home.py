@@ -1,33 +1,35 @@
-import streamlit as st
-from streamlit_searchbox import st_searchbox
-from st_xatadb_connection import XataConnection
-import hydralit_components as hc
-from streamlit_extras.switch_page_button import switch_page
-import streamlit_antd_components as stac
 import datetime
-import google.generativeai as genai
-import markdown
-import streamlit_antd_components as sac
 
-#--------------------------------------------- page config ---------------------------------------------
-#basic page configuration
+import google.generativeai as genai
+import hydralit_components as hc
+import markdown
+import streamlit as st
+import streamlit_antd_components as stac
+import streamlit_antd_components as sac
+from st_xatadb_connection import XataConnection
+from streamlit_extras.switch_page_button import switch_page
+from streamlit_searchbox import st_searchbox
+
+# --------------------------------------------- page config ---------------------------------------------
+# basic page configuration
 st.set_page_config(
-    page_title='CAPA',
+    page_title="CAPA",
     page_icon="rsc/Logos/LOGO_CAPPA.jpg",
     layout="wide",
     initial_sidebar_state="collapsed",
     menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': """# Web Site Club de Algoritmia Avanzada en Python.
-                        Todos los derechos reservados 2023, CAPA."""
-    }
+        "Get Help": "https://www.extremelycoolapp.com/help",
+        "Report a bug": "https://www.extremelycoolapp.com/bug",
+        "About": """# Web Site Club de Algoritmia Avanzada en Python.
+                        Todos los derechos reservados 2023, CAPA.""",
+    },
 )
-xata = st.connection('xata',type=XataConnection)
+xata = st.connection("xata", type=XataConnection)
 
-genai.configure(api_key=st.secrets['GEN_AI_KEY'])
+genai.configure(api_key=st.secrets["GEN_AI_KEY"])
 
-st.markdown('''
+st.markdown(
+    """
 <style>
 [data-testid="collapsedControl"] {
         display: none
@@ -48,113 +50,95 @@ st.markdown('''
     padding-right: 0.75rem;
     padding-bottom: 0;
   }
+em {
+	color: #FF0;
+}
 </style>
-''', unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
+
 
 @st.cache_resource
 def load_genmodel():
-    return genai.GenerativeModel('gemini-pro')
+    return genai.GenerativeModel("gemini-pro")
 
 
-def format_date(date):
-    dt = date.split('-')
-    meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre', 'Octubre','Noviembre','Diciembre']
+def format_date(date: str):
+    dt = date.split("-")
+    meses = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+    ]
 
-    return f'{dt[2]} de {meses[int(dt[1])-1]} del {dt[0]}'
+    return f"{dt[2]} de {meses[int(dt[1])-1]} del {dt[0]}"
 
-def render_docs(docs:list):
 
-    #First column
-    fc1 = st.columns([0.4,0.3,0.3])
-    fc2 = st.columns(3)
+def send_query(table: str, idd: str):
+    if "query" not in st.session_state:
+        st.session_state.query = {"Table": table, "id": idd}
+    else:
+        st.session_state.query = {"Table": table, "id": idd}
+    switch_page("docs_render")
 
-    if len (docs) > 0:
-        with fc1[0]:
+def render_docs(docs: list):
+    # First column
+    fc1 = st.columns([0.4, 0.3, 0.3])
+    c = 0
+    for d in docs:
+        if c > 2:
+            c = 0
+        with fc1[c]:
             with st.container(border=True):
+                st.image(
+					d["banner_pic"]["url"]
+					if "banner_pic" in d
+					else "https://source.unsplash.com/600x400/?code",
+					use_column_width=True,
+				)
+                st.caption(f"{d['tipo']}")
+                st.write(f"### {d['titulo']}")
+                st.write(f"{d['shortdesc']}")
+                bcols = st.columns([0.7, 0.3])
+                with bcols[0]:
+                    st.write(f"{d['autor']['nombre_completo']}")
+                    st.write(format_date(d["xata"]["createdAt"][0:10]))
+                with bcols[1]:
+                    if st.button(
+						"Leer", key=f"doc{c}", use_container_width=True, on_click=send_query, args=["Documento", d["id"]]
+					):
+                        switch_page("docs_render")
+        c += 1
 
-                st.image(docs[0]['banner_pic']['url'],use_column_width=True)
-                st.caption(f"{docs[0]['tipo']}")
-                st.write(f"### {docs[0]['titulo']}")
-                st.write(f"{docs[0]['shortdesc']}")
-                bcols0 = st.columns([0.7,0.3])
-                with bcols0[0]:
-                    st.write(f"{docs[0]['autor']['nombre_completo']}")
-                    st.write(format_date(docs[0]['xata']['createdAt'][0:10]))
-                with bcols0[1]:
-                    if st.button('Leer',key=f"doc0",use_container_width=True):
-                        if 'query' not in st.session_state:
-                            st.session_state.query = {'Table':'Documento','id':docs[0]['id']}
-                        else:
-                            st.session_state.query = {'Table':'Documento','id':docs[0]['id']}
-                        switch_page('docs_render')
-    if len (docs) > 1:
-        with fc1[1]:
-            with st.container(border=True):
-                st.image(docs[1]['banner_pic']['url'],use_column_width=True)
-                st.caption(f"## {docs[1]['tipo']}")
-                st.write(f"## {docs[1]['titulo']}")
-                st.write(f"### {docs[1]['shortdesc']}")
-                bcols1 = st.columns([0.7,0.3])
-                with bcols1[0]:
-                    st.write(f"{docs[1]['autor']['nombre_completo']}")
-                    st.write(format_date(docs[1]['xata']['createdAt'][0:10]))
-                with bcols1[1]:
-                    st.button('Leer',key=f"doc1",use_container_width=True)
-    if len (docs) > 2:
-        with fc1[2]:
-            with st.container(border=True):
-                st.image(docs[2]['banner_pic']['url'],use_column_width=True)
-                st.caption(f"{docs[2]['tipo']}")
-                st.write(f"### {docs[2]['titulo']}")
-                st.write(f"{docs[2]['shortdesc']}")
-                bcols2 = st.columns([0.7,0.3])
-                with bcols2[0]:
-                    st.write(f"{docs[2]['autor']['nombre_completo']}")
-                    st.write(format_date(docs[2]['xata']['createdAt'][0:10]))
-                with bcols2[1]:
-                    st.button('Leer',key=f"doc2",use_container_width=True)
 
-    if len (docs) > 3:
-        with fc2[0]:
-            with st.container(border=True):
-                st.image(docs[3]['banner_pic']['url'],use_column_width=True)
-                st.caption(f"{docs[3]['tipo']}")
-                st.write(f"### {docs[3]['titulo']}")
-                st.write(f"{docs[3]['shortdesc']}")
-                bcols3 = st.columns([0.7,0.3])
-                with bcols3[0]:
-                    st.write(f"{docs[3]['autor']['nombre_completo']}")
-                    st.write(format_date(docs[3]['xata']['createdAt'][0:10]))
-                with bcols3[1]:
-                    st.button('Leer',key=f"doc3",use_container_width=True)
-
-    if len (docs) > 4:
-        with fc2[1]:
-            with st.container(border=True):
-                st.image(docs[4]['banner_pic']['url'],use_column_width=True)
-                st.caption(f"{docs[4]['tipo']}")
-                st.write(f"### {docs[4]['titulo']}")
-                st.write(f"{docs[4]['shortdesc']}")
-                bcols4 = st.columns([0.7,0.3])
-                with bcols4[0]:
-                    st.write(f"{docs[4]['autor']['nombre_completo']}")
-                    st.write(format_date(docs[4]['xata']['createdAt'][0:10]))
-                with bcols4[1]:
-                    st.button('Leer',key=f"doc0",use_container_width=True)
-
-    if len (docs) > 5:
-        with fc2[2]:
-            with st.container(border=True):
-                st.image(docs[5]['banner_pic']['url'],use_column_width=True)
-                st.caption(f"{docs[5]['tipo']}")
-                st.write(f"## {docs[5]['titulo']}")
-                st.write(f"{docs[5]['shortdesc']}")
-                st.write(f"{docs[5]['autor']['nombre_completo']}")
-                st.write(format_date(docs[5]['xata']['createdAt'][0:10]))
 
 def render_daylycard(title, body, day, month):
-    meses = {'January':'Enero','February':'Febrero','March':'Marzo','April':'Abril','May':'Mayo','June':'Junio','July':'Julio','August':'Agosto','September':'Septiembre','October':'Octubre','November':'Noviembre','December':'Diciembre'}
-    st.markdown('''
+    meses = {
+        "January": "Enero",
+        "February": "Febrero",
+        "March": "Marzo",
+        "April": "Abril",
+        "May": "Mayo",
+        "June": "Junio",
+        "July": "Julio",
+        "August": "Agosto",
+        "September": "Septiembre",
+        "October": "Octubre",
+        "November": "Noviembre",
+        "December": "Diciembre",
+    }
+    st.markdown(
+        """
 <style>
 @import url(https://fonts.googleapis.com/css?family=Roboto);
 /* The card */
@@ -233,7 +217,7 @@ img.left {
 .cardtwo p {
   text-align: justify;
   padding-top: 10px;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   line-height: 150%;
   color: #4B4B4B;
 }
@@ -279,10 +263,13 @@ img.left {
   align-items: center;
 }
 </style>
-''', unsafe_allow_html=True)
+""",
+        unsafe_allow_html=True,
+    )
 
-    #1440x900
-    st.markdown(f'''
+    # 1440x900
+    st.markdown(
+        f"""
 <div class="cardtwo">
     <div class="thumbnail">
         <img class="left" src="https://source.unsplash.com/1440x900/?code">
@@ -297,10 +284,14 @@ img.left {
     <div class="fab"><img src="https://cdn-icons-png.flaticon.com/128/1565/1565867.png" width="60"></div>
 </div>
 
-''', unsafe_allow_html=True)
+""",
+        unsafe_allow_html=True,
+    )
 
-def render_recentdocs(docs:list):
-    st.markdown('''
+
+def render_recentdocs(docs: list):
+    st.markdown(
+        """
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
 .containercard {
@@ -358,81 +349,81 @@ background: linear-gradient(to right, #FFFFFF, #ECE9E6);
     letter-spacing: 0.1rem;
     }
 </style>
-''', unsafe_allow_html=True)
+""",
+        unsafe_allow_html=True,
+    )
 
-    typedoc = 'Articulo'
-    autor = 'Jhon Doe'
+    typedoc = "Articulo"
+    autor = "Jhon Doe"
     fecha = datetime.date.today().strftime("%B %d, %Y")
-    titulo = 'Python para principiantes'
-    shortdesc = 'Aprende a programar en python desde cero.'
-    avatar = 'https://i.pravatar.cc/40?img=1'
+    titulo = "Python para principiantes"
+    shortdesc = "Aprende a programar en python desde cero."
+    avatar = "https://i.pravatar.cc/40?img=1"
 
-    typedoc1 = 'Articulo'
-    autor1 = 'Mary Doe'
+    typedoc1 = "Articulo"
+    autor1 = "Mary Doe"
     fecha1 = datetime.date.today().strftime("%B %d, %Y")
-    titulo1 = 'Python para Intermedios'
-    shortdesc1 = 'Aprende conceptos intermedios de programacion en python.'
-    avatar1 = 'https://i.pravatar.cc/40?img=2'
+    titulo1 = "Python para Intermedios"
+    shortdesc1 = "Aprende conceptos intermedios de programacion en python."
+    avatar1 = "https://i.pravatar.cc/40?img=2"
 
-    typedoc2 = 'Articulo'
-    autor2 = 'Jhon Doe'
+    typedoc2 = "Articulo"
+    autor2 = "Jhon Doe"
     fecha2 = datetime.date.today().strftime("%B %d, %Y")
-    titulo2 = 'Python para principiantes'
-    shortdesc2 = 'Aprende a programar en python desde cero'
-    avatar2 = 'https://i.pravatar.cc/40?img=3'
+    titulo2 = "Python para principiantes"
+    shortdesc2 = "Aprende a programar en python desde cero"
+    avatar2 = "https://i.pravatar.cc/40?img=3"
 
-    if len (docs) > 0:
-        typedoc = docs[0]['tipo']
-        autor = docs[0]['autor']['nombre_completo']
-        fecha = format_date(docs[0]['xata']['createdAt'][0:10])
-        if len(docs[0]['titulo']) > 20:
-            titulo = docs[0]['titulo'][0:20]+'...'
+    if len(docs) > 0:
+        typedoc = docs[0]["tipo"]
+        autor = docs[0]["autor"]["nombre_completo"]
+        fecha = format_date(docs[0]["xata"]["createdAt"][0:10])
+        if len(docs[0]["titulo"]) > 20:
+            titulo = docs[0]["titulo"][0:20] + "..."
         else:
-            titulo = docs[0]['titulo']
-        if len(docs[0]['shortdesc']) > 100:
-            shortdesc = docs[0]['shortdesc'][0:100]+'...'
+            titulo = docs[0]["titulo"]
+        if len(docs[0]["shortdesc"]) > 100:
+            shortdesc = docs[0]["shortdesc"][0:100] + "..."
         else:
-            shortdesc = docs[0]['shortdesc']
+            shortdesc = docs[0]["shortdesc"]
 
-        if 'avatar' in docs[0]['autor']:
-            avatar = docs[0]['autor']['avatar']['url']
+        if "avatar" in docs[0]["autor"]:
+            avatar = docs[0]["autor"]["avatar"]["url"]
 
-
-    if len (docs) > 1:
-        typedoc1 = docs[1]['tipo']
-        autor1 = docs[1]['autor']['nombre_completo']
-        fecha1 = format_date(docs[1]['xata']['createdAt'][0:10])
-        if len(docs[1]['titulo']) > 20:
-            titulo1 = docs[1]['titulo'][0:20]+'...'
+    if len(docs) > 1:
+        typedoc1 = docs[1]["tipo"]
+        autor1 = docs[1]["autor"]["nombre_completo"]
+        fecha1 = format_date(docs[1]["xata"]["createdAt"][0:10])
+        if len(docs[1]["titulo"]) > 20:
+            titulo1 = docs[1]["titulo"][0:20] + "..."
         else:
-            titulo1 = docs[1]['titulo']
-        if len(docs[1]['shortdesc']) > 100:
-            shortdesc1 = docs[1]['shortdesc'][0:100]+'...'
+            titulo1 = docs[1]["titulo"]
+        if len(docs[1]["shortdesc"]) > 100:
+            shortdesc1 = docs[1]["shortdesc"][0:100] + "..."
         else:
-            shortdesc1 = docs[1]['shortdesc']
+            shortdesc1 = docs[1]["shortdesc"]
 
-        if 'avatar' in docs[1]['autor']:
-            avatar1 = docs[1]['autor']['avatar']['url']
+        if "avatar" in docs[1]["autor"]:
+            avatar1 = docs[1]["autor"]["avatar"]["url"]
 
-
-    if len (docs) > 2:
-        typedoc2 = docs[2]['tipo']
-        autor2 = docs[2]['autor']['nombre_completo']
-        fecha2 = format_date(docs[2]['xata']['createdAt'][0:10])
-        if len(docs[2]['titulo']) > 20:
-            titulo2 = docs[2]['titulo'][0:20]+'...'
+    if len(docs) > 2:
+        typedoc2 = docs[2]["tipo"]
+        autor2 = docs[2]["autor"]["nombre_completo"]
+        fecha2 = format_date(docs[2]["xata"]["createdAt"][0:10])
+        if len(docs[2]["titulo"]) > 20:
+            titulo2 = docs[2]["titulo"][0:20] + "..."
         else:
-            titulo2 = docs[2]['titulo']
-        if len(docs[2]['shortdesc']) > 100:
-            shortdesc2 = docs[2]['shortdesc'][0:100]+'...'
+            titulo2 = docs[2]["titulo"]
+        if len(docs[2]["shortdesc"]) > 100:
+            shortdesc2 = docs[2]["shortdesc"][0:100] + "..."
         else:
-            shortdesc2 = docs[2]['shortdesc']
+            shortdesc2 = docs[2]["shortdesc"]
 
-        if 'avatar' in docs[2]['autor']:
-            avatar2 = docs[2]['autor']['avatar']['url']
+        if "avatar" in docs[2]["autor"]:
+            avatar2 = docs[2]["autor"]["avatar"]["url"]
 
-
-    st.markdown(f'''
+    st.markdown(
+        f"""
 <div class="containercard">
   <div class="card">
     <div class="card__header">
@@ -492,164 +483,295 @@ background: linear-gradient(to right, #FFFFFF, #ECE9E6);
     </div>
   </div>
 </div>
-''', unsafe_allow_html=True)
-
+""",
+        unsafe_allow_html=True,
+    )
 
 
 
 def search_doc(s: str):
-    return []
+	results = xata.search_on_table(
+            "Documento", {"query": s, "fuzziness": 0, "prefix": "phrase"}
+	)
+	return results["records"]
+
 
 
 def update_pagedocs():
-    st.session_state.docspage = [xata.query("Documento", {
-    "columns": ["autor", "titulo", "banner_pic.url",'tags','tipo','shortdesc','xata.createdAt',],
-    "page": {
-        "size": 6
-    }}
-    )]
+    st.session_state.docspage = [
+        xata.query(
+            "Documento",
+            {
+                "columns": [
+                    "autor",
+                    "titulo",
+                    "banner_pic.url",
+                    "tags",
+                    "tipo",
+                    "shortdesc",
+                    "xata.createdAt",
+                ],
+                "page": {"size": 6},
+            },
+        )
+    ]
     st.rerun()
+
 
 def update_daylycard():
     model = load_genmodel()
-    title = model.generate_content('Dame un solo titulo para un articulo de blog sobre algun tema de programacion en python en texto plano sin nada adicional')
-    bdy = model.generate_content(f'Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo')
-    st.session_state.daylycard = {'title':title.text,'body':bdy.text,'day':datetime.date.today().day,'month':datetime.date.today().strftime("%B")}
+    title = model.generate_content(
+        "Dame un solo titulo para un articulo de blog sobre algun tema de programacion en python o algun tip, en texto plano sin nada adicional"
+    )
+    bdy = model.generate_content(
+        f"Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo"
+    )
+    st.session_state.daylycard = {
+        "title": title.text,
+        "body": bdy.text,
+        "day": datetime.date.today().day,
+        "month": datetime.date.today().strftime("%B"),
+    }
     st.rerun()
 
 
-if 'docspage' not in st.session_state:
-    st.session_state.docspage = [xata.query("Documento", {
-    "columns": ["autor", "titulo", "banner_pic.url",'tags','tipo','shortdesc','xata.createdAt'],
-    "page": {
-        "size": 6
-    }}
-    )]
+if "docspage" not in st.session_state:
+    st.session_state.docspage = [
+        xata.query(
+            "Documento",
+            {
+                "columns": [
+                    "autor",
+                    "titulo",
+                    "banner_pic.url",
+                    "tags",
+                    "tipo",
+                    "shortdesc",
+                    "xata.createdAt",
+                ],
+                "page": {"size": 6},
+            },
+        )
+    ]
 
-if 'pagenumdocs' not in st.session_state:
+if "pagenumdocs" not in st.session_state:
     st.session_state.pagenumdocs = 0
 
-if 'daylycard' not in st.session_state:
+if "daylycard" not in st.session_state:
     model = load_genmodel()
-    title = model.generate_content('Dame un solo titulo para un articulo de blog sobre algun tema de programacion en texto plano sin nada adicional')
-    bdy = model.generate_content(f'Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo')
-    st.session_state.daylycard = {'title':title.text,'body':bdy.text,'day':datetime.date.today().day,'month':datetime.date.today().strftime("%B")}
+    title = model.generate_content(
+        "Dame un solo titulo para un articulo de blog sobre algun tema de programacion en python o algun tip, en texto plano sin nada adicional"
+    )
+    bdy = model.generate_content(
+        f"Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo"
+    )
+    st.session_state.daylycard = {
+        "title": title.text,
+        "body": bdy.text,
+        "day": datetime.date.today().day,
+        "month": datetime.date.today().strftime("%B"),
+    }
 ##---------------------------------Navbar---------------------------------
-if 'auth_state' not  in st.session_state:
+if "auth_state" not in st.session_state or st.session_state["auth_state"] == False:
     menu_data = [
-    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
-    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
-    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
-    ]
-    logname = 'Iniciar Sesión'
-else:
-    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
-        #Navbar para administradores, Profesores y Moderadores
-        menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
-        'submenu':[
-            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
-            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
-        ]},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
-        'submenu':[
-            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+        {
+            "icon": "far fa-copy",
+            "label": "Blog",
+            "ttip": "Documentación de la Plataforma",
         },
-        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-            {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'label':"Basicos 1", 'icon': "🐛"},
-            {'icon':'🐍','label':"Intermedios"},
-            {'icon':'🐉','label':"Avanzados",},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+        {
+            "id": "About",
+            "icon": "bi bi-question-circle",
+            "label": "FAQ",
+            "ttip": "Preguntas Frecuentes",
+        },
+        {
+            "id": "contact",
+            "icon": "bi bi-envelope",
+            "label": "Contacto",
+            "ttip": "Contáctanos",
+        },
     ]
-    else:
-    #Navbar para Estudiantes
+    logname = "Iniciar Sesión"
+elif 'userinfo' in st.session_state and st.session_state['auth_state']:
+    if (
+        st.session_state["userinfo"]["rol"] == "Administrador"
+        or st.session_state["userinfo"]["rol"] == "Profesor"
+        or st.session_state["userinfo"]["rol"] == "Moderador"
+    ):
+        # Navbar para administradores, Profesores y Moderadores
         menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
-        'submenu':[
-            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
-        ]},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
-        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
-            {'label':"Basicos", 'icon': "🐛"},
-            {'icon':'🐍','label':"Intermedios"},
-            {'icon':'🐉','label':"Avanzados",}]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
-    ]
-    logname = st.session_state['userinfo']['username']
+            {
+                "icon": "bi bi-cpu",
+                "label": "Problemas",
+                "ttip": "Problemas de Programación",
+                "submenu": [
+                    {"id": "subid00", "icon": "bi bi-search", "label": "Todos"},
+                    {"id": " subid11", "icon": "bi bi-flower1", "label": "Basicos"},
+                    {
+                        "id": "subid22",
+                        "icon": "fa fa-paperclip",
+                        "label": "Intermedios",
+                    },
+                    {
+                        "id": "subid33",
+                        "icon": "bi bi-emoji-dizzy",
+                        "label": "Avanzados",
+                    },
+                    {"id": "subid44", "icon": "bi bi-gear", "label": "Editor"},
+                ],
+            },
+            {"id": "contest", "icon": "bi bi-trophy", "label": "Concursos"},
+            {
+                "icon": "bi bi-graph-up",
+                "label": "Analisis de Datos",
+                "ttip": "Herramientas de Analisis de Datos",
+            },
+            {
+                "id": "docs",
+                "icon": "bi bi-file-earmark-richtext",
+                "label": "Docs",
+                "ttip": "Articulos e Información",
+                "submenu": [{"id": "subid55", "icon": "bi bi-gear", "label": "Editor"}],
+            },
+            {"id": "code", "icon": "bi bi-code-square", "label": "Editor de Código"},
+            {
+                "icon": "bi bi-pencil-square",
+                "label": "Tests",
+                "submenu": [
+                    {"label": "Todos", "icon": "bi bi-search", "id": "alltests"},
+                    {"label": "Basicos 1", "icon": "🐛"},
+                    {"icon": "🐍", "label": "Intermedios"},
+                    {
+                        "icon": "🐉",
+                        "label": "Avanzados",
+                    },
+                    {"id": "subid144", "icon": "bi bi-gear", "label": "Editor"},
+                ],
+            },
+            {
+                "id": "logout",
+                "icon": "bi bi-door-open",
+                "label": "Logout",
+            },  # no tooltip message
+        ]
+    else:
+        # Navbar para Estudiantes
+        menu_data = [
+            {
+                "icon": "bi bi-cpu",
+                "label": "Problemas",
+                "ttip": "Problemas de Programación",
+                "submenu": [
+                    {"id": "subid00", "icon": "bi bi-search", "label": "Todos"},
+                    {"id": " subid11", "icon": "bi bi-flower1", "label": "Basicos"},
+                    {
+                        "id": "subid22",
+                        "icon": "fa fa-paperclip",
+                        "label": "Intermedios",
+                    },
+                    {
+                        "id": "subid33",
+                        "icon": "bi bi-emoji-dizzy",
+                        "label": "Avanzados",
+                    },
+                ],
+            },
+            {"id": "contest", "icon": "bi bi-trophy", "label": "Concursos"},
+            {
+                "icon": "bi bi-graph-up",
+                "label": "Analisis de Datos",
+                "ttip": "Herramientas de Analisis de Datos",
+            },
+            {
+                "id": "docs",
+                "icon": "bi bi-file-earmark-richtext",
+                "label": "Docs",
+                "ttip": "Articulos e Información",
+            },
+            {"id": "code", "icon": "bi bi-code-square", "label": "Editor de Código"},
+            {
+                "icon": "bi bi-pencil-square",
+                "label": "Tests",
+                "submenu": [
+                    {"label": "Todos", "icon": "bi bi-search", "label": "alltests"},
+                    {"label": "Basicos", "icon": "🐛"},
+                    {"icon": "🐍", "label": "Intermedios"},
+                    {
+                        "icon": "🐉",
+                        "label": "Avanzados",
+                    },
+                ],
+            },
+            {
+                "id": "logout",
+                "icon": "bi bi-door-open",
+                "label": "Logout",
+            },  # no tooltip message
+        ]
+    logname = st.session_state["userinfo"]["username"]
 
 
-over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
+over_theme = {"txc_inactive": "#FFFFFF", "menu_background": "#3670a0"}
 menu_id = hc.nav_bar(
     menu_definition=menu_data,
     override_theme=over_theme,
     home_name="Inicio",
-    login_name=st.session_state['userinfo']['username'],
+    login_name=st.session_state["userinfo"]["username"] if "userinfo" in st.session_state else "Iniciar Sesión",
     hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
     sticky_nav=True,  # at the top or not
     sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
-    first_select=40,
+    first_select=40 if 'auth_state' in st.session_state and st.session_state['auth_state'] else 10
 )
 
 
-if menu_id == 'Inicio':
-  switch_page('Main')
+if menu_id == "Inicio":
+    switch_page("Main")
 
-if menu_id == 'subid00':
-    switch_page('problems_home')
+if menu_id == "subid00":
+    switch_page("problems_home")
 
-if menu_id == 'subid44':
-    switch_page('problems_editor')
+if menu_id == "subid44":
+    switch_page("problems_editor")
 
-if menu_id == 'code':
-    switch_page('code_editor')
+if menu_id == "code":
+    switch_page("code_editor")
 
-if menu_id == 'subid144':
-    switch_page('test_editor')
+if menu_id == "subid144":
+    switch_page("test_editor")
 
-if menu_id == 'logout':
-    st.session_state.pop('auth_state')
-    st.session_state.pop('userinfo')
-    st.session_state.pop('username')
-    switch_page('login')
+if menu_id == "logout":
+    st.session_state.pop("auth_state")
+    st.session_state.pop("userinfo")
+    st.session_state.pop("username")
+    switch_page("login")
 
-if 'userinfo' in st.session_state:
-    if menu_id == st.session_state['userinfo']['username']:
-        if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+if "userinfo" in st.session_state:
+    if menu_id == st.session_state["userinfo"]["username"]:
+        if "query" not in st.session_state:
+            st.session_state.query = {
+                "Table": "Usuario",
+                "id": st.session_state["username"],
+            }
         else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        switch_page('profile_render')
+            st.session_state.query = {
+                "Table": "Usuario",
+                "id": st.session_state["username"],
+            }
+        switch_page("profile_render")
 
 
-
-#------------------------------------------BODY------------------------------------------------------------
-
+# ------------------------------------------BODY------------------------------------------------------------
 
 
-headcols = st.columns([0.6,0.4])
+headcols = st.columns([0.6, 0.4])
 with headcols[0]:
-    with open('rsc/html/docs_home_header.html') as f:
+    with open("rsc/html/docs_home_header.html") as f:
         st.markdown(f.read(), unsafe_allow_html=True)
 
 
-
-
-headcols[1].markdown('''
+headcols[1].markdown(
+    """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;900&display=swap');
 .blogheader {
@@ -752,64 +874,112 @@ headcols[1].markdown('''
     </svg>
 </div>
 
-''', unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 st.divider()
 
-cols0 = st.columns([0.3,0.4,0.3])
+cols0 = st.columns([0.6, 0.4])
 with cols0[1]:
-    st_searchbox(search_function=search_doc, placeholder="Buscar en el blog",label="",key="searchbox-blog")
+	search = st.text_input("Buscar", key="search", placeholder="Buscar en el blog", label_visibility='collapsed')
+if search != "":
+	data = search_doc(search)
+else:
+	data = []
+if len(data) > 0:
+	restabs = st.tabs([f"Resultado {i+1}" for i in range(len(data))])
+for indx, doc in enumerate(data):
+	with restabs[indx]:
+		with st.container(border=True):
+			scard = st.columns([0.8, 0.2])
+			scard[0].markdown(f"##### {doc['titulo']}")
+			if scard[1].button("Leer", key=f"docres{indx}", use_container_width=True):
+				if 'query' not in st.session_state:
+					st.session_state.query = {
+						"Table": "Documento",
+						"id": doc['id'],
+					}
+				else:
+					st.session_state.query = {
+						"Table": "Documento",
+						"id": doc['id'],
+					}
+				switch_page("docs_render")
+			st.write(f"###### Coicidencias: {len(doc['xata']['highlight'])}")
+			for k, v in doc['xata']['highlight'].items():
+				st.write(f"###### {k}: ")
+				if k == "content" or k == "shortdesc":
+					with st.expander(f"Ver Contenido"):
+						for i in v:
+							st.markdown(i, unsafe_allow_html=True)
+				else:
+					for i in v:
+						st.markdown(i, unsafe_allow_html=True)
 
-#st.write(st.session_state.docspage)
 
 
+# st.write(st.session_state.docspage)
 
-render_docs(st.session_state.docspage[st.session_state.pagenumdocs]['records'])
-pagecols = st.columns([0.7,0.1,0.1,0.1])
+render_docs(st.session_state.docspage[st.session_state.pagenumdocs]["records"])
+pagecols = st.columns([0.7, 0.1, 0.1, 0.1])
 
 with pagecols[1]:
-    if st.button('<',use_container_width=True):
+    if st.button("<", use_container_width=True):
         if st.session_state.pagenumdocs > 0:
             st.session_state.pagenumdocs -= 1
             st.rerun()
 with pagecols[2]:
-    if st.button('\>',use_container_width=True):
-        result = xata.next_page('Documento',st.session_state.docspage[st.session_state.pagenumdocs],pagesize=6)
+    if st.button("\>", use_container_width=True):
+        result = xata.next_page(
+            "Documento",
+            st.session_state.docspage[st.session_state.pagenumdocs],
+            pagesize=6,
+        )
         if result is not None:
             st.session_state.docspage.append(result)
             st.session_state.pagenumdocs += 1
             st.rerun()
 
 with pagecols[3]:
-    if st.button('Actualizar',use_container_width=True):
+    if st.button("Actualizar", use_container_width=True):
         update_pagedocs()
 
-#------------------------------------------CARDS------------------------------------------------------------
-#today = datetime.date.today()
+# ------------------------------------------CARDS------------------------------------------------------------
+# today = datetime.date.today()
 
-st.markdown('''
+st.markdown(
+    """
 ---
 
 <h1 style="text-align: center;">Artículos Recientes</h1>
-''', unsafe_allow_html=True)
-render_recentdocs(st.session_state.docspage[st.session_state.pagenumdocs]['records'])
+""",
+    unsafe_allow_html=True,
+)
+render_recentdocs(st.session_state.docspage[st.session_state.pagenumdocs]["records"])
 
-st.markdown('''
+st.markdown(
+    """
 ---
 
 <h1 style="text-align: center;">Tip del día</h1>
-''', unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-render_daylycard(st.session_state.daylycard['title'], st.session_state.daylycard['body'], st.session_state.daylycard['day'], st.session_state.daylycard['month'])
+render_daylycard(
+    st.session_state.daylycard["title"],
+    st.session_state.daylycard["body"],
+    st.session_state.daylycard["day"],
+    st.session_state.daylycard["month"],
+)
 
-daylycardcols = st.columns([0.6,0.2,0.2])
+daylycardcols = st.columns([0.6, 0.2, 0.2])
 with daylycardcols[1]:
-    if st.button('Generar otro tip del dia 💡',use_container_width=True):
+    if st.button("Generar otro tip del dia 💡", use_container_width=True):
         update_daylycard()
 
 
-
-
-#---------------------------------Footer---------------------------------
-with open('rsc/html/minimal_footer.html') as f:
+# ---------------------------------Footer---------------------------------
+with open("rsc/html/minimal_footer.html") as f:
     st.markdown(f.read(), unsafe_allow_html=True)
