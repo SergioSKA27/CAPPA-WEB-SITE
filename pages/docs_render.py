@@ -220,7 +220,7 @@ if 'userinfo' in st.session_state:
 #---------------------------------Body---------------------------------
 colors = ['blue','red','green','purple','orange','cyan','magenta','geekblue','gold','lime','volcano','yellow','pink','grey','darkblue','darkred','darkgreen','darkpurple','darkorange','darkcyan','darkmagenta','darkgeekblue','darkgold','darklime','darkvolcano','darkyellow','darkpink','darkgrey','lightblue','lightred','lightgreen','lightpurple','lightorange','lightcyan','lightmagenta','lightgeekblue','lightgold','lightlime','lightvolcano','lightyellow','lightpink','lightgrey']
 
-#st.write(st.session_state.doctorender)
+st.write(st.session_state.doctorender['content'].split('```'))
 
 st.title(st.session_state.doctorender['titulo'])
 st.caption(f"{format_date(st.session_state.doctorender['xata']['createdAt'][0:10])}, {st.session_state.doctorender['autor']['nombre_completo']}")
@@ -230,7 +230,7 @@ sac.tags(tgs,align='start')
 st.divider()
 with st.container(border=True):
     for part in split_parts(st.session_state.doctorender['content']):
-        render_part(part)
+        st.markdown(part)
 
 
 #---------------------------------Footer---------------------------------

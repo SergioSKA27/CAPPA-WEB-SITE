@@ -38,10 +38,7 @@ background-color: #f4ebe8;
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
 
-
-#
-#---------------------------------#
-#Functions
+#---------------------------------Functions---------------------------------------------------------
 def pythonlogo():
     """
     The `pythonlogo` function displays the Python logo using SVG code and a CSS file.
@@ -59,63 +56,6 @@ def pythonlogo():
             )
 
 
-def show_logos():
-    """
-    The `show_logos` function displays the Python logo and the name of a Python club using SVG code and a CSS file.
-    """
-
-
-    columns1,col2,col3 = st.columns([0.2,0.6,0.2])
-
-    with col2:
-        st.markdown('''
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-            .fancy {
-              position: relative;
-              white-space: nowrap;
-
-              &:after {
-                --deco-height: 0.3125em;
-                content: "";
-                position: absolute;
-                left: 0;
-                right: 0;
-                bottom: calc(var(--deco-height) * -0.625);
-                height: var(--deco-height);
-                background-image: url("data:image/svg+xml,%3Csvg width='100' height='64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M-17 30.5C-1 22 72-4 54 13 37.9 28.2-2.5 57.5 16 55.5s72-29 104-40' stroke='%233670a0' stroke-width='10'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='a'%3E%3Cpath fill='%23fff' d='M0 0h100v64H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
-                background-size: auto 100%;
-                background-repeat: round;
-                background-position: 0em;
-              }
-            }
-
-        </style>
-
-        <div style="text-align: center;">
-            <h2 style="font-family: 'Bebas Neue';font-size: 50px;">
-            <span class="fancy">Club de Programación en Python Avanzado</span>
-            </h2>
-
-        </div>
-
-        ''',unsafe_allow_html=True)
-        #st.write('## Club de Algoritmia en Python Avanzado' )
-    with columns1:
-        st.image('rsc/Logos/FESA_LOGO.png',use_column_width=True)
-        #file_ = open("rsc/Logos/FESA_LOGO.png",'rb')
-        #contents = file_.read()
-        #data_url = base64.b64encode(contents).decode("utf-8")
-        #file_.close()
-        #st.markdown(
-        #        f'<div style="text-align: center;"><img src="data:image/gif;base64,{data_url}" alt="logo-fes-mac"></div>',
-        #        unsafe_allow_html=True,
-        #        )
-    with col3:
-        pythonlogo()
-
-
-#show_logos() deprecate this function
 #use this instead
 with open('rsc/html/headlogos.html') as f:
     st.markdown(f.read(),unsafe_allow_html=True)
@@ -137,9 +77,6 @@ else:
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
             {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
         ]},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
@@ -147,35 +84,22 @@ else:
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
         'submenu':[
             {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
-            {'id':'docshome','icon': "bi bi-gear", 'label':"Home"}]
+            {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'label':"Basicos 1", 'icon': "🐛"},
-            {'icon':'🐍','label':"Intermedios"},
-            {'icon':'🐉','label':"Avanzados",},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
     ]
     else:
         menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
-        'submenu':[
-            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
-        ]},
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación"},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
         {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
-            {'label':"Basicos", 'icon': "🐛"},
-            {'icon':'🐍','label':"Intermedios"},
-            {'icon':'🐉','label':"Avanzados",}]},
+        {'icon': "bi bi-pencil-square",'label':"Tests"},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
     ]
     logname = st.session_state['userinfo']['username']
@@ -452,45 +376,3 @@ sac.TabsItem(label='FAQ',icon='question-circle'),
 with open('rsc/html/footer.html') as foo:
     #components.html(foo.read(),width=1600)
     st.markdown(foo.read(), unsafe_allow_html=True)
-
-x = '''
-Aquí tienes una descripción para tu página principal basada en el contenido:
-
----
-
-¡Bienvenido a nuestro Espacio de Desarrollo y Desafíos en Programación! Explora un mundo de posibilidades con nuestras emocionantes funciones y recursos.
-
-**Menú de Navegación:**
-- **Problemas:** Encuentra desafíos para todos los niveles, desde los más básicos hasta los más avanzados. Incluso puedes editar y resolver problemas en nuestro Editor integrado.
-  - Todos los Problemas
-  - Problemas Básicos
-  - Problemas Intermedios
-  - Problemas Avanzados
-  - Editor de Problemas
-
-- **Concursos:** ¡Demuestra tus habilidades compitiendo en nuestros concursos y desafíos especiales!
-
-- **Dashboard:** Obtén información valiosa sobre tu progreso y desempeño en un vistazo.
-
-- **Docs:** Accede a nuestra documentación completa para aprender y mejorar tus habilidades.
-
-- **Editor de Código:** Experimenta y crea con nuestro editor de código interactivo.
-
-- **Tests:** Desafíate a ti mismo con una variedad de pruebas clasificadas por dificultad.
-  - Pruebas Básicas
-  - Pruebas Intermedias
-  - Pruebas Avanzadas
-  - Editor de Pruebas
-
-- **FAQ:** Encuentra respuestas a preguntas frecuentes y descubre más sobre nuestra plataforma.
-
-- **Contacto:** ¿Necesitas ayuda o tienes comentarios? Contáctanos, ¡estamos aquí para ayudar!
-
-- **Logout:** Cierra sesión cuando hayas terminado tus sesiones.
-
-Explora, aprende y desafía tus límites en nuestro club. ¡Es hora de codear con pasión y creatividad!
-
----
-
-Esta descripción destaca las diversas secciones y características disponibles en tu página principal, invitando a los usuarios a sumergirse en el mundo de la programación y los desafíos que tu plataforma ofrece. ¡Espero que encuentres útil esta descripción!
-'''
