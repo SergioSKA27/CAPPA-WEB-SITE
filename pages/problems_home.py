@@ -9,7 +9,8 @@ from streamlit_elements import elements, sync, event
 from types import SimpleNamespace
 from modules import Dashboard, Card, Player
 from st_xatadb_connection import XataConnection
-
+import asyncio
+import requests
 
 
 st.set_page_config(layout="wide", page_title="Problemas",initial_sidebar_state="collapsed", page_icon="rsc/Logos/LOGO_CAPPA.jpg")
@@ -64,8 +65,14 @@ def update_problems():
         "size": 5
       }})
     ]
-    state.page = 0
+    state.pageproblems = 0
     st.rerun()
+
+
+async def get_random_image():
+    await asyncio.sleep(0.1)
+    return requests.get('https://source.unsplash.com/random/800x600?programming,python',timeout=5).content
+
 
 def render_problem(problem: dict,k : int):
     COLORS = ['blue', 'yellow', 'purple', 'cyan', 'pink', 'brown', 'gray','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
@@ -161,8 +168,8 @@ def render_problem(problem: dict,k : int):
 
     cols = st.columns([0.3, 0.7])
     with cols[0]:
-        st.image('https://images.squarespace-cdn.com/content/v1/574faff6f8baf35e5da43485/1553914921320-JL7TJLMKYJ0H1JUXG5CY/Data-Inspect.gif',
-                 use_column_width=True)
+        img = asyncio.run(get_random_image())
+        st.image(img, use_column_width=True)
 
     with cols[1]:
         with st.container(border=True):
@@ -207,8 +214,8 @@ def render_problem(problem: dict,k : int):
 
 
 #--------------------------------- Variables de Estado ---------------------------------
-if 'page' not in state:
-    state.page = 0
+if 'pageproblems' not in state:
+    state.pageproblems = 0
 
 
 if 'problems' not in state or state.problems is None:
@@ -228,61 +235,39 @@ if 'problems' not in state or state.problems is None:
 
 
 #---------------------------------Navbar---------------------------------
-if 'auth_state' not  in st.session_state:
+
+if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
     menu_data = [
-    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
-    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
-    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
-    ]
-    logname = 'Iniciar Sesión'
-else:
-    #st.session_state['userinfo']
-    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
-        menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
             {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
         ]},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
+            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
             {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'label':"Basicos 1", 'icon': "🐛"},
-            {'icon':'🐍','label':"Intermedios"},
-            {'icon':'🐉','label':"Avanzados",},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
     ]
-    else:
-        menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
-        'submenu':[
-            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
-        ]},
+else:
+    menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación"},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
-            {'label':"Basicos", 'icon': "🐛"},
-            {'icon':'🐍','label':"Intermedios"},
-            {'icon':'🐉','label':"Avanzados",}]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+        {'icon': "bi bi-pencil-square",'label':"Tests"},
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
     ]
-    logname = st.session_state['userinfo']['username']
+
+logname = st.session_state['userinfo']['username']
 
 
 over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
@@ -433,37 +418,37 @@ tagss = pills('Categorías',tags, emojis_tags)
 
 
 
-colls = st.columns([0.7,0.2,0.1])
+colls = st.columns([0.7,0.1,0.2])
 
-colls[2].button('🔄',key='refresh',on_click=update_problems,use_container_width=True)
-order = colls[1].selectbox('Ordenar',['Más Recientes','Más Antiguos','Score ↑','Score ↓',
+colls[1].button('🔄',key='refresh',on_click=update_problems,use_container_width=True)
+order = colls[2].selectbox('Ordenar',['Más Recientes','Más Antiguos','Score ↑','Score ↓',
 'Dificultad ↑','Dificultad ↓'],
 index=0,placeholder='Ordenar por',label_visibility='collapsed')
 
 sac.divider('',icon='hypnotize',align='center',)
 
-
-for problem in range(len(state.problems[state.page]['records'])):
-    render_problem(state.problems[state.page]['records'][problem],problem)
+with st.spinner('Cargando Problemas...'):
+    for problem in range(len(state.problems[state.pageproblems]['records'])):
+        render_problem(state.problems[state.pageproblems]['records'][problem],problem)
 
 pgcols = st.columns([0.8,0.1,0.1])
 
 if pgcols[1].button('<',use_container_width=True):
-    if state.page > 0:
-        state.page -= 1
+    if state.pageproblems > 0:
+        state.pageproblems -= 1
         st.rerun()
 
 if pgcols[2].button('\>',use_container_width=True):
-    nxt = xata.next_page("Problema",state.problems[state.page],pagesize=5)
+    nxt = xata.next_page("Problema",state.problems[state.pageproblems],pagesize=5)
     if nxt is not None:
-        state.page += 1
+        state.pageproblems += 1
         state.problems.append(nxt)
         st.rerun()
 
 
 
 
-
+st.empty()
 
 #--------------------------------- Anuncios ---------------------------------
 st.markdown('''

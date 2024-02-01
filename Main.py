@@ -90,7 +90,7 @@ else:
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"},
     ]
     else:
         menu_data = [
@@ -100,7 +100,7 @@ else:
         {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests"},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
     ]
     logname = st.session_state['userinfo']['username']
 
