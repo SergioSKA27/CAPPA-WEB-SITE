@@ -217,7 +217,7 @@ img.left {
 .cardtwo p {
   text-align: justify;
   padding-top: 10px;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   line-height: 150%;
   color: #4B4B4B;
 }
