@@ -657,9 +657,6 @@ if menu_id == 'subid44':
 if menu_id == 'Analisis de Datos':
     switch_page('data_analysis_home')
 
-if menu_id == 'Blog':
-    switch_page('docs_home')
-
 if menu_id == 'doceditor':
     switch_page('doc_editor')
 
