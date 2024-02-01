@@ -86,7 +86,7 @@
 
 @media (max-width:600px) {
   .fancy_list {
-    padding-bottom: 20vh;
+    padding-bottom: 5vh;
   }
   .fancy_list p {
     font-size: 0.75rem;
