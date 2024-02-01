@@ -143,7 +143,6 @@ if 'userinfo' in st.session_state:
 with open("rsc/html/DataAHomeBanner.html") as f:
     st.markdown(f.read(), unsafe_allow_html=True)
 
-st.divider()
 
 cols = st.columns(2)
 
