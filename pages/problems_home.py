@@ -83,6 +83,13 @@ def update_problem_images():
     state.problemimages = [asyncio.run(get_random_image()) for _ in range(6)]
 
 
+def switch_torender(id):
+    if 'query' not in state:
+        state.query = {'Table': 'Problema', 'id': id}
+    else:
+        state.query['Table'] = 'Problema'
+        state.query['id'] = id
+
 
 def render_problem(problem: dict,k : int):
     COLORS = ['blue', 'yellow', 'purple', 'cyan', 'pink', 'brown', 'gray','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
@@ -207,13 +214,10 @@ def render_problem(problem: dict,k : int):
 
         **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
         ''')
-        renderp = st.button('Ver Problema', key=f'b{k}',use_container_width=True)
-        if renderp:
-            if 'query' not in state:# Query for rendering problem
-                state.query = {'Table': 'Problema', 'id': problem['id']}
-            else:
-                state.query['Table'] = 'Problema'
-                state.query['id'] = problem['id']
+        if st.button('Ver Problema', key=f'b{k}',use_container_width=True, on_click=switch_torender, args=[problem['id']]):
+            switch_page('problem_render')
+
+
 
 
 
