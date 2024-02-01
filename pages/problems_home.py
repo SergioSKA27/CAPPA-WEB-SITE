@@ -46,10 +46,20 @@ if 'auth_state' not in st.session_state or not st.session_state['auth_state']:
     switch_page('login')
 
 #--------------------------------- Funciones ---------------------------------
+async def get_random_image():
+    await asyncio.sleep(0.1)
+    return requests.get('https://source.unsplash.com/random/600x400?programming,python',timeout=5).content
 
 
 def search_problem(s: str):
-    return []
+    try:
+        res = xata.search_on_table("Problema",{"query": s, "fuzziness": 0, "prefix": "phrase"})
+        data = []
+        for p in res['records']:
+            data.append(','.join([p['nombre'],p['id']]))
+        return data
+    except:
+        return []
 
 def update_problems():
     state.problems = [xata.query("Problema", {
@@ -62,16 +72,16 @@ def update_problems():
         "creador.username"
       ],
     "page": {
-        "size": 5
+        "size": 6
       }})
     ]
     state.pageproblems = 0
-    st.rerun()
+    update_problem_images()
 
 
-async def get_random_image():
-    await asyncio.sleep(0.1)
-    return requests.get('https://source.unsplash.com/random/800x600?programming,python',timeout=5).content
+def update_problem_images():
+    state.problemimages = [asyncio.run(get_random_image()) for _ in range(6)]
+
 
 
 def render_problem(problem: dict,k : int):
@@ -166,50 +176,44 @@ def render_problem(problem: dict,k : int):
     ]
 
 
-    cols = st.columns([0.3, 0.7])
-    with cols[0]:
-        img = asyncio.run(get_random_image())
+
+    with st.container(border=True):
+        img = state.problemimages[k]
         st.image(img, use_column_width=True)
-
-    with cols[1]:
-        with st.container(border=True):
-            st.markdown(f'### {problem["nombre"]}')
-            pls = []
-            pls_icon = []
-            if problem["dificultad"] == 1:
-                pls.append("Fácil")
-                pls_icon.append("🐛")
-
-            elif problem["dificultad"] == 2:
-                pls.append("Intermedio")
-                pls_icon.append("🐍")
+        st.markdown(f'### {problem["nombre"]}')
+        pls = []
+        pls_icon = []
+        if problem["dificultad"] == 1:
+            pls.append("Fácil")
+            pls_icon.append("🐛")
+        elif problem["dificultad"] == 2:
+            pls.append("Intermedio")
+            pls_icon.append("🐍")
+        else:
+            pls.append("Difícil")
+            pls_icon.append("🐉")
+        for tag in problem["tags"]:
+            if tag not in tags:
+                tags.append(tag)
+                emojis_tags.append("💊")
             else:
-                pls.append("Difícil")
-                pls_icon.append("🐉")
+                pls.append(tag)
+                pls_icon.append(emojis_tags[tags.index(tag)])
+        pills('Etiquetas', pls, pls_icon,key=f'pills{k}')
+        st.markdown(f'''
+        **Score:** {problem['score']}
 
-            for tag in problem["tags"]:
-                if tag not in tags:
-                    tags.append(tag)
-                    emojis_tags.append("💊")
-                else:
-                    pls.append(tag)
-                    pls_icon.append(emojis_tags[tags.index(tag)])
+        **Creador:** @{problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
 
-            pills('Etiquetas', pls, pls_icon,key=f'pills{k}')
-            st.markdown(f'''
-            **Score:** {problem['score']}
-
-            **Creador:** @{problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
-
-            **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
-            ''')
-            renderp = st.button('Ver Problema', key=f'b{k}')
-            if renderp:
-                if 'query' not in state:# Query for rendering problem
-                    state.query = {'Table': 'Problema', 'id': problem['id']}
-                else:
-                    state.query['Table'] = 'Problema'
-                    state.query['id'] = problem['id']
+        **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
+        ''')
+        renderp = st.button('Ver Problema', key=f'b{k}',use_container_width=True)
+        if renderp:
+            if 'query' not in state:# Query for rendering problem
+                state.query = {'Table': 'Problema', 'id': problem['id']}
+            else:
+                state.query['Table'] = 'Problema'
+                state.query['id'] = problem['id']
 
 
 
@@ -229,10 +233,13 @@ if 'problems' not in state or state.problems is None:
         "creador.username"
     ],
     "page": {
-        "size": 5
+        "size": 6
     }
 })]
 
+
+if 'problemimages' not in state:
+    state.problemimages = [asyncio.run(get_random_image()) for _ in range(5)]
 
 #---------------------------------Navbar---------------------------------
 
@@ -248,7 +255,7 @@ if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['u
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
             {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
-            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+            {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
@@ -427,19 +434,26 @@ index=0,placeholder='Ordenar por',label_visibility='collapsed')
 
 sac.divider('',icon='hypnotize',align='center',)
 
+problemscols = st.columns(3)
+pcol = 0
 with st.spinner('Cargando Problemas...'):
     for problem in range(len(state.problems[state.pageproblems]['records'])):
-        render_problem(state.problems[state.pageproblems]['records'][problem],problem)
+        if pcol == 3:
+            pcol = 0
+
+        with problemscols[pcol]:
+            render_problem(state.problems[state.pageproblems]['records'][problem],problem)
+        pcol += 1
 
 pgcols = st.columns([0.8,0.1,0.1])
 
-if pgcols[1].button('<',use_container_width=True):
+if pgcols[1].button('<',use_container_width=True,disabled=state.pageproblems == 0):
     if state.pageproblems > 0:
         state.pageproblems -= 1
         st.rerun()
 
 if pgcols[2].button('\>',use_container_width=True):
-    nxt = xata.next_page("Problema",state.problems[state.pageproblems],pagesize=5)
+    nxt = xata.next_page("Problema",state.problems[state.pageproblems],pagesize=6)
     if nxt is not None:
         state.pageproblems += 1
         state.problems.append(nxt)
