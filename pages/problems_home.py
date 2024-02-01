@@ -297,15 +297,23 @@ menu_id = hc.nav_bar(
 if menu_id == 'Inicio':
   switch_page('Main')
 
-
 if menu_id == 'subid44':
     switch_page('problems_editor')
+
+if menu_id == 'Analisis de Datos':
+    switch_page('data_analysis_home')
+
+if menu_id == 'Blog':
+    switch_page('docs_home')
+
+if menu_id == 'docshome':
+    switch_page('docs_home')
+
+if menu_id == 'doceditor':
+    switch_page('doc_editor')
 
 if menu_id == 'code':
     switch_page('code_editor')
-
-if menu_id == 'subid44':
-    switch_page('problems_editor')
 
 if menu_id == 'subid144':
     switch_page('test_editor')
