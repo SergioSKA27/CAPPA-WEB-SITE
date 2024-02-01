@@ -177,6 +177,9 @@ with cols0[1]:
 sac.divider(label='',align='center')
 #---------------------------------#
 #Caracteristicas del sitio
+with open('rsc/css/MainBanners.css') as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
 
 st.markdown('''
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mosk:wght@400;700&display=swap">
