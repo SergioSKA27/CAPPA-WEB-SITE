@@ -145,7 +145,7 @@ def render_daylycard(title, body, day, month):
 .cardtwo {
   position: relative;
   height: 450px;
-  width: 900px;
+  max-width: 900px;
   margin: 10px auto;
   background-color: #FFF;
   -webkit-box-shadow: 10px 10px 93px 0px rgba(0, 0, 0, 0.75);
@@ -262,6 +262,22 @@ img.left {
   box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
   align-items: center;
 }
+@media (max-width: 600px) {
+    .cardtwo {
+        Width: 100%;
+    }
+    .thumbnail {
+        display: none;
+    }
+    .right {
+        margin-left: 0px;
+    }
+    .right h1 {
+        margin: 0.5rem;
+    }
+    .right p {
+        margin: 0.5rem;
+    }
 </style>
 """,
         unsafe_allow_html=True,
