@@ -103,6 +103,12 @@ def update_tags(event,value):
 	else:
 		st.session_state.tagslist.append(value.props.value)
 
+def update_score(event):
+	st.session_state.pscore = event.target.value
+
+def update_timelimit(event):
+	st.session_state.timelimit = event.target.value
+
 if 'pname' not in st.session_state:
 	st.session_state.pname = ""
 
@@ -115,6 +121,12 @@ if 'ptags' not in st.session_state:
 
 if 'tagslist' not in st.session_state:
 	st.session_state.tagslist = []
+
+if 'pscore' not in st.session_state:
+	st.session_state.pscore = 0
+
+if 'timelimit' not in st.session_state:
+	st.session_state.timelimit = 0
 
 ##---------------------------------Navbar---------------------------------
 if 'auth_state' not  in st.session_state:
@@ -265,15 +277,29 @@ tags = [
 
 ]
 
-st.title('Editor de Problemas 👨‍💻')
-st.divider()
+with elements("header"):
+	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center", "justifyContent": "center"}):
+		mui.icon.IntegrationInstructions(sx={"fontSize": "4.2vw","color": "#36A0A0"})
+		mui.Typography("Editor de Problemas", sx={"fontFamily": "Monospace","fontSize": "4.2vw","fontWeight": "bold","letterSpacing": 10})
 
-cols0 = st.columns([0.6,0.4])
+	mui.Divider()
+
+
+desc = ""
+with st.form(key='my_form'):
+  desc = st_quill(placeholder='Descripción del Problema', html=True,key='quill1')
+  editcols = st.columns([0.8,0.2])
+
+  with editcols[1]:
+    savedesc = st.form_submit_button(label='Guardar Descripción 💾',use_container_width=True)
+  if savedesc:
+    st.markdown("##### Preview")
+    st.markdown(desc, unsafe_allow_html=True)
 
 
 with elements("new_element"):
 	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
-		mui.icon.Grid3x3()
+		mui.icon.Abc()
 		mui.TextField(id="problem_name", label="Nombre del Problema", sx={"margin": "10px","width":"100%"},variant="filled",onChange=lazy(update_pname))
 
 		mui.icon.Upgrade()
@@ -296,34 +322,20 @@ with elements("new_element"):
 				for tag in tags:
 					mui.MenuItem(tag, value=tag)
 
+	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
+		mui.icon.Star()
+		mui.TextField(id="score", label="Puntaje", sx={"margin": "10px","width":"50%"},
+						variant="filled", type="number",InputLabelProps={"shrink":True},
+						onChange=lazy(update_score))
 
-pname = st.session_state.pname
-st.write(pname)
-st.write(st.session_state.difficulty)
-st.write(st.session_state.ptags)
-st.write(st.session_state.tagslist)
+		mui.icon.Timer()
+		mui.TextField(id="time_limit", label="Tiempo Limite(Segundos)", sx={"margin": "10px","width":"50%"},
+						variant="filled", type="number",InputLabelProps={"shrink":True},onChange=lazy(update_timelimit))
 
-tags = st.multiselect("Seleccione las etiquetas", tags,placeholder="Listas, Grafos, Programación Dinámica, etc",max_selections=5)
+	with mui.Box(sx={"display": "flex", "alignItems": "left", "justifyContent": "flex-end"}):
+		mui.Button(mui.icon.Save,"Guardar", sx={"margin": "10px"}, variant="contained", color="primary",onClick=sync())
 
 
-ops = st.columns(3)
-dif = {'Basico': 1,'Intermedio': 2,'Avanzado': 3}
-dificulty = ops[0].selectbox('Dificultad',['Basico','Intermedio','Avanzado'])
-score = ops[1].number_input('Puntaje',min_value=100,max_value=1000,step=1)
-timelimit = ops[2].number_input('Tiempo limite(en segundos)',min_value=1,max_value=5,step=1)
-
-st.write('### Ingrese la descripción del Problema')
-
-desc = ""
-with st.form(key='my_form'):
-  desc = st_quill(placeholder='Descripción del Problema', html=True,key='quill1')
-  editcols = st.columns([0.8,0.2])
-
-  with editcols[1]:
-    savedesc = st.form_submit_button(label='Guardar Descripción 💾',use_container_width=True)
-  if savedesc:
-    st.markdown("##### Preview")
-    st.markdown(desc, unsafe_allow_html=True)
 
 
 
@@ -423,13 +435,13 @@ if upcols[1].button('Subir Problema 🚀',use_container_width=True):
   if desc == "":
     st.warning('Debe ingresar una descripción y guardarla antes de subir el problema')
     st.stop()
-  if pname == "":
+  if st.session_state.pname == "":
     st.warning('Debe ingresar un nombre para el problema')
     st.stop()
   if useoutput and cans == "":
     st.warning('El codigo no tiene salida, por favor ingrese una respuesta correcta')
     st.stop()
-  if tags == []:
+  if st.session_state.tagslist == []:
     st.warning('Debe ingresar al menos una etiqueta')
     st.stop()
   if cans == "" and not useoutput:
@@ -437,11 +449,11 @@ if upcols[1].button('Subir Problema 🚀',use_container_width=True):
     st.stop()
   try:
     r = xata.insert("Problema", {
-    "nombre": pname,
-    "tags": tags,
-    "dificultad": dif[dificulty],
-    "socore": score,
-    "time_limit": timelimit,
+    "nombre": st.session_state.pname,
+    "tags": st.session_state.tagslist,
+    "dificultad": int(st.session_state.difficulty.props.value),
+    "score": int(st.session_state.pscore),
+    "time_limit": int(st.session_state.timelimit),
     "desc": desc,
     "graph_code": g_desc,
     "correct_ans": str(result[0]) if useoutput else cans,
