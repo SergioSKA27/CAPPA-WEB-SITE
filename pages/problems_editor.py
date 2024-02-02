@@ -1,17 +1,18 @@
-import streamlit as st
-import hydralit_components as hc
-from streamlit_extras.switch_page_button import switch_page
 import subprocess
 import tracemalloc
-from types import SimpleNamespace
 from time import perf_counter
-from streamlit_quill import st_quill
+from types import SimpleNamespace
+
+import hydralit_components as hc
+import streamlit as st
+from st_xatadb_connection import XataConnection
 from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
-from st_xatadb_connection import XataConnection
+from streamlit_quill import st_quill
 
-from modules import Card, Dashboard, Editor,  Timer
+from modules import Card, Dashboard, Editor, Timer
+
 #Autor: Sergio Lopez
 
 
@@ -88,6 +89,17 @@ def execute_code(code, timeout=1, test_file: bytes = None):
 	e = perf_counter()
 	return result, e-s, cu, p
 
+def update_pname(event):
+	st.session_state.pname = event.target.value
+
+def update_difficulty(event):
+	st.session_state.difficulty = event
+
+if 'pname' not in st.session_state:
+	st.session_state.pname = ""
+
+if 'difficulty' not in st.session_state:
+	st.session_state.difficulty = "Basico"
 
 ##---------------------------------Navbar---------------------------------
 if 'auth_state' not  in st.session_state:
@@ -190,13 +202,10 @@ if 'userinfo' in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
         switch_page('profile_render')
 
+
+
+
 #------------------------------------- body ---------------------------------------------------------
-st.title('Editor de Problemas 👨‍💻')
-st.divider()
-
-
-pname =st.text_input('Ingrese el nombre del Problema',placeholder="Problema 1")
-
 tags = [
     "Programación Dinámica",
     "Divide Y Vencerás",
@@ -240,7 +249,35 @@ tags = [
     "Automatización",
 
 ]
-tags = st.multiselect("Seleccione las etiquetas", tags,placeholder="Listas, Grafos, Programación Dinámica, etc",max_selections=5)
+
+st.title('Editor de Problemas 👨‍💻')
+st.divider()
+
+cols0 = st.columns([0.6,0.4])
+
+with cols0[0]:
+	with elements("new_element"):
+		with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
+			mui.icon.Grid3x3()
+			mui.TextField(id="problem_name", label="Nombre del Problema", sx={"margin": "10px","width":"100%"},variant="filled",onChange=lazy(update_pname))
+
+		with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
+			mui.icon.Upgrade()
+			with mui.FormControl(sx={"width":"100%", "margin": "10px"}):
+				mui.InputLabel("Dificultad",id="Difficulty")
+				mui.Select(mui.MenuItem("Basico", value="1"),
+							mui.MenuItem("Intermedio", value="2"),
+							mui.MenuItem("Avanzado", value="3"),
+							labelId="Difficulty", id="difficulty",
+							label="Dificultad", value=st.session_state.difficulty,
+							onChange=sync(None,'difficulty'),
+							)
+
+pname = st.session_state.pname
+st.write(pname)
+st.write(st.session_state.difficulty)
+
+tags = cols0[1].multiselect("Seleccione las etiquetas", tags,placeholder="Listas, Grafos, Programación Dinámica, etc",max_selections=5)
 
 
 ops = st.columns(3)

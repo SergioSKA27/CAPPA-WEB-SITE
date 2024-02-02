@@ -2,7 +2,7 @@
 base="light"
 primaryColor="#3993dd"
 backgroundColor="#eaeaea"
-secondaryBackgroundColor="#7bb3fb"
+secondaryBackgroundColor="#D4D4D4"
 font="monospace"
 
 [server]
