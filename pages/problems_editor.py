@@ -7,7 +7,7 @@ import hydralit_components as hc
 import streamlit as st
 from st_xatadb_connection import XataConnection
 from streamlit import session_state as state
-from streamlit_elements import elements, event, lazy, mui, sync
+from streamlit_elements import elements, event, lazy, mui, sync,partial
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_quill import st_quill
 
@@ -93,13 +93,28 @@ def update_pname(event):
 	st.session_state.pname = event.target.value
 
 def update_difficulty(event):
-	st.session_state.difficulty = event
+	st.session_state.difficulty = event.props.value
+
+def update_tags(event,value):
+	st.session_state.ptags = value
+
+	if value.props.value in st.session_state.tagslist:
+		del st.session_state.tagslist[st.session_state.tagslist.index(value.props.value)]
+	else:
+		st.session_state.tagslist.append(value.props.value)
 
 if 'pname' not in st.session_state:
 	st.session_state.pname = ""
 
 if 'difficulty' not in st.session_state:
-	st.session_state.difficulty = "Basico"
+	st.session_state.difficulty = None
+
+
+if 'ptags' not in st.session_state:
+	st.session_state.ptags = []
+
+if 'tagslist' not in st.session_state:
+	st.session_state.tagslist = []
 
 ##---------------------------------Navbar---------------------------------
 if 'auth_state' not  in st.session_state:
@@ -255,29 +270,40 @@ st.divider()
 
 cols0 = st.columns([0.6,0.4])
 
-with cols0[0]:
-	with elements("new_element"):
-		with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
-			mui.icon.Grid3x3()
-			mui.TextField(id="problem_name", label="Nombre del Problema", sx={"margin": "10px","width":"100%"},variant="filled",onChange=lazy(update_pname))
 
-		with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
-			mui.icon.Upgrade()
-			with mui.FormControl(sx={"width":"100%", "margin": "10px"}):
-				mui.InputLabel("Dificultad",id="Difficulty")
-				mui.Select(mui.MenuItem("Basico", value="1"),
-							mui.MenuItem("Intermedio", value="2"),
-							mui.MenuItem("Avanzado", value="3"),
-							labelId="Difficulty", id="difficulty",
-							label="Dificultad", value=st.session_state.difficulty,
-							onChange=sync(None,'difficulty'),
-							)
+with elements("new_element"):
+	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
+		mui.icon.Grid3x3()
+		mui.TextField(id="problem_name", label="Nombre del Problema", sx={"margin": "10px","width":"100%"},variant="filled",onChange=lazy(update_pname))
+
+		mui.icon.Upgrade()
+		with mui.FormControl(sx={"width":"100%", "margin": "10px"}):
+			mui.InputLabel("Dificultad",id="Difficulty")
+			mui.Select(mui.MenuItem("Basico", value="1"),
+						mui.MenuItem("Intermedio", value="2"),
+						mui.MenuItem("Avanzado", value="3"),
+						labelId="Difficulty", id="difficulty",
+						label="Dificultad", value=st.session_state.difficulty.props.value if st.session_state.difficulty else "Basico",
+						onChange=sync(None,'difficulty'),
+						)
+
+	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
+		mui.icon.Tag()
+		with mui.FormControl(sx={"width":"100%", "margin": "10px"}):
+			mui.InputLabel("Etiquetas",id="Tags")
+			with mui.Select(value=st.session_state.tagslist, multiple=True,
+			labelId="Tags", id="tags", label="Etiquetas", sx={"width":"100%"}, onChange=partial(update_tags)) :
+				for tag in tags:
+					mui.MenuItem(tag, value=tag)
+
 
 pname = st.session_state.pname
 st.write(pname)
 st.write(st.session_state.difficulty)
+st.write(st.session_state.ptags)
+st.write(st.session_state.tagslist)
 
-tags = cols0[1].multiselect("Seleccione las etiquetas", tags,placeholder="Listas, Grafos, Programación Dinámica, etc",max_selections=5)
+tags = st.multiselect("Seleccione las etiquetas", tags,placeholder="Listas, Grafos, Programación Dinámica, etc",max_selections=5)
 
 
 ops = st.columns(3)
