@@ -590,11 +590,12 @@ if "daylycard" not in st.session_state:
 ##---------------------------------Navbar---------------------------------
 if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
     menu_data = [
-    {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información"},
+    {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información",'id':'Blog'},
     {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
     {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
     ]
     logname = 'Iniciar Sesión'
+    fs = 10
 else:
     #st.session_state['userinfo']
     if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
@@ -606,7 +607,7 @@ else:
         ]},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
             {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
             {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
@@ -619,7 +620,7 @@ else:
     ]
     else:
         menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación"},
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
         {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
@@ -628,17 +629,19 @@ else:
         {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
     ]
     logname = st.session_state['userinfo']['username']
+    fs = 40
+
 
 over_theme = {"txc_inactive": "#FFFFFF", "menu_background": "#3670a0"}
 menu_id = hc.nav_bar(
     menu_definition=menu_data,
     override_theme=over_theme,
     home_name="Inicio",
-    login_name=st.session_state["userinfo"]["username"] if "userinfo" in st.session_state else "Iniciar Sesión",
+    login_name=logname,
     hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
     sticky_nav=True,  # at the top or not
     sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
-    first_select=40 if 'auth_state' in st.session_state and st.session_state['auth_state'] else 10
+    first_select=fs
 )
 
 
@@ -648,23 +651,11 @@ if menu_id == "Inicio":
 if menu_id == 'Iniciar Sesión':
     switch_page('login')
 
-if menu_id == 'subid00':
-    switch_page('problems_home')
-
-if menu_id == 'subid44':
-    switch_page('problems_editor')
-
 if menu_id == 'Analisis de Datos':
     switch_page('data_analysis_home')
 
-if menu_id == 'doceditor':
-    switch_page('doc_editor')
-
 if menu_id == 'code':
     switch_page('code_editor')
-
-if menu_id == 'subid144':
-    switch_page('test_editor')
 
 if menu_id == 'logout':
     st.session_state.pop('auth_state')
@@ -672,7 +663,28 @@ if menu_id == 'logout':
     st.session_state.pop('username')
     switch_page('login')
 
-if 'userinfo' in st.session_state:
+
+
+if st.session_state['auth_state']:
+    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+        if menu_id == 'subid00':
+            switch_page('problems_home')
+        if menu_id == 'subid44':
+            switch_page('problems_editor')
+
+
+        if menu_id == 'doceditor':
+            switch_page('doc_editor')
+
+        if menu_id == 'subid144':
+            switch_page('test_editor')
+
+    else:
+        if menu_id == 'Problemas':
+            switch_page('problems_home')
+
+
+if 'userinfo' in st.session_state and st.session_state.userinfo is not None:
     if menu_id == st.session_state['userinfo']['username']:
         if 'query' not in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
