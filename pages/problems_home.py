@@ -297,26 +297,11 @@ menu_id = hc.nav_bar(
 if menu_id == 'Inicio':
   switch_page('Main')
 
-if menu_id == 'subid44':
-    switch_page('problems_editor')
-
 if menu_id == 'Analisis de Datos':
     switch_page('data_analysis_home')
 
-if menu_id == 'Blog':
-    switch_page('docs_home')
-
-if menu_id == 'docshome':
-    switch_page('docs_home')
-
-if menu_id == 'doceditor':
-    switch_page('doc_editor')
-
 if menu_id == 'code':
     switch_page('code_editor')
-
-if menu_id == 'subid144':
-    switch_page('test_editor')
 
 if menu_id == 'logout':
     st.session_state.pop('auth_state')
@@ -324,13 +309,31 @@ if menu_id == 'logout':
     st.session_state.pop('username')
     switch_page('login')
 
-if 'userinfo' in st.session_state:
-    if menu_id == st.session_state['userinfo']['username']:
-        if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        switch_page('profile_render')
+
+if menu_id == st.session_state['userinfo']['username']:
+    if 'query' not in st.session_state:
+        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+    else:
+        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+    switch_page('profile_render')
+
+if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+    if menu_id == 'subid144':
+        switch_page('test_editor')
+
+    if menu_id == 'doceditor':
+        switch_page('doc_editor')
+
+    if menu_id == 'docshome':
+        switch_page('docs_home')
+
+    if menu_id == 'subid44':
+        switch_page('problems_editor')
+
+else:
+    if menu_id == 'docs':
+        switch_page('docs_home')
+
 
 
 #---------------------------------Body---------------------------------
