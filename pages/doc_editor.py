@@ -399,8 +399,6 @@ if layout:
             lay.append(format_code(w.editor.get_content(l), l.split(" ")[1].lower()))
 
     merged = merge_text(lay)
-    with st.expander("Ver Raw"):
-        st.code(merged,language="markdown")
 
     subcols = st.columns([0.3,0.4,0.3])
     if subcols[1].button("Subir Documento",use_container_width=True):
