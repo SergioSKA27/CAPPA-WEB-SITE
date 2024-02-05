@@ -130,7 +130,7 @@ else:
         switch_page('problems_home')
 
 
-
+#---------------------------------#
 with open("rsc/html/DataAHomeBanner.html") as f:
     st.markdown(f.read(), unsafe_allow_html=True)
 
