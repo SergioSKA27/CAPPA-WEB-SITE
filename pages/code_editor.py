@@ -10,6 +10,8 @@ from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
 from modules import Card, Dashboard, Editor, Timer
+import google.generativeai as genai
+
 
 # Autor: Sergio Lopez
 
@@ -56,7 +58,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
+genai.configure(api_key=st.secrets["GEN_AI_KEY"])
 if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
     #Si no hay un usuario logeado, se muestra la pagina de login
     switch_page('login')
@@ -86,6 +88,9 @@ def measure_performance(func):
 
     return wrapper
 
+@st.cache_resource
+def load_genmodel():
+    return genai.GenerativeModel("gemini-pro")
 
 def run_code(code, timeout=1, test_file: bytes = None):
     """Run code and capture the output"""
@@ -112,6 +117,14 @@ def execute_code(code, timeout=1, test_file: bytes = None):
 	cu, p = tracemalloc.get_traced_memory()
 	e = perf_counter()
 	return result, e-s, cu, p
+
+
+def set_explanin():
+    st.session_state.explanin = True
+
+
+if 'explanin' not in st.session_state:
+    st.session_state.explanin =  False
 
 ##---------------------------------Navbar---------------------------------
 if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
@@ -244,8 +257,20 @@ with elements("workspace"):
         w.editor()
         content = w.editor.get_content("Code")
         result =  execute_code(w.editor.get_content("Code"), timeout=3)
-        w.timer(result[0],str(result[1]),result[2],result[3])
+        w.timer(result[0],str(result[1]),result[2],result[3],set_explanin)
         w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
+
+if st.session_state.explanin:
+    model = load_genmodel()
+    prompt = f"Explica el error {result[0][1]} del código: {w.editor.get_content('Code')}"
+    with st.spinner("Generando explicación..."):
+        response =  model.generate_content(prompt)
+
+    with st.expander("Explicación", expanded=True):
+        st.write(response.text, unsafe_allow_html=True)
+
+    st.session_state.explanin = False
+
 
 
 #---------------------------------Footer---------------------------------
