@@ -329,7 +329,6 @@ if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['u
 
     if menu_id == 'subid44':
         switch_page('problems_editor')
-
 else:
     if menu_id == 'docs':
         switch_page('docs_home')
