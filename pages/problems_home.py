@@ -83,12 +83,12 @@ def update_problem_images():
     state.problemimages = [asyncio.run(get_random_image()) for _ in range(6)]
 
 
-def switch_torender(id):
+def switch_torender(idd):
     if 'query' not in state:
-        state.query = {'Table': 'Problema', 'id': id}
+        state.query = {'Table': 'Problema', 'id': idd}
     else:
         state.query['Table'] = 'Problema'
-        state.query['id'] = id
+        state.query['id'] = idd
 
 
 def render_problem(problem: dict,k : int):
@@ -243,7 +243,7 @@ if 'problems' not in state or state.problems is None:
 
 
 if 'problemimages' not in state:
-    state.problemimages = [asyncio.run(get_random_image()) for _ in range(5)]
+    state.problemimages = [asyncio.run(get_random_image()) for _ in range(6)]
 
 #---------------------------------Navbar---------------------------------
 

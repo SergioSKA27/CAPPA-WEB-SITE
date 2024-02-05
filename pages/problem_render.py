@@ -111,16 +111,16 @@ def execute_code(code, timeout=1, test_file: bytes = None):
 if 'query' not in state or state.query['Table'] != 'Problema':
     switch_page('problems_home')
 else:
+    #st.write(state.query)
     if 'current_problem' not in state:
-        state.current_problem = xata.get('Problema',state.query['id'],columns=['nombre','dificultad',
-        'score','time_limit','tags','desc','autor.nombre_completo','correct_ans','graph_code'])
+        state.current_problem = xata.get('Problema',state.query['id'])
     else:
         if state.current_problem['id'] != state.query['id']:
             state.current_problem = xata.get('Problema',state.query['id'],columns=['nombre','dificultad',
             'score','time_limit','tags','desc','creador.nombre_completo','correct_ans','graph_code'])
 
-
 #st.write(state.current_problem)
+
 
 
 #---------------------------------Navbar---------------------------------

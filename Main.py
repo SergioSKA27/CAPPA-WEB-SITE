@@ -150,7 +150,7 @@ if menu_id == 'logout':
     st.session_state.pop('username')
     switch_page('login')
 
-if 'userinfo' in st.session_state:
+if 'userinfo' in st.session_state and st.session_state.userinfo is not None:
     if menu_id == st.session_state['userinfo']['username']:
         if 'query' not in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
