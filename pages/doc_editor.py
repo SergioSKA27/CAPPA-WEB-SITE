@@ -30,6 +30,9 @@ st.set_page_config(
 xata = st.connection('xata',type=XataConnection)
 genai.configure(api_key=st.secrets['GEN_AI_KEY'])
 
+if 'auth_state' not in st.session_state or not ( st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador"):
+    switch_page('login')
+
 st.markdown('''
 <style>
 [data-testid="collapsedControl"] {
@@ -80,7 +83,7 @@ def format_code(code: str, lang: str):
 def format_video(url: str):
     return f"```video\n{url}\n```"
 
-st.title('Editor de Problemas 👨‍💻')
+st.title('Editor de Documentos')
 st.divider()
 
 
@@ -102,62 +105,28 @@ if state.gtoast == 1:
 
 
 ##---------------------------------Navbar---------------------------------
-if 'auth_state' not  in st.session_state:
+
+if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
     menu_data = [
-    {'icon': "far fa-copy", 'label':"Docs",'ttip':"Documentación de la Plataforma"},
-    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
-    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
-    ]
-    logname = 'Iniciar Sesión'
-else:
-    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
-        #Navbar para administradores, Profesores y Moderadores
-        menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
             {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
         ]},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
-            {'id':'subid55','icon': "bi bi-gear", 'label':"Editor" }]
+            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
+            {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'label':"Basicos 1", 'icon': "🐛"},
-            {'icon':'🐍','label':"Intermedios"},
-            {'icon':'🐉','label':"Avanzados",},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
+        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
     ]
-    else:
-    #Navbar para Estudiantes
-        menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
-        'submenu':[
-            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':' subid11','icon': "bi bi-flower1", 'label':"Basicos"},
-            {'id':'subid22','icon': "fa fa-paperclip", 'label':"Intermedios"},
-            {'id':'subid33','icon': "bi bi-emoji-dizzy", 'label':"Avanzados"},
-        ]},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
-        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-            {'label':"Todos", 'icon': "bi bi-search",'label':'alltests'},
-            {'label':"Basicos", 'icon': "🐛"},
-            {'icon':'🐍','label':"Intermedios"},
-            {'icon':'🐉','label':"Avanzados",}]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Logout"},#no tooltip message
-    ]
-    logname = st.session_state['userinfo']['username']
+logname = st.session_state['userinfo']['username']
 
 
 over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
@@ -165,7 +134,7 @@ menu_id = hc.nav_bar(
     menu_definition=menu_data,
     override_theme=over_theme,
     home_name="Inicio",
-    login_name=st.session_state['userinfo']['username'],
+    login_name=logname,
     hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
     sticky_nav=True,  # at the top or not
     sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
@@ -188,19 +157,30 @@ if menu_id == 'code':
 if menu_id == 'subid144':
     switch_page('test_editor')
 
+if menu_id == 'Analisis de Datos':
+    switch_page('data_analysis_home')
+
+if menu_id == 'docshome':
+        switch_page('docs_home')
+
+
 if menu_id == 'logout':
     st.session_state.pop('auth_state')
     st.session_state.pop('userinfo')
     st.session_state.pop('username')
     switch_page('login')
 
-if 'userinfo' in st.session_state:
-    if menu_id == st.session_state['userinfo']['username']:
-        if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        switch_page('profile_render')
+
+if menu_id == st.session_state['userinfo']['username']:
+    if 'query' not in st.session_state:
+        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+    else:
+        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+    switch_page('profile_render')
+
+
+
+#---------------------------------Toast---------------------------------
 
 if "aitoast" not in state:
     state.aitoast = 0
