@@ -61,10 +61,10 @@ if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['u
     ]
 else:
     menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación"},
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests"},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
@@ -85,31 +85,13 @@ menu_id = hc.nav_bar(
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
         first_select=30
     )
-if menu_id == "Inicio":
-    switch_page("Main")
 
 
 if menu_id == 'Inicio':
   switch_page('Main')
 
-if menu_id == 'subid44':
-    switch_page('problems_editor')
-
-
-if menu_id == 'Blog':
-    switch_page('docs_home')
-
-if menu_id == 'docshome':
-    switch_page('docs_home')
-
-if menu_id == 'doceditor':
-    switch_page('doc_editor')
-
 if menu_id == 'code':
     switch_page('code_editor')
-
-if menu_id == 'subid144':
-    switch_page('test_editor')
 
 if menu_id == 'logout':
     st.session_state.pop('auth_state')
@@ -117,13 +99,36 @@ if menu_id == 'logout':
     st.session_state.pop('username')
     switch_page('login')
 
-if 'userinfo' in st.session_state:
-    if menu_id == st.session_state['userinfo']['username']:
-        if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        switch_page('profile_render')
+
+if menu_id == st.session_state['userinfo']['username']:
+    if 'query' not in st.session_state:
+        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+    else:
+        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+    switch_page('profile_render')
+
+if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+    if menu_id == 'subid144':
+        switch_page('test_editor')
+
+    if menu_id == 'doceditor':
+        switch_page('doc_editor')
+
+    if menu_id == 'docshome':
+        switch_page('docs_home')
+
+    if menu_id == 'subid44':
+        switch_page('problems_editor')
+
+    if menu_id == 'subid00':
+        switch_page('problems_home')
+else:
+    if menu_id == 'docs':
+        switch_page('docs_home')
+
+    if menu_id == 'Problemas':
+        switch_page('problems_home')
+
 
 
 with open("rsc/html/DataAHomeBanner.html") as f:
