@@ -272,7 +272,7 @@ else:
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación"},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información"},
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests"},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
