@@ -65,7 +65,7 @@ with open('rsc/html/headlogos.html') as f:
 
 if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
     menu_data = [
-    {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información"},
+    {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información",'id':'Blog'},
     {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
     {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
     ]
@@ -81,7 +81,7 @@ else:
         ]},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Docs",'ttip':"Articulos e Información",
+        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
             {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
             {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
@@ -94,7 +94,7 @@ else:
     ]
     else:
         menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación"},
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
         {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
         {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
@@ -117,14 +117,33 @@ menu_id = hc.nav_bar(
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
 
+
+if st.session_state['auth_state']:
+    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+        if menu_id == 'subid00':
+            switch_page('problems_home')
+        if menu_id == 'subid44':
+            switch_page('problems_editor')
+
+        if menu_id == 'docshome':
+            switch_page('docs_home')
+
+        if menu_id == 'doceditor':
+            switch_page('doc_editor')
+
+        if menu_id == 'subid144':
+            switch_page('test_editor')
+
+    else:
+        if menu_id == 'Problemas':
+            switch_page('problems_home')
+
+        if menu_id == 'Blog':
+            switch_page('docs_home')
+
+
 if menu_id == 'Iniciar Sesión':
     switch_page('login')
-
-if menu_id == 'subid00':
-    switch_page('problems_home')
-
-if menu_id == 'subid44':
-    switch_page('problems_editor')
 
 if menu_id == 'Analisis de Datos':
     switch_page('data_analysis_home')
@@ -132,17 +151,8 @@ if menu_id == 'Analisis de Datos':
 if menu_id == 'Blog':
     switch_page('docs_home')
 
-if menu_id == 'docshome':
-    switch_page('docs_home')
-
-if menu_id == 'doceditor':
-    switch_page('doc_editor')
-
 if menu_id == 'code':
     switch_page('code_editor')
-
-if menu_id == 'subid144':
-    switch_page('test_editor')
 
 if menu_id == 'logout':
     st.session_state.pop('auth_state')
