@@ -15,7 +15,7 @@ class Timer(Dashboard.Item):
         super().__init__(*args, **kwargs)
         self._dark_mode = False
 
-    def __call__(self,output=None,time=None,current=None,peak=None,explaninfunc=None):
+    def __call__(self,output=None,time=None,current=None,peak=None,explaninfunc=None,runfunc=None):
         """
         The function creates a card component with a title, subheader, image, content, and action buttons.
 
@@ -89,21 +89,17 @@ class Timer(Dashboard.Item):
             mui.Typography(f"Memoria Utilizada:\t\t {current / 10**6:.6f} MB \n", sx={"padding": "10px"})
             mui.Typography(f"Memoria Pico:\t\t {peak / 10**6:.6f} MB \n", sx={"padding": "10px"})
 
-            if output[1]!="":
-                with mui.Box(
-                    sx={
-                        "display": "flex",
-                        "flexDirection": "row",
-                        "alignItems": "right",
-                        "justifyContent": "flex-end",
-                        "padding": "0px 15px 0px 15px",
-                    }):
+
+            with mui.ButtonGroup(variant="text", sx={"padding": "10px",'display': 'flex','justifyContent': 'flex-end','alignItems': 'right'}):
+                if runfunc is not None:
+                    mui.Button(mui.icon.Terminal(),mui.Typography("Ejecutar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),onClick=runfunc)
+                else:
+                    mui.Button(mui.icon.Terminal(),mui.Typography("Ejecutar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),disabled=True)
+                if output[1]!="":
                     if explaninfunc is not None:
-                        mui.Button(mui.icon.AutoAwesome(),mui.Typography("Explicar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),
-                        sx={"backgroundColor": "#36A0A0", "color": "#FFFFFF", "borderRadius": 3},onClick=explaninfunc)
+                        mui.Button(mui.icon.AutoAwesome(),mui.Typography("Explicar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),onClick=explaninfunc)
                     else:
-                        mui.Button(mui.icon.AutoAwesome(),mui.Typography("Explicar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),
-                        sx={"backgroundColor": "#36A0A0", "color": "#FFFFFF", "borderRadius": 3},disabled=True)
+                        mui.Button(mui.icon.AutoAwesome(),mui.Typography("Explicar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),disabled=True)
 
 
 

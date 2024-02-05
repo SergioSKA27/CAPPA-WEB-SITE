@@ -122,9 +122,18 @@ def execute_code(code, timeout=1, test_file: bytes = None):
 def set_explanin():
     st.session_state.explanin = True
 
+def set_reruncode():
+    st.session_state.reruncode = True
 
 if 'explanin' not in st.session_state:
     st.session_state.explanin =  False
+
+if 'reruncode' not in st.session_state:
+    st.session_state.reruncode = False
+
+if st.session_state.reruncode:
+    st.session_state.reruncode = False
+    sync()
 
 ##---------------------------------Navbar---------------------------------
 if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
@@ -257,7 +266,7 @@ with elements("workspace"):
         w.editor()
         content = w.editor.get_content("Code")
         result =  execute_code(w.editor.get_content("Code"), timeout=3)
-        w.timer(result[0],str(result[1]),result[2],result[3],set_explanin)
+        w.timer(result[0],str(result[1]),result[2],result[3],set_explanin,set_reruncode)
         w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
 
 if st.session_state.explanin:
