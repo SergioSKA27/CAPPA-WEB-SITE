@@ -7,6 +7,7 @@ import datetime
 import google.generativeai as genai
 import markdown
 import re
+from streamlit_elements import media, elements
 
 
 st.set_page_config(
@@ -60,7 +61,7 @@ def split_parts(doc):
     parts = doc.split('```')
     return parts
 
-def render_part(part, code , graphs, videos):
+def render_part(part, graphs, videos):
     if part is None:
         return
 
@@ -70,7 +71,8 @@ def render_part(part, code , graphs, videos):
         vcol = st.columns([0.3,0.4,0.3])
         p1 = part.split('\n')
         with vcol[1]:
-            st.video(p1[1])
+            with elements(p1[1]):
+                media.Player(url=p1[1],controls=False)
     elif 'dot' in part and any([g in part for g in graphs]):
         gcol = st.columns([0.3,0.4,0.3])
         p1 = part.split('\n')
@@ -244,12 +246,11 @@ if 'userinfo' in st.session_state and st.session_state.userinfo is not None:
 #---------------------------------Body---------------------------------
 colors = ['blue','red','green','purple','orange','cyan','magenta','geekblue','gold','lime','volcano','yellow','pink','grey','darkblue','darkred','darkgreen','darkpurple','darkorange','darkcyan','darkmagenta','darkgeekblue','darkgold','darklime','darkvolcano','darkyellow','darkpink','darkgrey','lightblue','lightred','lightgreen','lightpurple','lightorange','lightcyan','lightmagenta','lightgeekblue','lightgold','lightlime','lightvolcano','lightyellow','lightpink','lightgrey']
 
-st.write(st.session_state.doctorender['content'].split('```'))
+#st.write(st.session_state.doctorender['content'].split('```'))
 
-st.write(extrac_videolinks(st.session_state.doctorender['content']))
-st.write(extrac_code(st.session_state.doctorender['content']))
+#st.write(extrac_videolinks(st.session_state.doctorender['content']))
+#st.write(extrac_code(st.session_state.doctorender['content']))
 
-code = extrac_code(st.session_state.doctorender['content'])
 
 videos = extrac_videolinks(st.session_state.doctorender['content'])
 
@@ -263,7 +264,7 @@ sac.tags(tgs,align='start')
 st.divider()
 
 for i,part in enumerate(split_parts(st.session_state.doctorender['content'])):
-    render_part(part,code,graphs,videos)
+    render_part(part,graphs,videos)
 
 #---------------------------------Footer---------------------------------
 with open('rsc/html/minimal_footer.html') as f:
