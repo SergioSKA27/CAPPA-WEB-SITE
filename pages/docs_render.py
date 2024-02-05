@@ -6,6 +6,7 @@ import streamlit_antd_components as sac
 import datetime
 import google.generativeai as genai
 import markdown
+import re
 
 
 st.set_page_config(
@@ -24,11 +25,12 @@ xata = st.connection('xata',type=XataConnection)
 
 st.markdown('''
 <style>
+
 [data-testid="collapsedControl"] {
         display: none
     }
-
 #MainMenu, header, footer {visibility: hidden;}
+
 .st-emotion-cache-152jn8i {
   position: absolute;
   background: rgb(244, 235, 232);
@@ -56,41 +58,50 @@ def format_date(date):
 
 def split_parts(doc):
     parts = doc.split('```')
-    return [parts[i] for i in range(len(parts)) if len(parts[i]) > 0 and '```' not in parts[i]]
+    return parts
 
-def render_part(part):
+def render_part(part, code , graphs, videos):
     if part is None:
         return
-    langs = ["Python", "JavaScript", "Java", "C", "Cpp", "C#", "HTML", "CSS", "SQL",
-    "R", "Rust", "Go", "PHP", "TypeScript", "Ruby", "Swift", "Kotlin", "Scala", "Julia", "Dart", "Haskell", "Lua",
-    "Perl", "Objective-C", "MATLAB","Markdown", "JSON", "YAML", "Dockerfile", "GraphQL", "Handlebars", "LaTeX",
-    "Groovy", "PowerShell", "VBScript", "Clojure", "Elixir", "F#", "Fortran", "OCaml",
-    "Pascal", "Racket", "Scheme", "Bash", "Assembly", "CoffeeScript", "Erlang", "Haxe", "Nim", "OCaml", "Prolog",
-    "PureScript", "Reason", "Scratch", "Solidity", "Tcl", "Vim", "XML", "YAML"]
 
-    htmltags = ['<p>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>', '<ul>', '<ol>', '<li>', '<blockquote>', '<hr>',
-    '<br>', '<a>', '<img>', '<table>', '<thead>', '<tbody>', '<tr>', '<th>', '<td>', '<pre>', '<code>', '<em>',
-    '<strong>', '<del>', '<sup>', '<sub>', '<iframe>', '<script>', '<style>', '<div>', '<span>', '<input>', '<button>',
-    '<label>', '<select>', '<option>', '<form>', '<textarea>', '<svg>', '<canvas>', '<audio>', '<video>', '<math>',
-    '<figure>', '<figcaption>', '<noscript>', '<header>', '<footer>', '<main>', '<section>', '<article>', '<aside>',
-    '<nav>', '<details>', '<summary>', '<dialog>', '<template>', '<slot>']
+    LANGUAGES  = ['python','javascript','java','c','c++','c#','html','css','sql','php','ruby','go','kotlin','swift','dart','r','rust','typescript','shell','powershell','perl','lua','scala','groovy','haskell','f#','elixir','clojure','racket','julia','nim','crystal','cobol','fortran','ada','lisp','scheme','prolog','erlang','ocaml','reason','coffeescript','v','verilog','vhdl','systemverilog','logos','dot','video']
 
-    if 'video' in part:
+    if 'video' in part and any([v in part for v in videos]):
         vcol = st.columns([0.3,0.4,0.3])
         p1 = part.split('\n')
         with vcol[1]:
             st.video(p1[1])
-    elif any([lang.lower() in part for lang in langs]) and (not any([tag in part for tag in htmltags]) and 'html' not in part.lower()):
+    elif 'dot' in part and any([g in part for g in graphs]):
+        gcol = st.columns([0.3,0.4,0.3])
         p1 = part.split('\n')
-
-        st.code('\n'.join(p1[1:]),language=p1[0].lower())
-    elif 'dot' in part:
-        p1 = part.split('\n')
-        st.graphviz_chart('\n'.join(p1[1:]))
+        with gcol[1]:
+            st.graphviz_chart(p1[1])
     else:
-        st.markdown(part,unsafe_allow_html=True)
+        split = part.split('\n')
+
+        if split[0] in LANGUAGES:
+            st.code('\n'.join(split[1:]),language=split[0])
+        else:
+            st.markdown(part,unsafe_allow_html=True)
+
+
+
+
 if 'query' not in st.session_state:
     switch_page('docs_home.py')
+
+@st.cache_data
+def extrac_videolinks(doc):
+    return re.findall(r'```video\n(.*?)```',doc,re.DOTALL)
+@st.cache_data
+def extrac_code(doc):
+    return re.findall(r'```[a-zA-Z]*\n(.*?)```',doc,re.DOTALL)
+
+@st.cache_data
+def extrac_dot(doc):
+    return re.findall(r'```dot\n(.*?)```',doc,re.DOTALL)
+
+
 
 if st.session_state.query['Table'] ==  'Documento':
     if 'doctorender' not in st.session_state:
@@ -235,16 +246,24 @@ colors = ['blue','red','green','purple','orange','cyan','magenta','geekblue','go
 
 st.write(st.session_state.doctorender['content'].split('```'))
 
+st.write(extrac_videolinks(st.session_state.doctorender['content']))
+st.write(extrac_code(st.session_state.doctorender['content']))
+
+code = extrac_code(st.session_state.doctorender['content'])
+
+videos = extrac_videolinks(st.session_state.doctorender['content'])
+
+graphs = extrac_dot(st.session_state.doctorender['content'])
+
 st.title(st.session_state.doctorender['titulo'])
 st.caption(f"{format_date(st.session_state.doctorender['xata']['createdAt'][0:10])}, {st.session_state.doctorender['autor']['nombre_completo']}")
 
 tgs = [sac.Tag(label=tag,color=colors[i%len(colors)]) for i,tag in enumerate(st.session_state.doctorender['tags'])]
 sac.tags(tgs,align='start')
 st.divider()
-with st.container(border=True):
-    for part in split_parts(st.session_state.doctorender['content']):
-        st.markdown(part)
 
+for i,part in enumerate(split_parts(st.session_state.doctorender['content'])):
+    render_part(part,code,graphs,videos)
 
 #---------------------------------Footer---------------------------------
 with open('rsc/html/minimal_footer.html') as f:
