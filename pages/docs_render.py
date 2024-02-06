@@ -208,7 +208,7 @@ if menu_id == 'logout':
 
 
 
-if st.session_state['auth_state']:
+if 'auth_state' in st.session_state and st.session_state['auth_state']:
     if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
         if menu_id == 'subid00':
             switch_page('problems_home')
