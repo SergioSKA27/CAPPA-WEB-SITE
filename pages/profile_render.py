@@ -51,8 +51,8 @@ if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == Fa
 
 
 #---------------------------------Funciones---------------------------------
-def get_user(id):
-    return xata.get("Usuario", id)
+def get_user(idd):
+    return xata.get("Usuario", idd)
 
 
 
@@ -168,14 +168,17 @@ cols = st.columns([0.3,0.7])
 
 with cols[0]:
     #st.write(st.session_state.profile_info)
-
-    st.markdown(f"""
-    <img src="{st.session_state.profile_data['avatar']['url']}" alt="profile picture" width="200" height="200"  style="border-radius:50%;">
+    if 'avatar' not in st.session_state.profile_data:
+            st.markdown(f"""<img src="{"https://source.unsplash.com/200x200/?python"}" alt="profile picture" width="200" height="200"  style="border-radius:50%;">
     """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <img src="{st.session_state.profile_data['avatar']['url']}" alt="profile picture" width="200" height="200"  style="border-radius:50%;">
+        """, unsafe_allow_html=True)
 
     st.subheader(f"@{st.session_state.profile_data['username']}")
-    st.caption(f"{'「✔ ᵛᵉʳᶦᶠᶦᵉᵈ」' if st.session_state.profile_data['verificado'] else ''}")
     st.caption(f"{st.session_state.profile_data['rol']}")
+    st.caption(f"{'「✔ ᵛᵉʳᶦᶠᶦᵉᵈ」' if st.session_state.profile_data['verificado'] else ''}")
     st.caption(f"""
         <a href="mailto:{st.session_state.profile_data['correo']}">{st.session_state.profile_data['correo']}</a>
         """, unsafe_allow_html=True)
@@ -201,7 +204,31 @@ with cols[0]:
                 navatar = st.file_uploader("Avatar", type=['png','jpg','jpeg'])
                 name = st.text_input("Nombre completo", value=st.session_state.profile_data['nombre_completo'])
                 birth = st.date_input("Fecha de nacimiento", value=datetime.datetime.strptime(st.session_state.profile_data['fechaNacimiento'][:10], '%Y-%m-%d'))
+
+                udata = {}
+
+                if name != st.session_state.profile_data['nombre_completo']:
+                    udata['nombre_completo'] = name
+
+                if birth != datetime.datetime.strptime(st.session_state.profile_data['fechaNacimiento'][:10], '%Y-%m-%d'):
+                    udata['fechaNacimiento'] = birth.strftime("%Y-%m-%dT%H:%M:%SZ")
+
                 submit = st.form_submit_button("Guardar cambios")
+
+                if submit:
+                    try:
+                        res = xata.update("Usuario", st.session_state.profile_data['id'], udata)
+                        st.success("Cambios guardados")
+                    except Exception as e:
+                        st.error(f"Error al guardar cambios: {e}")
+
+                    if navatar:
+                        try:
+                            resimg = xata.upload_file("Usuario", st.session_state.profile_data['id'], "avatar", navatar.read(), navatar.type)
+                            st.success("Avatar actualizado")
+                        except Exception as e:
+                            st.error(f"Error al actualizar avatar: {e}")
+
     if st.session_state.userinfo['rol'] == 'Administrador' and st.session_state.profile_data['rol'] != 'Administrador':
         nrol = st.selectbox("Editar Rol", options=['Moderador','Profesor','Estudiante'])
 
