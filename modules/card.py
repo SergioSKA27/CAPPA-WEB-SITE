@@ -11,7 +11,9 @@ class Card(Dashboard.Item):
         "if you like."
     )
 
-    def __call__(self, content,img,title='Card',subheader='September 14, 2016',avatar='R', tags=[],button=None,onchg=None):
+    def __call__(self, content,img,title='Card',
+    subheader='September 14, 2016',avatar='R',
+    tags=[],button=None,onchg=None,actions=False):
         """
         The function creates a card component with a title, subheader, image, content, and action buttons.
 
@@ -46,7 +48,7 @@ class Card(Dashboard.Item):
                     mui.Button(button, variant='outlined', color='primary',onClick=onchg)
                 else:
                     mui.Button(button, variant='outlined', color='primary')
-
-            with mui.CardActions(disableSpacing=True):
-                mui.IconButton(mui.icon.Favorite)
-                mui.IconButton(mui.icon.Share)
+            if actions:
+                with mui.CardActions(disableSpacing=True):
+                    mui.IconButton(mui.icon.Favorite,)
+                    mui.IconButton(mui.icon.Share)
