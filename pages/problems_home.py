@@ -57,7 +57,7 @@ def search_problem(s: str):
         data = []
         for p in res['records']:
             data.append(','.join([p['nombre'],p['id']]))
-        return data
+        return data if len(data) < 5 else data[:5]
     except:
         return []
 
@@ -263,6 +263,8 @@ if 'problems' not in state or state.problems is None:
 if 'problemimages' not in state:
     state.problemimages = [asyncio.run(get_random_image()) for _ in range(6)]
 
+
+
 #---------------------------------Navbar---------------------------------
 
 if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
@@ -360,7 +362,18 @@ with open('rsc/html/ProblemaHome-Banner.html') as f:
 
 cols0 = st.columns([0.3,0.4,0.3])
 with cols0[1]:
-    st_searchbox(search_function=search_problem, placeholder="Buscar Problema", )
+    datasearch = st_searchbox(search_function=search_problem, placeholder="Buscar Problema")
+    if datasearch is not None and datasearch != '' and not isinstance(datasearch, int):
+        if 'searchbox' in state:
+            del state.searchbox
+        nm,idtfy = datasearch.split(',')
+        st.write(nm)
+        if 'query' not in state:
+            state.query = {'Table': 'Problema', 'id': idtfy}
+        else:
+            state.query['Table'] = 'Problema'
+            state.query['id'] = idtfy
+        switch_page('problem_render')
 
 tags = [
     "Todos",
