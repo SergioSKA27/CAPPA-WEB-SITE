@@ -440,6 +440,10 @@ with elements("workspace"):
 
         st.session_state.explanin = False
 
+with st.container(height=200):
+    st.write('### Salida')
+    st.text(result[0][0])
+    st.write(f":red[{result[0][1]}]")
 
 st.write('### Ingrese la respuesta correcta')
 useoutput = st.checkbox('Usar la salida del código como respuesta correcta(Maximo 250 caracteres)')
@@ -480,8 +484,6 @@ if upcols[1].button('Subir Problema 🚀',use_container_width=True):
     st.balloons()
   except Exception as e:
     st.error(f'Error al subir el problema: {e}')
-
-
 
 #---------------------------------Footer---------------------------------
 with open('rsc/html/minimal_footer.html') as f:
