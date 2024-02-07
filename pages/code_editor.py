@@ -1,7 +1,7 @@
 import subprocess
 import tracemalloc
 from functools import wraps
-from time import perf_counter
+from time import perf_counter,sleep
 from types import SimpleNamespace
 
 import hydralit_components as hc
@@ -11,6 +11,7 @@ from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
 from modules import Card, Dashboard, Editor, Timer
 import google.generativeai as genai
+
 
 
 # Autor: Sergio Lopez
@@ -65,6 +66,13 @@ if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == Fa
 
 
 #---------------------------------Funciones---------------------------------
+
+def stream_text():
+    """Stream text to the app"""
+    for w in st.session_state.explainstr.split(' '):
+        yield w + " "
+        sleep(0.05)
+
 
 def measure_performance(func):
     """Measure performance of a function"""
@@ -125,6 +133,9 @@ def set_explanin():
 def set_reruncode():
     st.session_state.reruncode = True
 
+
+if 'explainstr' not in st.session_state:
+    st.session_state.explainstr = ""
 if 'explanin' not in st.session_state:
     st.session_state.explanin =  False
 
@@ -227,6 +238,8 @@ else:
 
 
 #---------------------------------Body---------------------------------
+
+
 if "w_code" not in state:
     board = Dashboard()
     w = SimpleNamespace(
@@ -268,18 +281,27 @@ with elements("workspace"):
         result =  execute_code(w.editor.get_content("Code"), timeout=3)
         w.timer(result[0],str(result[1]),result[2],result[3],set_explanin,set_reruncode)
         w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
+    if st.session_state.explanin:
+        model = load_genmodel()
+        prompt = f"Explica el error {result[0][1]} del código: {w.editor.get_content('Code')}"
+        with st.spinner("🧠 Generando explicación..."):
+            response =  model.generate_content(prompt)
 
-if st.session_state.explanin:
-    model = load_genmodel()
-    prompt = f"Explica el error {result[0][1]} del código: {w.editor.get_content('Code')}"
-    with st.spinner("Generando explicación..."):
-        response =  model.generate_content(prompt)
+        with st.expander("💡 Explicación", expanded=True):
+            st.session_state.explainstr = response.text
+            st.write_stream(stream_text)
 
-    with st.expander("Explicación", expanded=True):
-        st.write(response.text, unsafe_allow_html=True)
+        st.session_state.explanin = False
 
-    st.session_state.explanin = False
 
+with st.expander("Salida"):
+    if len(result[0][0]) > 1000:
+        st.write(result[0][0][:1000])
+        st.write("...")
+    else:
+        st.text(result[0][0])
+
+    st.write(f':red[{result[0][1]}]')
 
 
 #---------------------------------Footer---------------------------------

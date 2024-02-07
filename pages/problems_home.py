@@ -212,11 +212,29 @@ def render_problem(problem: dict,k : int):
 
         **Creador:** @{problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
 
-        **Fecha de Creación:** {problem['xata']['createdAt'][:10]}
+        **Fecha de Creación:** {format_date(problem['xata']['createdAt'][:10])}
         ''')
         if st.button('Ver Problema', key=f'b{k}',use_container_width=True, on_click=switch_torender, args=[problem['id']]):
             switch_page('problem_render')
 
+def format_date(date: str):
+    dt = date.split("-")
+    meses = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+    ]
+
+    return f"{dt[2]} de {meses[int(dt[1])-1]} del {dt[0]}"
 
 
 

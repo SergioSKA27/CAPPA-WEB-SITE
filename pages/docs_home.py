@@ -109,7 +109,7 @@ def render_docs(docs: list):
                 st.caption(f"{d['tipo']}")
                 st.write(f"### {d['titulo']}")
                 st.write(f"{d['shortdesc']}")
-                bcols = st.columns([0.7, 0.3])
+                bcols = st.columns([0.6, 0.4])
                 with bcols[0]:
                     st.write(f"{d['autor']['nombre_completo']}")
                     st.write(format_date(d["xata"]["createdAt"][0:10]))

@@ -53,7 +53,13 @@ class Timer(Dashboard.Item):
                 mui.Typography("Salida", sx={"paddingLeft": "10px", "fontSize": "1.2rem"})
 
             mui.Divider()
-            mui.Typography(output[0], sx={"padding": "10px"})
+            for i ,sp in enumerate(output[0].split("\n")):
+                mui.Typography(sp, sx={"padding": "1px"})
+                if i > 10:
+                    mui.Typography("...", sx={"padding": "1px"})
+                    break
+
+
             mui.Typography(output[1], sx={"padding": "10px","color":"#FF0000"})
 
             with mui.Box(

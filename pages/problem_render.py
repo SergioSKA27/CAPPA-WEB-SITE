@@ -14,7 +14,7 @@ from streamlit_extras.switch_page_button import switch_page
 from streamlit_profiler import Profiler
 from st_xatadb_connection import XataConnection
 from streamlit_pills import pills
-
+import extra_streamlit_components as stx
 from modules import Card, Dashboard, DataGrid, Editor, Pie, Player, Radar, Timer
 #Autor: Sergio Lopez
 
@@ -121,7 +121,21 @@ else:
 
 #st.write(state.current_problem)
 
+def set_explanin():
+    st.session_state.explanin = True
 
+def set_reruncode():
+    st.session_state.reruncode = True
+
+if 'explanin' not in st.session_state:
+    st.session_state.explanin =  False
+
+if 'reruncode' not in st.session_state:
+    st.session_state.reruncode = False
+
+if st.session_state.reruncode:
+    st.session_state.reruncode = False
+    sync()
 
 #---------------------------------Navbar---------------------------------
 
