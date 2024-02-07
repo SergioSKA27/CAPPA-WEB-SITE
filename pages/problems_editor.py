@@ -1,6 +1,6 @@
 import subprocess
 import tracemalloc
-from time import perf_counter
+from time import perf_counter, sleep
 from types import SimpleNamespace
 
 import hydralit_components as hc
@@ -10,7 +10,7 @@ from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync,partial
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_quill import st_quill
-
+import google.generativeai as genai
 from modules import Card, Dashboard, Editor, Timer
 
 #Autor: Sergio Lopez
@@ -32,6 +32,8 @@ st.set_page_config(
     }
 )
 xata = st.connection('xata',type=XataConnection)
+genai.configure(api_key=st.secrets["GEN_AI_KEY"])
+
 st.markdown('''
 <style>
 [data-testid="collapsedControl"] {
@@ -61,6 +63,17 @@ if 'auth_state' not in st.session_state or not ( st.session_state['userinfo']['r
     switch_page('login')
 
 #--------------------------------------------- Funciones ---------------------------------------------
+
+def stream_text():
+    """Stream text to the app"""
+    for w in st.session_state.explainstr.split(' '):
+        yield w + " "
+        sleep(0.05)
+
+@st.cache_resource
+def load_genmodel():
+    return genai.GenerativeModel("gemini-pro")
+
 
 def run_code(code, timeout=1, test_file: bytes = None):
     """Run code and capture the output"""
@@ -126,6 +139,27 @@ if 'pscore' not in st.session_state:
 
 if 'timelimit' not in st.session_state:
 	st.session_state.timelimit = 0
+
+
+def set_explanin():
+    st.session_state.explanin = True
+
+def set_reruncode():
+    st.session_state.reruncode = True
+
+
+if 'explainstr' not in st.session_state:
+    st.session_state.explainstr = ""
+if 'explanin' not in st.session_state:
+    st.session_state.explanin =  False
+
+if 'reruncode' not in st.session_state:
+    st.session_state.reruncode = False
+
+if st.session_state.reruncode:
+    st.session_state.reruncode = False
+    sync()
+
 
 ##---------------------------------Navbar---------------------------------
 if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
@@ -352,7 +386,7 @@ if graph:
 
 
 
-if "w" not in state:
+if "w_editorp" not in state:
     board = Dashboard()
     w = SimpleNamespace(
         dashboard=board,
@@ -378,12 +412,12 @@ if "w" not in state:
 			6,
 		),
     )
-    state.w = w
+    state.w_editorp = w
     w.editor.add_tab("Code", "print('Hello world!')", "python")
 
 
 else:
-    w = state.w
+    w = state.w_editorp
 
 with elements("workspace"):
     event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
@@ -391,10 +425,20 @@ with elements("workspace"):
         w.editor()
         content = w.editor.get_content("Code")
         result =  execute_code(w.editor.get_content("Code"), timeout=3)
-        w.timer(result[0],str(result[1]),result[2],result[3])
+        w.timer(result[0],str(result[1]),result[2],result[3],set_explanin,set_reruncode)
         w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
 
+    if st.session_state.explanin:
+        model = load_genmodel()
+        prompt = f"Explica el error {result[0][1]} del código: {w.editor.get_content('Code')}"
+        with st.spinner("🧠 Generando explicación..."):
+            response =  model.generate_content(prompt)
 
+        with st.expander("💡 Explicación", expanded=True):
+            st.session_state.explainstr = response.text
+            st.write_stream(stream_text)
+
+        st.session_state.explanin = False
 
 
 st.write('### Ingrese la respuesta correcta')
