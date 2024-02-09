@@ -360,8 +360,8 @@ events = [
         {
             "title": "Event 1",
             "color": "#FF6C6C",
-            "start": "2023-11-03",
-            "end": "2023-11-05",
+            "start": "2024-02-07",
+            "end": "2024-02-07",
             "resourceId": "a",
         },
         {
@@ -559,11 +559,12 @@ if "resource" in mode:
                 "initialView": "multiMonthYear",
             }
 
-state = calendar(
+calstate = calendar(
         events=events,
         options=calendar_options,
         key=mode,
     )
+#st.write(calstate)
 #---------------------------------#
 #Galeria de Imagenes
 sac.divider(label='',align='center',icon='image')
