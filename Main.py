@@ -36,36 +36,21 @@ background-color: #f4ebe8;
 </style>
 """,unsafe_allow_html=True)
 
-
+#---------------------------------  Variables de Sesión ---------------------------------------------------------
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
 
-#---------------------------------Functions---------------------------------------------------------
-def pythonlogo():
-    """
-    The `pythonlogo` function displays the Python logo using SVG code and a CSS file.
-    """
-    with open('rsc/css/style_PythonLogo.css') as f:
-        container1 = st.empty()
-        columns1,col2,col3 = st.columns(3)
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-        with columns1:
-            container1.markdown(
-    '''<svg width="40%" height="40%" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" id="python-logo">
-    <path d="m116 296c0-30.328125 24.671875-55 55-55h170c13.785156 0 25-11.214844 25-25v-141c0-41.355469-33.644531-75-75-75h-70c-41.355469 0-75 33.644531-75 75v41h110c8.285156 0 15 6.714844 15 15s-6.714844 15-15 15h-181c-41.355469 0-75 33.644531-75 75v70c0 41.355469 33.644531 75 75 75h41zm105-220c-8.285156 0-15-6.714844-15-15s6.714844-15 15-15 15 6.714844 15 15-6.714844 15-15 15zm0 0" />
-    <path d="m437 146h-41v70c0 30.328125-24.671875 55-55 55h-170c-13.785156 0-25 11.214844-25 25v141c0 41.355469 33.644531 75 75 75h70c41.355469 0 75-33.644531 75-75v-41h-110c-8.285156 0-15-6.714844-15-15s6.714844-15 15-15h181c41.355469 0 75-33.644531 75-75v-70c0-41.355469-33.644531-75-75-75zm-146 290c8.285156 0 15 6.714844 15 15s-6.714844 15-15 15-15-6.714844-15-15 6.714844-15 15-15zm0 0" />
-    </svg>''',unsafe_allow_html=True
-            )
+if 'username' not in st.session_state:
+    st.session_state.username = None
 
-def is_admin():
-    if 'auth_state' in st.session_state and st.session_state['auth_state']:
-        if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor":
-            return True
-        else:
-            return False
-    else:
-        return False
-#use this instead
+if 'userinfo' not in st.session_state:
+    st.session_state.userinfo = None
+
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+
+#---------------------------------Logos---------------------------------------------------------
 with open('rsc/html/headlogos.html') as f:
     st.markdown(f.read(),unsafe_allow_html=True)
 #---------------------------------#
@@ -81,7 +66,7 @@ if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == Fa
     logname = 'Iniciar Sesión'
 else:
     #st.session_state['userinfo']
-    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -111,7 +96,7 @@ else:
         {'icon': "bi bi-pencil-square",'label':"Tests"},
         {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
     ]
-    logname = st.session_state['userinfo']['username']
+    logname = st.session_state.user.usuario
 
 
 
@@ -167,10 +152,11 @@ if menu_id == 'logout':
     st.session_state.pop('auth_state')
     st.session_state.pop('userinfo')
     st.session_state.pop('username')
+    st.session_state.pop('user')
     switch_page('login')
 
-if 'userinfo' in st.session_state and st.session_state.userinfo is not None:
-    if menu_id == st.session_state['userinfo']['username']:
+if st.session_state['auth_state']  and st.session_state.user is not None:
+    if menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
         else:
@@ -487,7 +473,7 @@ calendar_resources = [
     ]
 
 calendar_options = {
-        "editable": "true" if is_admin() else "false",
+        "editable": "false",
         "navLinks": "true",
         "resources": calendar_resources,
     }
