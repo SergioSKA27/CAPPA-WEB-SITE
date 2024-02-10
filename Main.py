@@ -149,10 +149,10 @@ if menu_id == 'code':
     switch_page('code_editor')
 
 if menu_id == 'logout':
-    st.session_state.pop('auth_state')
-    st.session_state.pop('userinfo')
-    st.session_state.pop('username')
-    st.session_state.pop('user')
+    st.session_state.auth_state = False
+    st.session_state.userinfo = None
+    st.session_state.user = None
+    st.session_state.username = None
     switch_page('login')
 
 if st.session_state['auth_state']  and st.session_state.user is not None:
