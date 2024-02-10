@@ -3,7 +3,6 @@ import tracemalloc
 from functools import wraps
 from time import perf_counter,sleep
 from types import SimpleNamespace
-
 import hydralit_components as hc
 import streamlit as st
 from streamlit import session_state as state
@@ -11,7 +10,9 @@ from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
 from modules import Card, Dashboard, Editor, Timer
 import google.generativeai as genai
-
+import asyncio
+import sys
+from  concurrent.futures import ThreadPoolExecutor
 
 
 # Autor: Sergio Lopez
@@ -20,8 +21,8 @@ import google.generativeai as genai
 # --------------------------------------------- page config ---------------------------------------------
 # basic page configuration
 st.set_page_config(
-    page_title="CAPA",
-    page_icon=":snake:",
+    page_title="CAPPA",
+    page_icon="rsc/Logos/LOGO_CAPPA.jpg",
     layout="wide",
     initial_sidebar_state="collapsed",
     menu_items={
@@ -147,7 +148,7 @@ if st.session_state.reruncode:
     sync()
 
 ##---------------------------------Navbar---------------------------------
-if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+if st.session_state.user.is_admin() or st.session_state.user.is_professor() or st.session_state.user.is_moderator:
     menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -178,7 +179,7 @@ else:
         {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
     ]
 
-logname = st.session_state['userinfo']['username']
+logname = st.session_state.user.usuario
 
 over_theme = {"txc_inactive": "#FFFFFF", "menu_background": "#3670a0"}
 menu_id = hc.nav_bar(
@@ -207,11 +208,11 @@ if menu_id == 'logout':
     switch_page('login')
 
 
-if menu_id == st.session_state['userinfo']['username']:
+if menu_id == st.session_state.user.usuario:
     if 'query' not in st.session_state:
-        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
     else:
-        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
     switch_page('profile_render')
 
 if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
@@ -283,15 +284,20 @@ with elements("workspace"):
         w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
     if st.session_state.explanin:
         model = load_genmodel()
-        prompt = f"Explica el error {result[0][1]} del código: {w.editor.get_content('Code')}"
+        prompt = f"Explica el error {result[0][1]}, este es el código: {w.editor.get_content('Code')}"
         with st.spinner("🧠 Generando explicación..."):
             response =  model.generate_content(prompt)
 
         with st.expander("💡 Explicación", expanded=True):
             st.session_state.explainstr = response.text
             st.write_stream(stream_text)
+            rlexplain = st.columns([0.9,0.1])
+            if rlexplain[1].button("🔃",use_container_width=True):
+                st.session_state.explanin = True
+                st.rerun()
 
         st.session_state.explanin = False
+
 
 
 with st.expander("Salida"):

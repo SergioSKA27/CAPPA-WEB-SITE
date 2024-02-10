@@ -57,7 +57,7 @@ with open('rsc/html/headlogos.html') as f:
 #Navigation Bar
 
 
-if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
+if st.session_state['auth_state'] == False:
     menu_data = [
     {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información",'id':'Blog'},
     {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
@@ -112,8 +112,8 @@ menu_id = hc.nav_bar(
     )
 
 
-if 'auth_state' in st.session_state and st.session_state['auth_state'] :
-    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+if st.session_state['auth_state'] :
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
         if menu_id == 'subid00':
             switch_page('problems_home')
         if menu_id == 'subid44':
@@ -158,9 +158,9 @@ if menu_id == 'logout':
 if st.session_state['auth_state']  and st.session_state.user is not None:
     if menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         switch_page('profile_render')
 
 
