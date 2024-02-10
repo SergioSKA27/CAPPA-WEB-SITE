@@ -38,6 +38,19 @@ class Timer(Dashboard.Item):
                 mui.icon.Code()
                 mui.Typography("Entorno de ejecución", sx={"fontSize": "1.2rem"})
             mui.Divider()
+
+            with mui.ButtonGroup(variant="text", sx={"padding": "10px",'display': 'flex','justifyContent': 'flex-end','alignItems': 'right'}):
+                if runfunc is not None:
+                    mui.Button(mui.icon.Terminal(),mui.Typography("Ejecutar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),onClick=runfunc)
+                else:
+                    mui.Button(mui.icon.Terminal(),mui.Typography("Ejecutar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),disabled=True)
+                if output[1]!="":
+                    if explaninfunc is not None:
+                        mui.Button(mui.icon.AutoAwesome(),mui.Typography("Explicar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),onClick=explaninfunc)
+                    else:
+                        mui.Button(mui.icon.AutoAwesome(),mui.Typography("Explicar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),disabled=True)
+
+
             with mui.Box(
                 sx={
                     "display": "flex",
@@ -95,17 +108,6 @@ class Timer(Dashboard.Item):
             mui.Typography(f"Memoria Utilizada:\t\t {current / 10**6:.6f} MB \n", sx={"padding": "10px"})
             mui.Typography(f"Memoria Pico:\t\t {peak / 10**6:.6f} MB \n", sx={"padding": "10px"})
 
-
-            with mui.ButtonGroup(variant="text", sx={"padding": "10px",'display': 'flex','justifyContent': 'flex-end','alignItems': 'right'}):
-                if runfunc is not None:
-                    mui.Button(mui.icon.Terminal(),mui.Typography("Ejecutar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),onClick=runfunc)
-                else:
-                    mui.Button(mui.icon.Terminal(),mui.Typography("Ejecutar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),disabled=True)
-                if output[1]!="":
-                    if explaninfunc is not None:
-                        mui.Button(mui.icon.AutoAwesome(),mui.Typography("Explicar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),onClick=explaninfunc)
-                    else:
-                        mui.Button(mui.icon.AutoAwesome(),mui.Typography("Explicar", sx={"paddingLeft": "10px", "fontSize": "1.2rem"}),disabled=True)
 
 
 

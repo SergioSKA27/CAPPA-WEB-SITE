@@ -55,6 +55,13 @@ st.markdown(
     padding-right: 0.5rem;
     padding-bottom: 0;
   }
+
+div.stSpinner > div {
+    text-align:center;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
 </style>
 """,
     unsafe_allow_html=True,
@@ -126,6 +133,17 @@ def execute_code(code, timeout=1, test_file: bytes = None):
 	cu, p = tracemalloc.get_traced_memory()
 	e = perf_counter()
 	return result, e-s, cu, p
+
+
+async def generate_explanation(prompt):
+    """Generate an explanation for the code"""
+    model = load_genmodel()
+    try:
+        response = model.generate_content(prompt)
+    except Exception as e:
+        response = f"Error generando explicación {e} 🤯\n Intente Nuevamente dentro de unos minutos"
+    await asyncio.sleep(10)
+    return response
 
 
 def set_explanin():
@@ -286,15 +304,11 @@ with elements("workspace"):
         model = load_genmodel()
         prompt = f"Explica el error {result[0][1]}, este es el código: {w.editor.get_content('Code')}"
         with st.spinner("🧠 Generando explicación..."):
-            response =  model.generate_content(prompt)
+            response =  asyncio.run(generate_explanation(prompt))
 
         with st.expander("💡 Explicación", expanded=True):
             st.session_state.explainstr = response.text
             st.write_stream(stream_text)
-            rlexplain = st.columns([0.9,0.1])
-            if rlexplain[1].button("🔃",use_container_width=True):
-                st.session_state.explanin = True
-                st.rerun()
 
         st.session_state.explanin = False
 
