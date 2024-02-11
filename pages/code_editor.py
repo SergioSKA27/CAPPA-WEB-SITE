@@ -14,8 +14,10 @@ import streamlit as st
 from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
+import extra_streamlit_components as stx
 
 from modules import Card, Dashboard, Editor, Timer
+from Clases import Usuario,Autenticador
 
 # Autor: Sergio Lopez
 
@@ -75,7 +77,9 @@ if "auth_state" not in st.session_state or st.session_state["auth_state"] == Fal
 
 
 # ---------------------------------Funciones---------------------------------
-
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
 
 def stream_text():
     """Stream text to the app"""
@@ -255,16 +259,16 @@ menu_id = hc.nav_bar(
 
 
 if menu_id == "Inicio":
-    switch_page("Main")
+    st.switch_page("Main")
 
 if menu_id == "Analisis de Datos":
-    switch_page("data_analysis_home")
+    st.switch_page("pages/data_analysis_home.py")
 
 if menu_id == "logout":
     st.session_state.pop("auth_state")
     st.session_state.pop("userinfo")
     st.session_state.pop("username")
-    switch_page("login")
+    st.switch_page("pages/login.py")
 
 
 if menu_id == st.session_state.user.usuario:
@@ -272,33 +276,33 @@ if menu_id == st.session_state.user.usuario:
         st.session_state.query = {"Table": "Usuario", "id": st.session_state.user.key}
     else:
         st.session_state.query = {"Table": "Usuario", "id": st.session_state.user.key}
-    switch_page("profile_render")
+    st.switch_page("pages/profile_render.py")
 
 if (
-    st.session_state["userinfo"]["rol"] == "Administrador"
-    or st.session_state["userinfo"]["rol"] == "Profesor"
-    or st.session_state["userinfo"]["rol"] == "Moderador"
+    st.session_state.user.is_admin()
+    or st.session_state.user.is_professor()
+    or st.session_state.user.is_moderator()
 ):
     if menu_id == "subid144":
-        switch_page("test_editor")
+        st.switch_page("pages/test_editor.py")
 
     if menu_id == "doceditor":
-        switch_page("doc_editor")
+        st.switch_page("pages/doc_editor.py")
 
     if menu_id == "docshome":
-        switch_page("docs_home")
+        st.switch_page("pages/docs_home.py")
 
     if menu_id == "subid44":
-        switch_page("problems_editor")
+        st.switch_page("pages/problems_editor.py")
 
     if menu_id == "subid00":
-        switch_page("problems_home")
+        st.switch_page("pages/problems_home.py")
 else:
     if menu_id == "docs":
-        switch_page("docs_home")
+        st.switch_page("pages/docs_home.py")
 
     if menu_id == "Problemas":
-        switch_page("problems_home")
+        st.switch_page("pages/problems_home.py")
 
 
 # ---------------------------------Body---------------------------------
