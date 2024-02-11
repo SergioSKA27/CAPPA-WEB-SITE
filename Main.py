@@ -8,6 +8,7 @@ import datetime
 from Clases.Autenticador import Autenticador
 import extra_streamlit_components as stx
 from st_xatadb_connection import XataConnection
+import time
 
 #Autor: Sergio Demis Lopez Martinez
 #This is the main file for the CAPPA project and will contain the landing page
@@ -163,38 +164,39 @@ menu_id = hc.nav_bar(
 if auth() :
     if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
         if menu_id == 'subid00':
-            switch_page('problems_home')
+            st.switch_page('pages/problems_home.py')
+
         if menu_id == 'subid44':
-            switch_page('problems_editor')
+            st.switch_page('pages/problems_editor.py')
 
         if menu_id == 'docshome':
-            switch_page('docs_home')
+            st.switch_page('pages/docs_home.py')
 
         if menu_id == 'doceditor':
-            switch_page('doc_editor')
+            st.switch_page('pages/doc_editor.py')
 
         if menu_id == 'subid144':
-            switch_page('test_editor')
+            st.switch_page('pages/test_editor.py')
 
     else:
         if menu_id == 'Problemas':
-            switch_page('problems_home')
+            st.switch_page('pages/problems_home.py')
 
         if menu_id == 'Blog':
-            switch_page('docs_home')
+            st.switch_page('pages/docs_home.py')
 
 
 if menu_id == 'Iniciar Sesión':
-    switch_page('login')
+    st.switch_page('pages/login.py')
 
 if menu_id == 'Analisis de Datos':
-    switch_page('data_analysis_home')
+    st.switch_page('pages/data_analysis_home.py')
 
 if menu_id == 'Blog':
-    switch_page('docs_home')
+    st.switch_page('pages/docs_home.py')
 
 if menu_id == 'code':
-    switch_page('code_editor')
+    st.switch_page('pages/code_editor.py')
 
 if menu_id == 'logout':
     st.session_state.auth_state = False
@@ -202,7 +204,9 @@ if menu_id == 'logout':
     st.session_state.user = None
     st.session_state.username = None
     auth.delete_valid_cookie()
-    switch_page('login')
+    with st.spinner('Cerrando Sesión...'):
+        time.sleep(2)
+    st.switch_page('pages/login.py')
 
 if auth() and st.session_state.user is not None:
     if menu_id == st.session_state.user.usuario:
@@ -210,7 +214,8 @@ if auth() and st.session_state.user is not None:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
-        switch_page('profile_render')
+
+        st.switch_page('pages/profile_render.py')
 
 
 #---------------------------------#

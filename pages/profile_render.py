@@ -8,7 +8,9 @@ from types import SimpleNamespace
 from modules import Card, Dashboard, DataGrid, Editor, Pie, Player, Radar, Timer
 import hydralit_components as hc
 from streamlit_extras.switch_page_button import switch_page
-
+import extra_streamlit_components as stx
+import time
+from Clases import Usuario,Autenticador
 
 
 #---------------------------------Page config---------------------------------
@@ -45,27 +47,30 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
-if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
-    #Si no hay un usuario logeado, se muestra la pagina de login
-    switch_page('login')
-
 
 #---------------------------------Funciones---------------------------------
 def get_user(idd):
     return xata.get("Usuario", idd)
 
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
 
+cookie_manager = get_manager()
+auth = Autenticador(xata,cookie_manager)
 
+if 'auth_state' not in st.session_state or st.session_state.auth_state == False:
+    auth.validate_cookie()
+    if st.session_state.auth_state == False:
+        st.switch_page('pages/login.py')
 
-#---------------------------------Variables de estado---------------------------------
-if 'query' in st.session_state and st.session_state.query['Table'] == 'Usuario':
-    if 'profile_data' not in st.session_state :
-        st.session_state.profile_data = get_user(st.session_state.query['id'])
-    else:
-        st.session_state.profile_data = get_user(st.session_state.query['id'])
-else:
-    st.error("404 Not Found")
-    st.image("https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif")
+cookie = cookie_manager.get('query')
+
+if cookie is None or ('query' in st.session_state and cookie != st.session_state.query) :
+    cookie_manager.set('query',st.session_state.query)
+    with st.spinner('Cargando Perfil...'):
+        time.sleep(5)
+
 
 
 
@@ -158,6 +163,56 @@ else:
 
 
 
+#---------------------------------Variables de estado---------------------------------
+if 'query' in st.session_state and st.session_state.query['Table'] == 'Usuario':
+    if 'profile_data' not in st.session_state :
+        try:
+            st.session_state.profile_data = get_user(st.session_state.query['id'])
+        except Exception as e:
+            st.error("404 Not Found")
+            st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+            with st.expander("Detalles del error"):
+                st.error(e)
+            st.stop()
+    else:
+        try:
+            st.session_state.profile_data = get_user(st.session_state.query['id'])
+        except Exception as e:
+            st.error("404 Not Found")
+            st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+            with st.expander("Detalles del error"):
+                st.error(e)
+            st.stop()
+
+elif 'table' in st.query_params and 'id' in st.query_params:
+    if st.query_params['table'] == 'Usuario':
+        q = {'Table':st.query_params['table'],'id':st.query_params['id']}
+        st.session_state.query = q
+        try:
+            st.session_state.profile_data = get_user(st.query_params['id'])
+        except Exception as e:
+            st.error("404 Not Found")
+            st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+            with st.expander("Detalles del error"):
+                st.error(e)
+            st.stop()
+else:
+    qcookie = cookie_manager.get('query')
+    if qcookie is not None:
+        st.session_state.query = qcookie
+        try:
+            st.session_state.profile_data = get_user(st.session_state.query['id'])
+        except Exception as e:
+            st.error("404 Not Found")
+            st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+            with st.expander("Detalles del error"):
+                st.error(e)
+    else:
+        st.error("404 Not Found")
+        st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+        st.stop()
+
+
 
 
 
@@ -166,6 +221,8 @@ else:
 #---------------------------------Body---------------------------------
 cols = st.columns([0.3,0.7])
 
+
+#---------------------------------Sidebar---------------------------------
 with cols[0]:
     #st.write(st.session_state.profile_info)
     if 'avatar' not in st.session_state.profile_data:
@@ -197,7 +254,8 @@ with cols[0]:
 
         **Puntos:** {st.session_state.profile_data['score']}
     """)
-    if st.session_state.profile_data['id'] == st.session_state.username:
+    #-------------------------------Editar perfil---------------------------------
+    if st.session_state.profile_data['id'] == st.session_state.user.key:
         if st.checkbox("Editar perfil"):
             with st.form(key='profile_edit_form'):
                 st.caption('Edite los campos que desee cambiar')
@@ -232,14 +290,15 @@ with cols[0]:
     if st.session_state.userinfo['rol'] == 'Administrador' and st.session_state.profile_data['rol'] != 'Administrador':
         nrol = st.selectbox("Editar Rol", options=['Moderador','Profesor','Estudiante'])
 
-
+#---------------------------------Biografía---------------------------------
 with cols[1]:
     with st.container(border=True):
         c0 = st.columns([0.7,0.3])
 
         c0[0].subheader("Biografía")
 
-        if st.session_state.profile_data['id'] == st.session_state.username:
+        if st.session_state.profile_data['id'] == st.session_state.user.key:
+            #-------------------------------Editar biografía---------------------------------
             if c0[1].checkbox("Editar biografía"):
                 tabs = st.tabs(["Editor de texto", 'Markdown'])
                 with tabs[0]:
@@ -300,6 +359,7 @@ with cols[1]:
                     except Exception as e:
                         st.error(f"Error al guardar cambios: {e}")
 
+        #-------------------------------Mostrar biografía---------------------------------
         if 'feed' in st.session_state.profile_data:
             st.markdown(st.session_state.profile_data['feed'], unsafe_allow_html=True)
 
