@@ -6,27 +6,13 @@ from st_xatadb_connection import XataConnection
 import datetime
 import re
 from Clases import Usuario, Autenticador
+import extra_streamlit_components as stx
+import time
 
 st.set_page_config(page_title='Login', page_icon=':lock:', layout='centered', initial_sidebar_state='collapsed')
 
 xata = st.connection('xata',type=XataConnection)
 
-
-def register(data: dict, idunam: str, ):
-  try:
-    with st.spinner("Registrando..."):
-      ans = xata.insert("Usuario", data, idunam)
-  except Exception as e:
-    st.error(e)
-    return ans
-
-
-def check_username(usr):
-  try:
-    ans = xata.get("Usuario",usr)
-    return True
-  except Exception as e:
-    return False
 
 
 
@@ -125,6 +111,22 @@ with open('rsc/css/backgroundLogin.css') as f:
   <div class="star"></div>
 </div>''',unsafe_allow_html=True)
 
+
+def register(data: dict, idunam: str, ):
+  try:
+    with st.spinner("Registrando..."):
+      ans = xata.insert("Usuario", data, idunam)
+  except Exception as e:
+    st.error(e)
+    return ans
+
+def check_username(usr):
+  try:
+    ans = xata.get("Usuario",usr)
+    return True
+  except Exception as e:
+    return False
+
 def validar_correo(correo):
     patron = r'\b[A-Za-z0-9._%+-]+@pcpuma\.acatlan\.unam\.mx\b'
     if re.match(patron, correo):
@@ -133,7 +135,7 @@ def validar_correo(correo):
         return False
 
 def validate_login(username, password):
-    auth = Autenticador()
+
     try:
         ans = xata.get("Usuario",username)
         if auth.validate_password(password, ans['password']):
@@ -143,7 +145,20 @@ def validate_login(username, password):
     except Exception as e:
         return False
 
+def get_manager():
+    return stx.CookieManager()
 
+
+if 'switchtohome' not in st.session_state:
+    st.session_state.switchtohome = False
+
+if st.session_state.switchtohome:
+    st.session_state.switchtohome = False
+    with st.spinner("Redirigiendo..."):
+        time.sleep(5)
+    switch_page("Main")
+cookie_manager = get_manager()
+auth = Autenticador(xata,cookie_manager)
 #------------------------Login------------------------
 with st.form(key='login_form'):
     st.markdown('''
@@ -159,6 +174,7 @@ with st.form(key='login_form'):
     ''', unsafe_allow_html=True)
     username = st.text_input('Usuario',placeholder='No. de cuenta')
     password = st.text_input('Contraseña', type='password',placeholder='Contraseña')
+    remember1month = st.checkbox('Recuerdame por 1 mes')
     cols = st.columns([0.3,0.4,0.3])
     with cols[1]:
         submit_button = st.form_submit_button(label='Iniciar sesión',use_container_width=True)
@@ -174,8 +190,14 @@ with st.form(key='login_form'):
                 st.session_state['auth_state'] = True
                 st.session_state['userinfo'] = xata.get("Usuario",username)
                 st.session_state['user'] = Usuario(st.session_state['userinfo'])
-
-                switch_page('Main')
+                if remember1month:
+                    auth.set_valid_cookie(username,30)
+                else:
+                    auth.set_valid_cookie(username)
+                with st.spinner('Verificando credenciales...'):
+                    time.sleep(2)
+                st.session_state.switchtohome = True
+                st.rerun()
             else:
                 st.error('Usuario o contraseña incorrectos')
 

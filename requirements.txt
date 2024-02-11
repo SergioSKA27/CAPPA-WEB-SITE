@@ -13,3 +13,4 @@ google-generativeai
 bcrypt
 pygwalker
 mitosheet
+extra-streamlit-components
