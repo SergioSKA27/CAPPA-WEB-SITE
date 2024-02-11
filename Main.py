@@ -5,6 +5,7 @@ import streamlit_antd_components as sac
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_calendar import calendar
 import datetime
+from Clases.Autenticador import Autenticador
 
 #Autor: Sergio Demis Lopez Martinez
 #This is the main file for the CAPPA project and will contain the landing page
@@ -36,6 +37,7 @@ background-color: #f4ebe8;
 </style>
 """,unsafe_allow_html=True)
 
+auth = Autenticador()
 #---------------------------------  Variables de Sesión ---------------------------------------------------------
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
@@ -57,7 +59,7 @@ with open('rsc/html/headlogos.html') as f:
 #Navigation Bar
 
 
-if st.session_state['auth_state'] == False:
+if auth() == False:
     menu_data = [
     {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información",'id':'Blog'},
     {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
@@ -112,7 +114,7 @@ menu_id = hc.nav_bar(
     )
 
 
-if st.session_state['auth_state'] :
+if auth() :
     if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
         if menu_id == 'subid00':
             switch_page('problems_home')
@@ -155,7 +157,7 @@ if menu_id == 'logout':
     st.session_state.username = None
     switch_page('login')
 
-if st.session_state['auth_state']  and st.session_state.user is not None:
+if auth() and st.session_state.user is not None:
     if menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}

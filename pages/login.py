@@ -5,7 +5,7 @@ from streamlit_extras.switch_page_button import switch_page
 from st_xatadb_connection import XataConnection
 import datetime
 import re
-from Clases import Usuario
+from Clases import Usuario, Autenticador
 
 st.set_page_config(page_title='Login', page_icon=':lock:', layout='centered', initial_sidebar_state='collapsed')
 
@@ -133,9 +133,10 @@ def validar_correo(correo):
         return False
 
 def validate_login(username, password):
+    auth = Autenticador()
     try:
         ans = xata.get("Usuario",username)
-        if bc.checkpw(password.encode('utf-8'), ans['password'].encode('utf-8')):
+        if auth.validate_password(password, ans['password']):
             return True
         else:
             return False
