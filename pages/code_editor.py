@@ -1,19 +1,21 @@
+# trunk-ignore-all(isort)
+import asyncio
+
+
 import subprocess
 import tracemalloc
 from functools import wraps
-from time import perf_counter,sleep
+from time import perf_counter, sleep
 from types import SimpleNamespace
+
+import google.generativeai as genai
 import hydralit_components as hc
 import streamlit as st
 from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
-from modules import Card, Dashboard, Editor, Timer
-import google.generativeai as genai
-import asyncio
-import sys
-from  concurrent.futures import ThreadPoolExecutor
 
+from modules import Card, Dashboard, Editor, Timer
 
 # Autor: Sergio Lopez
 
@@ -67,16 +69,17 @@ div.stSpinner > div {
 )
 
 genai.configure(api_key=st.secrets["GEN_AI_KEY"])
-if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
-    #Si no hay un usuario logeado, se muestra la pagina de login
-    switch_page('login')
+if "auth_state" not in st.session_state or st.session_state["auth_state"] == False:
+    # Si no hay un usuario logeado, se muestra la pagina de login
+    switch_page("login")
 
 
-#---------------------------------Funciones---------------------------------
+# ---------------------------------Funciones---------------------------------
+
 
 def stream_text():
     """Stream text to the app"""
-    for w in st.session_state.explainstr.split(' '):
+    for w in st.session_state.explainstr.split(" "):
         yield w + " "
         sleep(0.05)
 
@@ -103,9 +106,11 @@ def measure_performance(func):
 
     return wrapper
 
+
 @st.cache_resource
 def load_genmodel():
     return genai.GenerativeModel("gemini-pro")
+
 
 def run_code(code, timeout=1, test_file: bytes = None):
     """Run code and capture the output"""
@@ -126,12 +131,13 @@ def run_code(code, timeout=1, test_file: bytes = None):
     except subprocess.TimeoutExpired or Exception as e:
         return "", "TimeoutExpired"
 
+
 def execute_code(code, timeout=1, test_file: bytes = None):
-	s = perf_counter()
-	result = run_code(code, timeout, test_file)
-	cu, p = tracemalloc.get_traced_memory()
-	e = perf_counter()
-	return result, e-s, cu, p
+    s = perf_counter()
+    result = run_code(code, timeout, test_file)
+    cu, p = tracemalloc.get_traced_memory()
+    e = perf_counter()
+    return result, e - s, cu, p
 
 
 async def generate_explanation(prompt):
@@ -148,16 +154,17 @@ async def generate_explanation(prompt):
 def set_explanin():
     st.session_state.explanin = True
 
+
 def set_reruncode():
     st.session_state.reruncode = True
 
 
-if 'explainstr' not in st.session_state:
+if "explainstr" not in st.session_state:
     st.session_state.explainstr = ""
-if 'explanin' not in st.session_state:
-    st.session_state.explanin =  False
+if "explanin" not in st.session_state:
+    st.session_state.explanin = False
 
-if 'reruncode' not in st.session_state:
+if "reruncode" not in st.session_state:
     st.session_state.reruncode = False
 
 if st.session_state.reruncode:
@@ -165,35 +172,71 @@ if st.session_state.reruncode:
     sync()
 
 ##---------------------------------Navbar---------------------------------
-if st.session_state.user.is_admin() or st.session_state.user.is_professor() or st.session_state.user.is_moderator:
+if (
+    st.session_state.user.is_admin()
+    or st.session_state.user.is_professor()
+    or st.session_state.user.is_moderator
+):
     menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
-        'submenu':[
-            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
-        ]},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
-        'submenu':[
-            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
-            {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
+        {
+            "icon": "bi bi-cpu",
+            "label": "Problemas",
+            "ttip": "Problemas de Programación",
+            "submenu": [
+                {"id": "subid00", "icon": "bi bi-search", "label": "Todos"},
+                {"id": "subid44", "icon": "bi bi-gear", "label": "Editor"},
+            ],
         },
-        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-            {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
+        {"id": "contest", "icon": "bi bi-trophy", "label": "Concursos"},
+        {
+            "icon": "bi bi-graph-up",
+            "label": "Analisis de Datos",
+            "ttip": "Herramientas de Analisis de Datos",
+        },
+        {
+            "id": "docs",
+            "icon": "bi bi-file-earmark-richtext",
+            "label": "Blog",
+            "ttip": "Articulos e Información",
+            "submenu": [
+                {"id": "doceditor", "icon": "bi bi-gear", "label": "Editor"},
+                {"id": "docshome", "icon": "bi bi-search", "label": "Home"},
+            ],
+        },
+        {"id": "code", "icon": "bi bi-code-square", "label": "Editor de Código"},
+        {
+            "icon": "bi bi-pencil-square",
+            "label": "Tests",
+            "submenu": [
+                {"label": "Todos", "icon": "bi bi-search", "id": "alltests"},
+                {"id": "subid144", "icon": "bi bi-gear", "label": "Editor"},
+            ],
+        },
+        {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
     ]
 else:
     menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
-        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests"},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
+        {
+            "icon": "bi bi-cpu",
+            "label": "Problemas",
+            "ttip": "Problemas de Programación",
+            "id": "Problemas",
+        },
+        {"id": "contest", "icon": "bi bi-trophy", "label": "Concursos"},
+        {
+            "icon": "bi bi-graph-up",
+            "label": "Analisis de Datos",
+            "ttip": "Herramientas de Analisis de Datos",
+        },
+        {
+            "id": "docs",
+            "icon": "bi bi-file-earmark-richtext",
+            "label": "Blog",
+            "ttip": "Articulos e Información",
+        },
+        {"id": "code", "icon": "bi bi-code-square", "label": "Editor de Código"},
+        {"icon": "bi bi-pencil-square", "label": "Tests"},
+        {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
     ]
 
 logname = st.session_state.user.usuario
@@ -211,51 +254,54 @@ menu_id = hc.nav_bar(
 )
 
 
+if menu_id == "Inicio":
+    switch_page("Main")
 
-if menu_id == 'Inicio':
-  switch_page('Main')
+if menu_id == "Analisis de Datos":
+    switch_page("data_analysis_home")
 
-if menu_id == 'Analisis de Datos':
-    switch_page('data_analysis_home')
-
-if menu_id == 'logout':
-    st.session_state.pop('auth_state')
-    st.session_state.pop('userinfo')
-    st.session_state.pop('username')
-    switch_page('login')
+if menu_id == "logout":
+    st.session_state.pop("auth_state")
+    st.session_state.pop("userinfo")
+    st.session_state.pop("username")
+    switch_page("login")
 
 
 if menu_id == st.session_state.user.usuario:
-    if 'query' not in st.session_state:
-        st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+    if "query" not in st.session_state:
+        st.session_state.query = {"Table": "Usuario", "id": st.session_state.user.key}
     else:
-        st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
-    switch_page('profile_render')
+        st.session_state.query = {"Table": "Usuario", "id": st.session_state.user.key}
+    switch_page("profile_render")
 
-if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
-    if menu_id == 'subid144':
-        switch_page('test_editor')
+if (
+    st.session_state["userinfo"]["rol"] == "Administrador"
+    or st.session_state["userinfo"]["rol"] == "Profesor"
+    or st.session_state["userinfo"]["rol"] == "Moderador"
+):
+    if menu_id == "subid144":
+        switch_page("test_editor")
 
-    if menu_id == 'doceditor':
-        switch_page('doc_editor')
+    if menu_id == "doceditor":
+        switch_page("doc_editor")
 
-    if menu_id == 'docshome':
-        switch_page('docs_home')
+    if menu_id == "docshome":
+        switch_page("docs_home")
 
-    if menu_id == 'subid44':
-        switch_page('problems_editor')
+    if menu_id == "subid44":
+        switch_page("problems_editor")
 
-    if menu_id == 'subid00':
-        switch_page('problems_home')
+    if menu_id == "subid00":
+        switch_page("problems_home")
 else:
-    if menu_id == 'docs':
-        switch_page('docs_home')
+    if menu_id == "docs":
+        switch_page("docs_home")
 
-    if menu_id == 'Problemas':
-        switch_page('problems_home')
+    if menu_id == "Problemas":
+        switch_page("problems_home")
 
 
-#---------------------------------Body---------------------------------
+# ---------------------------------Body---------------------------------
 
 
 if "w_code" not in state:
@@ -277,12 +323,12 @@ if "w_code" not in state:
             6,
         ),
         card=Card(
-			board,
-			11,
-			6,
-			4,
-			6,
-		),
+            board,
+            11,
+            6,
+            4,
+            6,
+        ),
     )
     state.w_code = w
     w.editor.add_tab("Code", "print('Hello world!')", "python")
@@ -296,21 +342,25 @@ with elements("workspace"):
     with w.dashboard(rowHeight=57):
         w.editor()
         content = w.editor.get_content("Code")
-        result =  execute_code(w.editor.get_content("Code"), timeout=3)
-        w.timer(result[0],str(result[1]),result[2],result[3],set_explanin,set_reruncode)
-        w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
+        result = execute_code(w.editor.get_content("Code"), timeout=3)
+        w.timer(
+            result[0], str(result[1]), result[2], result[3], set_explanin, set_reruncode
+        )
+        w.card(
+            "Editor de Código",
+            "https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png",
+        )
     if st.session_state.explanin:
         model = load_genmodel()
         prompt = f"Explica el error {result[0][1]}, este es el código: {w.editor.get_content('Code')}"
         with st.spinner("🧠 Generando explicación..."):
-            response =  asyncio.run(generate_explanation(prompt))
+            response = asyncio.run(generate_explanation(prompt))
 
         with st.expander("💡 Explicación", expanded=True):
             st.session_state.explainstr = response.text
             st.write_stream(stream_text)
 
         st.session_state.explanin = False
-
 
 
 with st.expander("Salida"):
@@ -320,9 +370,9 @@ with st.expander("Salida"):
     else:
         st.text(result[0][0])
 
-    st.write(f':red[{result[0][1]}]')
+    st.write(f":red[{result[0][1]}]")
 
 
-#---------------------------------Footer---------------------------------
-with open('rsc/html/minimal_footer.html') as f:
+# ---------------------------------Footer---------------------------------
+with open("rsc/html/minimal_footer.html") as f:
     st.markdown(f.read(), unsafe_allow_html=True)
