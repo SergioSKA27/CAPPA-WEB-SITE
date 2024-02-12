@@ -35,7 +35,7 @@ class Autenticador:
 
     def validate_cookie(self):
         manager = self.manager
-        if manager.get('Validado') is not None:
+        if manager.get_all('valid').get('Validado') is not None:
             if 'auth_state' not in session_state:
                 session_state.auth_state = True
             else:

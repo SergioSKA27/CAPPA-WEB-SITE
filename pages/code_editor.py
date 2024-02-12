@@ -1,7 +1,7 @@
 # trunk-ignore-all(isort)
 import asyncio
 
-
+import time
 import subprocess
 import tracemalloc
 from functools import wraps
@@ -15,6 +15,7 @@ from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_extras.switch_page_button import switch_page
 import extra_streamlit_components as stx
+from st_xatadb_connection import XataConnection
 
 from modules import Card, Dashboard, Editor, Timer
 from Clases import Usuario,Autenticador
@@ -70,6 +71,7 @@ div.stSpinner > div {
     unsafe_allow_html=True,
 )
 
+xata = st.connection("xata", type=XataConnection)
 genai.configure(api_key=st.secrets["GEN_AI_KEY"])
 if "auth_state" not in st.session_state or st.session_state["auth_state"] == False:
     # Si no hay un usuario logeado, se muestra la pagina de login
@@ -175,6 +177,19 @@ if st.session_state.reruncode:
     st.session_state.reruncode = False
     sync()
 
+
+
+cookie_manager = get_manager()
+auth = Autenticador(xata,cookie_manager)
+
+if auth() == False:
+    auth.validate_cookie()
+    if auth() == False:
+        st.switch_page("pages/login.py")
+
+
+
+
 ##---------------------------------Navbar---------------------------------
 if (
     st.session_state.user.is_admin()
@@ -259,7 +274,7 @@ menu_id = hc.nav_bar(
 
 
 if menu_id == "Inicio":
-    st.switch_page("Main")
+    st.switch_page("pages/app.py")
 
 if menu_id == "Analisis de Datos":
     st.switch_page("pages/data_analysis_home.py")

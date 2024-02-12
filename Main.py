@@ -56,70 +56,28 @@ if 'userinfo' not in st.session_state:
 if 'user' not in st.session_state:
     st.session_state.user = None
 
+#---------------------------------Funciones---------------------------------------------------------
+
 @st.cache_resource(experimental_allow_widgets=True)
 def get_manager():
     return stx.CookieManager()
 
-
-#st.write(st.session_state.auth_state)
-#st.write(st.session_state.username)
-#st.write(st.session_state.userinfo)
 
 
 #---------------------------------Logos---------------------------------------------------------
 with open('rsc/html/headlogos.html') as f:
     st.markdown(f.read(),unsafe_allow_html=True)
 
-#---------------------------------#
-#Navigation Bar
-cookie_manager = get_manager()
-auth = Autenticador(xata,cookie_manager)
-
-if auth() == False:
-    auth.validate_cookie()
+#---------------------------------Navigation Bar---------------------------------------------------------
 
 
-if auth() == False:
-    menu_data = [
+
+menu_data = [
     {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información",'id':'Blog'},
     {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
     {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
     ]
-    logname = 'Iniciar Sesión'
-else:
-    #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
-        menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
-        'submenu':[
-            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
-        ]},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
-        'submenu':[
-            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
-            {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
-        },
-        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
-            {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"},
-    ]
-    else:
-        menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
-        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests"},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
-    ]
-    logname = st.session_state.user.usuario
-
+logname = 'Iniciar Sesión'
 
 
 over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
@@ -133,64 +91,14 @@ menu_id = hc.nav_bar(
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
 
-
-if auth() :
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
-        if menu_id == 'subid00':
-            st.switch_page('pages/problems_home.py')
-
-        if menu_id == 'subid44':
-            st.switch_page('pages/problems_editor.py')
-
-        if menu_id == 'docshome':
-            st.switch_page('pages/docs_home.py')
-
-        if menu_id == 'doceditor':
-            st.switch_page('pages/doc_editor.py')
-
-        if menu_id == 'subid144':
-            st.switch_page('pages/test_editor.py')
-
-    else:
-        if menu_id == 'Problemas':
-            st.switch_page('pages/problems_home.py')
-
-        if menu_id == 'Blog':
-            st.switch_page('pages/docs_home.py')
-
-
 if menu_id == 'Iniciar Sesión':
     st.switch_page('pages/login.py')
-
-if menu_id == 'Analisis de Datos':
-    st.switch_page('pages/data_analysis_home.py')
 
 if menu_id == 'Blog':
     st.switch_page('pages/docs_home.py')
 
-if menu_id == 'code':
-    st.switch_page('pages/code_editor.py')
-
-if menu_id == 'logout':
-    st.session_state.auth_state = False
-    st.session_state.userinfo = None
-    st.session_state.user = None
-    st.session_state.username = None
-    auth.delete_valid_cookie()
-    with st.spinner('Cerrando Sesión...'):
-        time.sleep(2)
-    st.switch_page('pages/login.py')
-
-if auth() and st.session_state.user is not None:
-    if menu_id == st.session_state.user.usuario:
-        if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
-        else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
-
-        st.switch_page('pages/profile_render.py')
-
-
+if st.session_state.auth_state:
+    st.switch_page('pages/app.py')
 #---------------------------------#
 #Welcome Message
 cols0 = st.columns([0.6,0.4])
@@ -202,7 +110,9 @@ with cols0[1]:
     st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json',quality='low')
 
 
-
+cookie_manager = get_manager()
+if cookie_manager.get('Validado') is not None:
+    st.switch_page('pages/app.py')
 
 sac.divider(label='',align='center')
 #---------------------------------#
