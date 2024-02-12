@@ -43,15 +43,36 @@ def get_manager():
     return stx.CookieManager()
 
 
+if 'auth_state' not in st.session_state:
+    st.session_state.auth_state = False
+
+if 'username' not in st.session_state:
+    st.session_state.username = None
+
+if 'userinfo' not in st.session_state:
+    st.session_state.userinfo = None
+
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+if 'cookie_tries' not in st.session_state:
+    st.session_state.cookie_tries = 0
+
+
 cookie_manager = get_manager()
 auth = Autenticador(xata,cookie_manager)
+valcookie = cookie_manager.get('Validado')
+if auth() == False and valcookie is not None:
+    if st.session_state.cookie_tries > 10:
+        st.switch_page('pages/login.py')
+    auth.validate_cookie(valcookie)
+    st.session_state.cookie_tries += 1
+    st.write(st.session_state.cookie_tries)
 
-if auth() == False:
-    auth.validate_cookie()
-    if auth() == False:
-        st.switch_page("pages/login.py")
-
-
+    st.rerun()
+else:
+    if 'cookie_tries' in st.session_state:
+        st.session_state.pop('cookie_tries')
 
 
 
@@ -126,7 +147,7 @@ if auth():
         st.session_state.userinfo = None
         st.session_state.user = None
         st.session_state.username = None
-        auth.delete_valid_cookie()
+        cookie_manager.delete('Validado')
         with st.spinner('Cerrando Sesión...'):
             time.sleep(2)
         st.switch_page('pages/login.py')

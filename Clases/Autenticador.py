@@ -33,34 +33,29 @@ class Autenticador:
         if manager.get('Validado') is not None:
             manager.delete('Validado')
 
-    def validate_cookie(self):
-        manager = self.manager
-        if manager.get_all('valid').get('Validado') is not None:
-            if 'auth_state' not in session_state:
-                session_state.auth_state = True
-            else:
-                session_state.auth_state = True
-
-            if 'username' not in session_state:
-                session_state.username = manager.get('Validado')
-            else:
-                session_state.username = manager.get('Validado')
-
-            if 'userinfo' not in session_state:
-                try:
-                    session_state.userinfo = self.xatacon.get('Usuario',session_state.username)
-                except Exception as e:
-                    print(e)
-            else:
-                try:
-                    session_state.userinfo = self.xatacon.get('Usuario',session_state.username)
-                except Exception as e:
-                    print(e)
-
-            if 'user' not in session_state:
-                session_state.user = Usuario(session_state.userinfo)
-            else:
-                session_state.user = Usuario(session_state.userinfo)
+    def validate_cookie(self,username):
+        if 'auth_state' not in session_state:
+            session_state.auth_state = True
+        else:
+            session_state.auth_state = True
+        if 'username' not in session_state:
+            session_state.username = username
+        else:
+            session_state.username = username
+        if 'userinfo' not in session_state:
+            try:
+                session_state.userinfo = self.xatacon.get('Usuario',session_state.username)
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                session_state.userinfo = self.xatacon.get('Usuario',session_state.username)
+            except Exception as e:
+                print(e)
+        if 'user' not in session_state:
+            session_state.user = Usuario(session_state.userinfo)
+        else:
+            session_state.user = Usuario(session_state.userinfo)
 
 
 

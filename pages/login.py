@@ -191,9 +191,10 @@ with st.form(key='login_form'):
                 st.session_state['userinfo'] = xata.get("Usuario",username)
                 st.session_state['user'] = Usuario(st.session_state['userinfo'])
                 if remember1month:
-                    auth.set_valid_cookie(username,30)
+                    cookie_manager.set('Validado',username,expires_at=datetime.datetime.now() + datetime.timedelta(days=30))
                 else:
-                    auth.set_valid_cookie(username)
+                    cookie_manager.set('Validado',username)
+
                 with st.spinner('Verificando credenciales...'):
                     time.sleep(2)
                 st.session_state.switchtohome = True
@@ -201,6 +202,9 @@ with st.form(key='login_form'):
             else:
                 st.error('Usuario o contraseña incorrectos')
 
+
+
+st.write(cookie_manager.get_all())
 
 opt = sac.tabs([
 sac.TabsItem(label='Necesitas ayuda?', icon='question-circle-fill'),

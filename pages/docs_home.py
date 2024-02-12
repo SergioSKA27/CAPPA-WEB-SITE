@@ -1,3 +1,4 @@
+import time
 import datetime
 
 import google.generativeai as genai
@@ -9,7 +10,9 @@ import streamlit_antd_components as sac
 from st_xatadb_connection import XataConnection
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_searchbox import st_searchbox
+import extra_streamlit_components as stx
 
+from Clases import Usuario,Autenticador
 # --------------------------------------------- page config ---------------------------------------------
 # basic page configuration
 st.set_page_config(
@@ -511,7 +514,9 @@ def search_doc(s: str):
 	)
 	return results["records"]
 
-
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
 
 def update_pagedocs():
     st.session_state.docspage = [
@@ -587,49 +592,104 @@ if "daylycard" not in st.session_state:
         "day": datetime.date.today().day,
         "month": datetime.date.today().strftime("%B"),
     }
-##---------------------------------Navbar---------------------------------
-if 'auth_state' not  in st.session_state or st.session_state['auth_state'] == False:
-    menu_data = [
-    {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información",'id':'Blog'},
-    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
-    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
-    ]
-    logname = 'Iniciar Sesión'
-    fs = 10
+
+
+
+
+if 'auth_state' not in st.session_state:
+    st.session_state.auth_state = False
+
+if 'username' not in st.session_state:
+    st.session_state.username = None
+
+if 'userinfo' not in st.session_state:
+    st.session_state.userinfo = None
+
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+if 'cookie_tries' not in st.session_state:
+    st.session_state.cookie_tries = 0
+
+if 'logout' not in st.session_state:
+    st.session_state.logout = False
+
+if st.session_state.logout:
+    with st.spinner('Cerrando Sesión...'):
+        time.sleep(2)
+    st.session_state.logout = False
+    st.switch_page('pages/login.py')
+
+cookie_manager = get_manager()
+auth = Autenticador(xata,cookie_manager)
+valcookie = cookie_manager.get('Validado')
+if auth() == False and valcookie is not None:
+    if st.session_state.cookie_tries > 10:
+        st.switch_page('pages/login.py')
+    auth.validate_cookie(valcookie)
+    st.session_state.cookie_tries += 1
+    st.rerun()
 else:
+    if 'cookie_tries' in st.session_state:
+        st.session_state.pop('cookie_tries')
+
+
+
+
+
+##---------------------------------Navbar---------------------------------
+logname = 'visitor'
+if auth():
     #st.session_state['userinfo']
-    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
+            {'id':'subid44','icon': "bi bi-journal-code", 'label':"Editor"}
         ]},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
-            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
+            {'id':'doceditor','icon': "bi bi-file-earmark-richtext", 'label':"Editor" },
             {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"},
+        {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
+        'submenu':[
+            {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
+            {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
+        ]}
+
     ]
     else:
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests"},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
+        {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
+        'submenu':[
+            {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
+            {"id": "pcourses", "icon": "bi bi-journal-bookmark", "label": "Mis Cursos"},
+
+            {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
+        ]}
     ]
-    logname = st.session_state['userinfo']['username']
-    fs = 40
+    fs = 30
+    logname = None
+else:
+    menu_data = [
+    {'icon': "far fa-copy", 'label':"Blog",'ttip':"Articulos e Información",'id':'Blog'},
+    {'id':'About','icon':"bi bi-question-circle",'label':"FAQ",'ttip':"Preguntas Frecuentes"},
+    {'id':'contact','icon':"bi bi-envelope",'label':"Contacto",'ttip':"Contáctanos"},
+    ]
+    fs = 10
+
 
 
 over_theme = {"txc_inactive": "#FFFFFF", "menu_background": "#3670a0"}
@@ -637,7 +697,7 @@ menu_id = hc.nav_bar(
     menu_definition=menu_data,
     override_theme=over_theme,
     home_name="Inicio",
-    login_name=logname,
+    login_name='Iniciar Sesión' if logname is not None else None,
     hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
     sticky_nav=True,  # at the top or not
     sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
@@ -658,10 +718,13 @@ if menu_id == 'code':
     switch_page('code_editor')
 
 if menu_id == 'logout':
-    st.session_state.pop('auth_state')
-    st.session_state.pop('userinfo')
-    st.session_state.pop('username')
-    switch_page('login')
+    st.session_state.auth_state = False
+    st.session_state.userinfo = None
+    st.session_state.user = None
+    st.session_state.username = None
+    st.session_state.logout = True
+    cookie_manager.delete('Validado')
+
 
 
 

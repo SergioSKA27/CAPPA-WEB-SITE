@@ -57,23 +57,27 @@ if 'userinfo' not in st.session_state:
 if 'user' not in st.session_state:
     st.session_state.user = None
 
-@st.cache_resource(experimental_allow_widgets=True)
+
+if 'logout' not in st.session_state:
+    st.session_state.logout = False
+
 def get_manager():
     return stx.CookieManager()
 #---------------------------------#
 #Navigation Bar
+if st.session_state.logout:
+    with st.spinner('Cerrando Sesión...'):
+        time.sleep(2)
+    st.session_state.logout = False
+    st.switch_page('pages/login.py')
+
 cookie_manager = get_manager()
 auth = Autenticador(xata,cookie_manager)
+valcookie = cookie_manager.get('Validado')
+if auth() == False and valcookie is not None:
+    auth.validate_cookie(valcookie)
+    st.rerun()
 
-st.write(cookie_manager.get_all())
-if auth() == False:
-    auth.validate_cookie()
-    if auth() == False:
-        st.switch_page('pages/login.py')
-
-
-
-#st.write(st.session_state)
 
 if auth():
     #st.session_state['userinfo']
@@ -155,9 +159,6 @@ if auth():
             st.switch_page('pages/docs_home.py')
 
 
-    if menu_id == 'Iniciar Sesión':
-        st.switch_page('pages/login.py')
-
     if menu_id == 'Analisis de Datos':
         st.switch_page('pages/data_analysis_home.py')
 
@@ -172,10 +173,9 @@ if auth():
         st.session_state.userinfo = None
         st.session_state.user = None
         st.session_state.username = None
-        auth.delete_valid_cookie()
-        with st.spinner('Cerrando Sesión...'):
-            time.sleep(2)
-        st.switch_page('pages/login.py')
+        cookie_manager.delete('Validado')
+        st.session_state.logout = True
+
 
     if auth() and st.session_state.user is not None:
         if menu_id == st.session_state.user.usuario:
@@ -185,9 +185,11 @@ if auth():
                 st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
 
             st.switch_page('pages/profile_render.py')
-
 else:
-    st.switch_page('Main.py')
+    st.error("404 Not Found")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    st.stop()
 st.write('Bienvenido a CAPPA, el Centro de Aprendizaje y Programación para Programadores Avanzados')
 
 

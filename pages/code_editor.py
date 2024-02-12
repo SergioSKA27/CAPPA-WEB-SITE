@@ -73,13 +73,8 @@ div.stSpinner > div {
 
 xata = st.connection("xata", type=XataConnection)
 genai.configure(api_key=st.secrets["GEN_AI_KEY"])
-if "auth_state" not in st.session_state or st.session_state["auth_state"] == False:
-    # Si no hay un usuario logeado, se muestra la pagina de login
-    switch_page("login")
-
 
 # ---------------------------------Funciones---------------------------------
-@st.cache_resource(experimental_allow_widgets=True)
 def get_manager():
     return stx.CookieManager()
 
@@ -177,20 +172,47 @@ if st.session_state.reruncode:
     st.session_state.reruncode = False
     sync()
 
+if 'auth_state' not in st.session_state:
+    st.session_state.auth_state = False
 
+if 'username' not in st.session_state:
+    st.session_state.username = None
+
+if 'userinfo' not in st.session_state:
+    st.session_state.userinfo = None
+
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+if 'cookie_tries' not in st.session_state:
+    st.session_state.cookie_tries = 0
+
+if 'logout' not in st.session_state:
+    st.session_state.logout = False
+
+if st.session_state.logout:
+    with st.spinner('Cerrando Sesión...'):
+        time.sleep(2)
+    st.session_state.logout = False
+    st.switch_page('pages/login.py')
 
 cookie_manager = get_manager()
 auth = Autenticador(xata,cookie_manager)
-
-if auth() == False:
-    auth.validate_cookie()
-    if auth() == False:
-        st.switch_page("pages/login.py")
-
-
+valcookie = cookie_manager.get('Validado')
+if auth() == False and valcookie is not None:
+    if st.session_state.cookie_tries > 10:
+        st.switch_page('pages/login.py')
+    auth.validate_cookie(valcookie)
+    st.session_state.cookie_tries += 1
+    st.rerun()
+else:
+    if 'cookie_tries' in st.session_state:
+        st.session_state.pop('cookie_tries')
 
 
 ##---------------------------------Navbar---------------------------------
+
+
 if auth():
     #st.session_state['userinfo']
     if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
@@ -254,10 +276,8 @@ if auth():
         st.session_state.userinfo = None
         st.session_state.user = None
         st.session_state.username = None
-        auth.delete_valid_cookie()
-        with st.spinner('Cerrando Sesión...'):
-            time.sleep(2)
-        st.switch_page('pages/login.py')
+        st.session_state.logout = True
+        cookie_manager.delete('Validado')
 
 
     if menu_id == st.session_state.user.usuario:

@@ -5,10 +5,7 @@ import streamlit_antd_components as sac
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_calendar import calendar
 import datetime
-from Clases.Autenticador import Autenticador
-import extra_streamlit_components as stx
-from st_xatadb_connection import XataConnection
-import time
+
 
 #Autor: Sergio Demis Lopez Martinez
 #This is the main file for the CAPPA project and will contain the landing page
@@ -41,8 +38,6 @@ background-color: #f4ebe8;
 </style>
 """,unsafe_allow_html=True)
 
-xata = st.connection('xata',type=XataConnection)
-
 #---------------------------------  Variables de Sesión ---------------------------------------------------------
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
@@ -57,10 +52,6 @@ if 'user' not in st.session_state:
     st.session_state.user = None
 
 #---------------------------------Funciones---------------------------------------------------------
-
-@st.cache_resource(experimental_allow_widgets=True)
-def get_manager():
-    return stx.CookieManager()
 
 
 
@@ -110,9 +101,6 @@ with cols0[1]:
     st_lottie('https://lottie.host/140704e5-be12-4599-9a87-c945ab953df4/7qF25McNau.json',quality='low')
 
 
-cookie_manager = get_manager()
-if cookie_manager.get('Validado') is not None:
-    st.switch_page('pages/app.py')
 
 sac.divider(label='',align='center')
 #---------------------------------#
