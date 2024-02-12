@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 import hydralit_components as hc
 from streamlit_lottie import st_lottie
@@ -65,13 +66,13 @@ if auth():
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
+            {'id':'subid44','icon': "bi bi-journal-code", 'label':"Editor"}
         ]},
         {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
-            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
+            {'id':'doceditor','icon': "bi bi-file-earmark-richtext", 'label':"Editor" },
             {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
@@ -121,10 +122,14 @@ if auth():
         st.switch_page('pages/code_editor')
 
     if menu_id == 'logout':
-        st.session_state.pop('auth_state')
-        st.session_state.pop('userinfo')
-        st.session_state.pop('username')
-        switch_page('login')
+        st.session_state.auth_state = False
+        st.session_state.userinfo = None
+        st.session_state.user = None
+        st.session_state.username = None
+        auth.delete_valid_cookie()
+        with st.spinner('Cerrando Sesión...'):
+            time.sleep(2)
+        st.switch_page('pages/login.py')
 
 
     if menu_id == st.session_state['userinfo']['username']:

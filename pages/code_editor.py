@@ -198,12 +198,12 @@ if auth():
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
+            {'id':'subid44','icon': "bi bi-journal-code", 'label':"Editor"}
         ]},
         {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
-            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
+            {'id':'doceditor','icon': "bi bi-file-earmark-richtext", 'label':"Editor" },
             {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
@@ -248,9 +248,6 @@ if auth():
 
     if menu_id == "Inicio":
         st.switch_page("pages/app.py")
-
-    if menu_id == "Analisis de Datos":
-        st.switch_page("pages/data_analysis_home.py")
 
     if menu_id == 'logout':
         st.session_state.auth_state = False

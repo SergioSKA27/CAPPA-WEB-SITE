@@ -77,17 +77,17 @@ if auth() == False:
 
 if auth():
     #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
+            {'id':'subid44','icon': "bi bi-journal-code", 'label':"Editor"}
         ]},
         {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
-            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
+            {'id':'doceditor','icon': "bi bi-file-earmark-richtext", 'label':"Editor" },
             {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
