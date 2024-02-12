@@ -3,6 +3,9 @@ import hydralit_components as hc
 from streamlit_lottie import st_lottie
 import streamlit_antd_components as sac
 from streamlit_extras.switch_page_button import switch_page
+import extra_streamlit_components as stx
+from st_xatadb_connection import XataConnection
+from Clases import Usuario,Autenticador
 
 
 st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg', initial_sidebar_state='collapsed')
@@ -32,6 +35,22 @@ background-color: #f4ebe8;
 </style>
 """,unsafe_allow_html=True)
 
+xata = st.connection("xata", type=XataConnection)
+
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
+
+
+cookie_manager = get_manager()
+auth = Autenticador(xata,cookie_manager)
+
+if auth() == False:
+    auth.validate_cookie()
+    if auth() == False:
+        st.switch_page("pages/login.py")
+
+
 
 
 
@@ -39,14 +58,16 @@ background-color: #f4ebe8;
 #Navigation Bar
 
 
-if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
-    menu_data = [
+if auth():
+    #st.session_state['userinfo']
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+        menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
             {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
         ]},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
@@ -57,77 +78,83 @@ if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['u
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
+        {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
+        'submenu':[
+            {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
+            {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
+        ]}
+
     ]
-else:
-    menu_data = [
+    else:
+        menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
+        {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
-        {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
+        {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests"},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
+        {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
+        'submenu':[
+            {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
+            {"id": "pcourses", "icon": "bi bi-journal-bookmark", "label": "Mis Cursos"},
+
+            {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
+        ]}
     ]
 
-logname = st.session_state['userinfo']['username']
+    over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
+    menu_id = hc.nav_bar(
+            menu_definition=menu_data,
+            override_theme=over_theme,
+            home_name='Inicio',
+            login_name=None,
+            hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
+            sticky_nav=True, #at the top or not
+            sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
+            first_select=30
+        )
 
 
+    if menu_id == 'Inicio':
+        st.switch_page("pages/app.py")
+    if menu_id == 'code':
+        st.switch_page('pages/code_editor')
 
-over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
-menu_id = hc.nav_bar(
-        menu_definition=menu_data,
-        override_theme=over_theme,
-        home_name='Inicio',
-        login_name=logname,
-        hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
-        sticky_nav=True, #at the top or not
-        sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
-        first_select=30
-    )
+    if menu_id == 'logout':
+        st.session_state.pop('auth_state')
+        st.session_state.pop('userinfo')
+        st.session_state.pop('username')
+        switch_page('login')
 
 
-if menu_id == 'Inicio':
-  switch_page('Main')
+    if menu_id == st.session_state['userinfo']['username']:
+        if 'query' not in st.session_state:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        else:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        st.switch_page('pages/profile_render')
 
-if menu_id == 'code':
-    switch_page('code_editor')
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+        if menu_id == 'subid144':
+            switch_page('test_editor')
 
-if menu_id == 'logout':
-    st.session_state.pop('auth_state')
-    st.session_state.pop('userinfo')
-    st.session_state.pop('username')
-    switch_page('login')
+        if menu_id == 'doceditor':
+            switch_page('doc_editor')
 
+        if menu_id == 'docshome':
+            switch_page('docs_home')
 
-if menu_id == st.session_state['userinfo']['username']:
-    if 'query' not in st.session_state:
-        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+        if menu_id == 'subid44':
+            switch_page('problems_editor')
+
+        if menu_id == 'subid00':
+            switch_page('problems_home')
     else:
-        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-    switch_page('profile_render')
+        if menu_id == 'docs':
+            switch_page('docs_home')
 
-if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
-    if menu_id == 'subid144':
-        switch_page('test_editor')
-
-    if menu_id == 'doceditor':
-        switch_page('doc_editor')
-
-    if menu_id == 'docshome':
-        switch_page('docs_home')
-
-    if menu_id == 'subid44':
-        switch_page('problems_editor')
-
-    if menu_id == 'subid00':
-        switch_page('problems_home')
-else:
-    if menu_id == 'docs':
-        switch_page('docs_home')
-
-    if menu_id == 'Problemas':
-        switch_page('problems_home')
+        if menu_id == 'Problemas':
+            switch_page('problems_home')
 
 
 #---------------------------------#

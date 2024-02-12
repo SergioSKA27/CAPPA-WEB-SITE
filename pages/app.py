@@ -84,8 +84,7 @@ if auth():
             {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
             {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
         ]},
-        {'id':'courses','icon': "bi bi-trophy", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
             {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
@@ -95,17 +94,27 @@ if auth():
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
             {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"},
+        {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
+        'submenu':[
+            {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
+            {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
+        ]}
+
     ]
     else:
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+        {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests"},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
+        {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
+        'submenu':[
+            {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
+            {"id": "pcourses", "icon": "bi bi-journal-bookmark", "label": "Mis Cursos"},
+
+            {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
+        ]}
     ]
     logname = st.session_state.user.usuario
 
@@ -116,7 +125,7 @@ if auth():
         menu_definition=menu_data,
         override_theme=over_theme,
         home_name='Inicio',
-        login_name=logname,
+        login_name=None,
         hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
         sticky_nav=True, #at the top or not
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
