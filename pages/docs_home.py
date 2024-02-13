@@ -513,7 +513,6 @@ def search_doc(s: str):
 	)
 	return results["records"]
 
-@st.cache_resource(experimental_allow_widgets=True)
 def get_manager():
     return stx.CookieManager()
 

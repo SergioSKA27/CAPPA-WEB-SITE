@@ -75,7 +75,6 @@ xata = st.connection("xata", type=XataConnection)
 genai.configure(api_key=st.secrets["GEN_AI_KEY"])
 
 # ---------------------------------Funciones---------------------------------
-@st.cache_resource(experimental_allow_widgets=True)
 def get_manager():
     return stx.CookieManager()
 

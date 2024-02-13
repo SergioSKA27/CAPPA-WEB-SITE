@@ -105,7 +105,6 @@ if state.gtoast == 1:
     state.gtoast = 2
 
 
-@st.cache_resource(experimental_allow_widgets=True)
 def get_manager():
     return stx.CookieManager()
 
@@ -140,6 +139,10 @@ if auth() == False and valcookie is not None:
     st.rerun()
 
 
+if st.session_state.user.is_student():
+    st.error("No tienes permisos para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/app.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 ##---------------------------------Navbar---------------------------------
 if auth():

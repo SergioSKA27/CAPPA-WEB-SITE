@@ -7,7 +7,7 @@ import datetime
 import google.generativeai as genai
 import markdown
 import re
-from streamlit_elements import media, elements
+from streamlit_elements import media, elements,mui
 import extra_streamlit_components as stx
 
 from Clases import Usuario,Autenticador
@@ -70,10 +70,9 @@ def render_part(part, graphs, videos):
     LANGUAGES  = ['python','javascript','java','c','c++','c#','html','css','sql','php','ruby','go','kotlin','swift','dart','r','rust','typescript','shell','powershell','perl','lua','scala','groovy','haskell','f#','elixir','clojure','racket','julia','nim','crystal','cobol','fortran','ada','lisp','scheme','prolog','erlang','ocaml','reason','coffeescript','v','verilog','vhdl','systemverilog','logos','dot','video']
 
     if 'video' in part and any([v in part for v in videos]):
-        vcol = st.columns([0.3,0.4,0.3])
         p1 = part.split('\n')
-        with vcol[1]:
-            with elements(p1[1]):
+        with elements(p1[1]):
+            with mui.Box(sx={'display':'flex','justify-content':'center', 'align-items':'center'}):
                 media.Player(url=p1[1],controls=False)
     elif 'dot' in part and any([g in part for g in graphs]):
         gcol = st.columns([0.3,0.4,0.3])
@@ -105,7 +104,6 @@ def extrac_code(doc):
 def extrac_dot(doc):
     return re.findall(r'```dot\n(.*?)```',doc,re.DOTALL)
 
-@st.cache_resource(experimental_allow_widgets=True)
 def get_manager():
     return stx.CookieManager()
 

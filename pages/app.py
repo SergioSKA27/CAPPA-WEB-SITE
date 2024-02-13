@@ -61,7 +61,6 @@ if 'user' not in st.session_state:
 if 'logout' not in st.session_state:
     st.session_state.logout = False
 
-@st.cache_resource(experimental_allow_widgets=True)
 def get_manager():
     return stx.CookieManager()
 #---------------------------------#
