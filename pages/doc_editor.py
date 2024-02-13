@@ -1,7 +1,6 @@
 import time
 import streamlit as st
 import hydralit_components as hc
-from streamlit_extras.switch_page_button import switch_page
 from types import SimpleNamespace
 from streamlit_quill import st_quill
 from streamlit import session_state as state
@@ -34,8 +33,6 @@ st.set_page_config(
 xata = st.connection('xata',type=XataConnection)
 genai.configure(api_key=st.secrets['GEN_AI_KEY'])
 
-if 'auth_state' not in st.session_state or not ( st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador"):
-    switch_page('login')
 
 st.markdown('''
 <style>
@@ -125,29 +122,29 @@ if 'userinfo' not in st.session_state:
 if 'user' not in st.session_state:
     st.session_state.user = None
 
-if 'cookie_tries' not in st.session_state:
-    st.session_state.cookie_tries = 0
+if 'logout' not in st.session_state:
+    st.session_state.logout = False
+
+if st.session_state.logout:
+    with st.spinner('Cerrando Sesión...'):
+        time.sleep(2)
+    st.session_state.logout = False
+    st.switch_page('pages/login.py')
 
 
 cookie_manager = get_manager()
 auth = Autenticador(xata,cookie_manager)
 valcookie = cookie_manager.get('Validado')
 if auth() == False and valcookie is not None:
-    if st.session_state.cookie_tries > 10:
-        st.switch_page('pages/login.py')
     auth.validate_cookie(valcookie)
-    st.session_state.cookie_tries += 1
     st.rerun()
-else:
-    if 'cookie_tries' in st.session_state:
-        st.session_state.pop('cookie_tries')
 
 
 
 ##---------------------------------Navbar---------------------------------
 if auth():
     #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -160,7 +157,7 @@ if auth():
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+            {'id':'subid144','icon': "bi bi-card-checklist", 'label':"Editor" }]},
         {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
         'submenu':[
             {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
@@ -203,50 +200,51 @@ if auth():
       st.switch_page('pages/app.py')
 
     if menu_id == 'code':
-        st.switch_page('pages/code_editor')
+        st.switch_page('pages/code_editor.py')
 
     if menu_id == "docs":
-            st.switch_page("pages/docs_home.py")
+        st.switch_page("pages/docs_home.py")
 
     if menu_id == 'logout':
         st.session_state.auth_state = False
         st.session_state.userinfo = None
         st.session_state.user = None
         st.session_state.username = None
-        auth.delete_valid_cookie()
-        with st.spinner('Cerrando Sesión...'):
-            time.sleep(2)
-        st.switch_page('pages/login.py')
+        cookie_manager.delete('Validado')
+        st.session_state.logout = True
 
-    if menu_id == st.session_state['userinfo']['username']:
+    if menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        switch_page('profile_render')
-
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+        st.switch_page('pages/profile_render.py')
 
 
     if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
 
         if menu_id == 'subid00':
-            switch_page('problems_home')
+            st.switch_page('pages/problems_home.py')
 
         if menu_id == 'subid44':
-            st.switch_page('pages/problems_editor')
+            st.switch_page('pages/problems_editor.py')
 
 
         if menu_id == 'subid144':
-            st.switch_page('pages/test_editor')
+            st.switch_page('pages/test_editor.py')
 
 
         if menu_id == 'docshome':
-            st.switch_page('pages/docs_home')
+            st.switch_page('pages/docs_home.py')
 
     else:
         if menu_id == "Problemas":
             st.switch_page("pages/problems_home.py")
-
+else:
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    st.stop()
 
 
 

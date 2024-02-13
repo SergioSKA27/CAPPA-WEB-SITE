@@ -8,7 +8,6 @@ import streamlit as st
 import streamlit_antd_components as stac
 import streamlit_antd_components as sac
 from st_xatadb_connection import XataConnection
-from streamlit_extras.switch_page_button import switch_page
 from streamlit_searchbox import st_searchbox
 import extra_streamlit_components as stx
 
@@ -92,7 +91,7 @@ def send_query(table: str, idd: str):
         st.session_state.query = {"Table": table, "id": idd}
     else:
         st.session_state.query = {"Table": table, "id": idd}
-    switch_page("docs_render")
+    st.switch_page("pages/docs_render.py")
 
 def render_docs(docs: list):
     # First column
@@ -120,7 +119,7 @@ def render_docs(docs: list):
                     if st.button(
 						"Leer", key=f"doc{c}", use_container_width=True, on_click=send_query, args=["Documento", d["id"]]
 					):
-                        switch_page("docs_render")
+                        st.switch_page("pages/docs_render.py")
         c += 1
 
 
@@ -608,9 +607,6 @@ if 'userinfo' not in st.session_state:
 if 'user' not in st.session_state:
     st.session_state.user = None
 
-if 'cookie_tries' not in st.session_state:
-    st.session_state.cookie_tries = 0
-
 if 'logout' not in st.session_state:
     st.session_state.logout = False
 
@@ -624,24 +620,14 @@ cookie_manager = get_manager()
 auth = Autenticador(xata,cookie_manager)
 valcookie = cookie_manager.get('Validado')
 if auth() == False and valcookie is not None:
-    if st.session_state.cookie_tries > 10:
-        st.switch_page('pages/login.py')
     auth.validate_cookie(valcookie)
-    st.session_state.cookie_tries += 1
     st.rerun()
-else:
-    if 'cookie_tries' in st.session_state:
-        st.session_state.pop('cookie_tries')
-
-
-
 
 
 ##---------------------------------Navbar---------------------------------
-logname = 'visitor'
 if auth():
     #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -657,7 +643,7 @@ if auth():
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+            {'id':'subid144','icon': "bi bi-card-checklist", 'label':"Editor" }]},
         {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
         'submenu':[
             {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
@@ -697,7 +683,7 @@ menu_id = hc.nav_bar(
     menu_definition=menu_data,
     override_theme=over_theme,
     home_name="Inicio",
-    login_name='Iniciar Sesión' if logname is not None else None,
+    login_name='Iniciar Sesión' if not auth() else None,
     hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
     sticky_nav=True,  # at the top or not
     sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
@@ -706,54 +692,52 @@ menu_id = hc.nav_bar(
 
 
 if menu_id == "Inicio":
-    switch_page("Main")
+    st.switch_page("pages/app.py")
 
 if menu_id == 'Iniciar Sesión':
-    switch_page('login')
-
-if menu_id == 'Analisis de Datos':
-    switch_page('data_analysis_home')
+    st.switch_page('pages/login.py')
 
 if menu_id == 'code':
-    switch_page('code_editor')
+    st.switch_page('pages/code_editor.py')
 
 if menu_id == 'logout':
     st.session_state.auth_state = False
     st.session_state.userinfo = None
     st.session_state.user = None
     st.session_state.username = None
-    st.session_state.logout = True
     cookie_manager.delete('Validado')
+    st.session_state.logout = True
 
 
 
 
-if 'auth_state' in st.session_state and st.session_state['auth_state']:
-    if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
+
+if auth():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
         if menu_id == 'subid00':
-            switch_page('problems_home')
+            st.switch_page('pages/problems_home.py')
+
         if menu_id == 'subid44':
-            switch_page('problems_editor')
+            st.switch_page('pages/problems_editor.py')
 
 
         if menu_id == 'doceditor':
-            switch_page('doc_editor')
+            st.switch_page('pages/doc_editor.py')
 
         if menu_id == 'subid144':
-            switch_page('test_editor')
+            st.switch_page('pages/test_editor.py')
 
     else:
         if menu_id == 'Problemas':
-            switch_page('problems_home')
+            st.switch_page('pages/problems_home.py')
 
 
-if 'userinfo' in st.session_state and st.session_state.userinfo is not None:
-    if menu_id == st.session_state['userinfo']['username']:
-        if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        switch_page('profile_render')
+    if menu_id == st.session_state.user.usuario:
+            if 'query' not in st.session_state:
+                st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+            else:
+                st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+            st.switch_page('pages/profile_render.py')
 
 
 # ------------------------------------------BODY------------------------------------------------------------
@@ -900,7 +884,7 @@ for indx, doc in enumerate(data):
 						"Table": "Documento",
 						"id": doc['id'],
 					}
-				switch_page("docs_render")
+				st.switch_page("pages/docs_render.py")
 			st.write(f"###### Coicidencias: {len(doc['xata']['highlight'])}")
 			for k, v in doc['xata']['highlight'].items():
 				st.write(f"###### {k}: ")

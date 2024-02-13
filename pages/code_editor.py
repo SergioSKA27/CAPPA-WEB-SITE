@@ -184,8 +184,6 @@ if 'userinfo' not in st.session_state:
 if 'user' not in st.session_state:
     st.session_state.user = None
 
-if 'cookie_tries' not in st.session_state:
-    st.session_state.cookie_tries = 0
 
 if 'logout' not in st.session_state:
     st.session_state.logout = False
@@ -200,14 +198,8 @@ cookie_manager = get_manager()
 auth = Autenticador(xata,cookie_manager)
 valcookie = cookie_manager.get('Validado')
 if auth() == False and valcookie is not None:
-    if st.session_state.cookie_tries > 10:
-        st.switch_page('pages/login.py')
     auth.validate_cookie(valcookie)
-    st.session_state.cookie_tries += 1
     st.rerun()
-else:
-    if 'cookie_tries' in st.session_state:
-        st.session_state.pop('cookie_tries')
 
 
 ##---------------------------------Navbar---------------------------------
@@ -215,7 +207,7 @@ else:
 
 if auth():
     #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() :
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -231,7 +223,7 @@ if auth():
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+            {'id':'subid144','icon': "bi bi-card-checklist", 'label':"Editor" }]},
         {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
         'submenu':[
             {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
@@ -276,16 +268,16 @@ if auth():
         st.session_state.userinfo = None
         st.session_state.user = None
         st.session_state.username = None
-        st.session_state.logout = True
         cookie_manager.delete('Validado')
+        st.session_state.logout = True
 
 
     if menu_id == st.session_state.user.usuario:
-        if "query" not in st.session_state:
-            st.session_state.query = {"Table": "Usuario", "id": st.session_state.user.key}
+        if 'query' not in st.session_state:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:
-            st.session_state.query = {"Table": "Usuario", "id": st.session_state.user.key}
-        st.switch_page("pages/profile_render.py")
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+        st.switch_page('pages/profile_render.py')
 
     if (
         st.session_state.user.is_admin()
@@ -313,7 +305,10 @@ if auth():
         if menu_id == "Problemas":
             st.switch_page("pages/problems_home.py")
 else:
-    st.switch_page("pages/login.py")
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    st.stop()
 
 # ---------------------------------Body---------------------------------
 

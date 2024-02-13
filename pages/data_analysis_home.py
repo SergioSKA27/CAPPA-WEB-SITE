@@ -55,24 +55,21 @@ if 'userinfo' not in st.session_state:
 if 'user' not in st.session_state:
     st.session_state.user = None
 
-if 'cookie_tries' not in st.session_state:
-    st.session_state.cookie_tries = 0
+if 'logout' not in st.session_state:
+    st.session_state.logout = False
 
+if st.session_state.logout:
+    with st.spinner('Cerrando Sesión...'):
+        time.sleep(2)
+    st.session_state.logout = False
+    st.switch_page('pages/login.py')
 
 cookie_manager = get_manager()
 auth = Autenticador(xata,cookie_manager)
 valcookie = cookie_manager.get('Validado')
 if auth() == False and valcookie is not None:
-    if st.session_state.cookie_tries > 10:
-        st.switch_page('pages/login.py')
     auth.validate_cookie(valcookie)
-    st.session_state.cookie_tries += 1
-    st.write(st.session_state.cookie_tries)
-
     st.rerun()
-else:
-    if 'cookie_tries' in st.session_state:
-        st.session_state.pop('cookie_tries')
 
 
 
@@ -82,7 +79,7 @@ else:
 
 if auth():
     #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -99,7 +96,7 @@ if auth():
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+            {'id':'subid144','icon': "bi bi-card-checklist", 'label':"Editor" }]},
         {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
         'submenu':[
             {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
@@ -140,7 +137,7 @@ if auth():
     if menu_id == 'Inicio':
         st.switch_page("pages/app.py")
     if menu_id == 'code':
-        st.switch_page('pages/code_editor')
+        st.switch_page('pages/code_editor.py')
 
     if menu_id == 'logout':
         st.session_state.auth_state = False
@@ -148,39 +145,42 @@ if auth():
         st.session_state.user = None
         st.session_state.username = None
         cookie_manager.delete('Validado')
-        with st.spinner('Cerrando Sesión...'):
-            time.sleep(2)
-        st.switch_page('pages/login.py')
+        st.session_state.logout = True
 
 
-    if menu_id == st.session_state['userinfo']['username']:
+    if menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:
-            st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-        st.switch_page('pages/profile_render')
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+        st.switch_page('pages/profile_render.py')
 
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
         if menu_id == 'subid144':
-            switch_page('test_editor')
+            st.switch_page('pages/test_editor.py')
 
         if menu_id == 'doceditor':
-            switch_page('doc_editor')
+            st.switch_page('pages/doc_editor.py')
 
         if menu_id == 'docshome':
-            switch_page('docs_home')
+            st.switch_page('pages/docs_home.py')
 
         if menu_id == 'subid44':
-            switch_page('problems_editor')
+            st.switch_page('pages/problems_editor.py')
 
         if menu_id == 'subid00':
-            switch_page('problems_home')
+            st.switch_page('pages/problems_home.py')
     else:
         if menu_id == 'docs':
-            switch_page('docs_home')
+            st.switch_page('pages/docs_home.py')
 
         if menu_id == 'Problemas':
-            switch_page('problems_home')
+            st.switch_page('pages/problems_home.py')
+else:
+    st.error("404 Not Found")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    st.stop()
 
 
 #---------------------------------#
@@ -202,7 +202,7 @@ línea de código. Lo que distingue a PyGWalker es su compromiso de hacer que el
 y escalable, simplificando tareas complejas con un conjunto de funciones poderosas.
 ''')
         if st.button('Prueba PyGWalker 📊',use_container_width=True):
-            switch_page('pgwalker_sandbox')
+            st.switch_page('pages/pgwalker_sandbox.py')
 
 with cols[1]:
     with st.container(border=True):
@@ -227,7 +227,7 @@ y eficiente con Mito.
 
 ''')
         if st.button('Prueba Mito 📈',use_container_width=True):
-            switch_page('spreadsheets_sandbox')
+            st.switch_page('pages/spreadsheets_sandbox.py')
 #---------------------------------Footer---------------------------------
 with open('rsc/html/minimal_footer.html') as f:
     st.markdown(f.read(), unsafe_allow_html=True)

@@ -97,7 +97,7 @@ if auth():
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
+            {'id':'subid144','icon': "bi bi-card-checklist", 'label':"Editor" }]},
         {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
         'submenu':[
             {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
@@ -135,7 +135,7 @@ if auth():
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
     )
 
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() or st.session_state.user.is_moderator():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
         if menu_id == 'subid00':
             st.switch_page('pages/problems_home.py')
 
@@ -177,16 +177,15 @@ if auth():
         st.session_state.logout = True
 
 
-    if auth() and st.session_state.user is not None:
-        if menu_id == st.session_state.user.usuario:
-            if 'query' not in st.session_state:
-                st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
-            else:
-                st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
 
-            st.switch_page('pages/profile_render.py')
+    if menu_id == st.session_state.user.usuario:
+        if 'query' not in st.session_state:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+        else:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+        st.switch_page('pages/profile_render.py')
 else:
-    st.error("404 Not Found")
+    st.error("Inicia Sesión para acceder a esta página")
     st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
     st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
     st.stop()
