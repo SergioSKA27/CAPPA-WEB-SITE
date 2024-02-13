@@ -169,21 +169,10 @@ if auth():
 
     ]
     else:
-        menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
-        {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
-        {'id':'Blog','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información"},
-        {'id':'doceditor','icon': "bi bi-file-earmark-richtext", 'label':"Editor" },
-        {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
-        {'icon': "bi bi-pencil-square",'label':"Tests"},
-        {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
-        'submenu':[
-            {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
-            {"id": "pcourses", "icon": "bi bi-journal-bookmark", "label": "Mis Cursos"},
-
-            {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
-        ]}
-    ]
+        st.error('403 No tienes permisos para acceder a esta página')
+        st.image('https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif')
+        st.page_link('pages/app.py',label='Regresar a la Página de Inicio',icon='🏠')
+        st.stop()
 
 
     over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}

@@ -217,7 +217,7 @@ if auth():
 
     ]
     else:
-        st.error("No tienes permisos para acceder a esta página")
+        st.error("403 No tienes permisos para acceder a esta página")
         st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
         st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
         st.stop()
