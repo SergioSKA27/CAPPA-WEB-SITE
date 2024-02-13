@@ -2,7 +2,6 @@ import streamlit as st
 import hydralit_components as hc
 from streamlit_lottie import st_lottie
 import streamlit_antd_components as sac
-from streamlit_extras.switch_page_button import switch_page
 from streamlit_calendar import calendar
 import datetime
 

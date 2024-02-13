@@ -43,6 +43,7 @@ background-color: #f4ebe8;
 """,unsafe_allow_html=True)
 xata = st.connection('xata',type=XataConnection)
 
+@st.cache_resource(experimental_allow_widgets=True)
 def get_manager():
     return stx.CookieManager()
 
