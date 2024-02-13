@@ -690,8 +690,7 @@ menu_id = hc.nav_bar(
 )
 
 
-if menu_id == "Inicio":
-    st.switch_page("pages/app.py")
+
 
 if menu_id == 'Iniciar Sesión':
     st.switch_page('pages/login.py')
@@ -712,6 +711,8 @@ if menu_id == 'logout':
 
 
 if auth():
+    if menu_id == "Inicio":
+        st.switch_page("pages/app.py")
     if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
         if menu_id == 'subid00':
             st.switch_page('pages/problems_home.py')
@@ -737,6 +738,9 @@ if auth():
             else:
                 st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
             st.switch_page('pages/profile_render.py')
+else:
+    if menu_id == "Inicio":
+        st.switch_page("Main.py")
 
 
 # ------------------------------------------BODY------------------------------------------------------------
