@@ -73,11 +73,6 @@ def update_problems():
       }})
     ]
     state.pageproblems = 0
-    update_problem_images()
-
-
-def update_problem_images():
-    state.problemimages = [asyncio.run(get_random_image()) for _ in range(6)]
 
 
 def switch_torender(idd):
@@ -255,10 +250,6 @@ if 'problems' not in state or state.problems is None:
         "size": 6
     }
 })]
-
-
-if 'problemimages' not in state:
-    state.problemimages = [asyncio.run(get_random_image()) for _ in range(6)]
 
 
 def get_manager():
