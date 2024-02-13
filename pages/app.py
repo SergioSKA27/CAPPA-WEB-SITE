@@ -120,7 +120,6 @@ if auth():
             {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
         ]}
     ]
-    logname = st.session_state.user.usuario
 
 
 

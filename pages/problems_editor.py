@@ -2,16 +2,18 @@ import subprocess
 import tracemalloc
 from time import perf_counter, sleep
 from types import SimpleNamespace
-
+import time
 import hydralit_components as hc
 import streamlit as st
 from st_xatadb_connection import XataConnection
+import extra_streamlit_components as stx
 from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync,partial
-from streamlit_extras.switch_page_button import switch_page
 from streamlit_quill import st_quill
 import google.generativeai as genai
 from modules import Card, Dashboard, Editor, Timer
+from Clases import Usuario,Autenticador
+
 
 #Autor: Sergio Lopez
 
@@ -58,9 +60,6 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
-
-if 'auth_state' not in st.session_state or not ( st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador"):
-    switch_page('login')
 
 #--------------------------------------------- Funciones ---------------------------------------------
 
@@ -161,81 +160,119 @@ if st.session_state.reruncode:
     sync()
 
 
+def get_manager():
+    return stx.CookieManager()
+
+
+
+if 'auth_state' not in st.session_state:
+    st.session_state.auth_state = False
+
+if 'username' not in st.session_state:
+    st.session_state.username = None
+
+if 'userinfo' not in st.session_state:
+    st.session_state.userinfo = None
+
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+if 'logout' not in st.session_state:
+    st.session_state.logout = False
+
+if st.session_state.logout:
+    with st.spinner('Cerrando Sesión...'):
+        time.sleep(2)
+    st.session_state.logout = False
+    st.switch_page('pages/login.py')
+
+cookie_manager = get_manager()
+auth = Autenticador(xata,cookie_manager)
+valcookie = cookie_manager.get('Validado')
+if auth() == False and valcookie is not None:
+    auth.validate_cookie(valcookie)
+    st.rerun()
+
 ##---------------------------------Navbar---------------------------------
-if st.session_state['userinfo']['rol'] == "Administrador" or st.session_state['userinfo']['rol'] == "Profesor" or st.session_state['userinfo']['rol'] == "Moderador":
-    menu_data = [
-        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
-        'submenu':[
-            {'id': 'subid00','icon':'bi bi-search','label':'Todos'},
-            {'id':'subid44','icon': "bi bi-gear", 'label':"Editor"}
-        ]},
-        {'id':'contest','icon': "bi bi-trophy", 'label':"Concursos"},
-        {'icon': "bi bi-graph-up", 'label':"Analisis de Datos",'ttip':"Herramientas de Analisis de Datos"},
+if auth():
+    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+        menu_data = [
+        {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'subid00'},
+        {'id':'subid44','icon': "bi bi-journal-code", 'label':"Editor"},
+        {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
         {'id':'docs','icon': "bi bi-file-earmark-richtext", 'label':"Blog",'ttip':"Articulos e Información",
         'submenu':[
-            {'id':'doceditor','icon': "bi bi-gear", 'label':"Editor" },
+            {'id':'doceditor','icon': "bi bi-file-earmark-richtext", 'label':"Editor" },
             {'id':'docshome','icon': "bi bi-search", 'label':"Home"}]
         },
         {'id':'code','icon': "bi bi-code-square", 'label':"Editor de Código"},
         {'icon': "bi bi-pencil-square",'label':"Tests", 'submenu':[
             {'label':"Todos", 'icon': "bi bi-search",'id':'alltests'},
-            {'id':'subid144','icon': "bi bi-gear", 'label':"Editor" }]},
-        {'id':'logout','icon': "bi bi-door-open", 'label':"Cerrar Sesión"}
+            {'id':'subid144','icon': "bi bi-card-checklist", 'label':"Editor" }]},
+        {'id':st.session_state.user.usuario,'icon': "bi bi-person", 'label':st.session_state.user.usuario,
+        'submenu':[
+            {'label':"Perfil", 'icon': "bi bi-person",'id':st.session_state.user.usuario},
+            {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
+        ]}
+
     ]
-
-
-logname = st.session_state['userinfo']['username']
-
-
-over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
-menu_id = hc.nav_bar(
-    menu_definition=menu_data,
-    override_theme=over_theme,
-    home_name="Inicio",
-    login_name=logname,
-    hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
-    sticky_nav=True,  # at the top or not
-    sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
-    first_select=10,
-)
-
-
-if menu_id == 'Inicio':
-  switch_page('Main')
-
-if menu_id == 'subid00':
-    switch_page('problems_home')
-
-if menu_id == 'docshome':
-    switch_page('docs_home')
-
-if menu_id == 'Analisis de Datos':
-    switch_page('data_analysis_home')
-
-if menu_id == 'doceditor':
-    switch_page('doc_editor')
-
-if menu_id == 'code':
-    switch_page('code_editor')
-
-if menu_id == 'subid144':
-    switch_page('test_editor')
-
-if menu_id == 'logout':
-    st.session_state.pop('auth_state')
-    st.session_state.pop('userinfo')
-    st.session_state.pop('username')
-    switch_page('login')
-
-
-if menu_id == st.session_state['userinfo']['username']:
-    if 'query' not in st.session_state:
-        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
     else:
-        st.session_state.query = {'Table':'Usuario','id':st.session_state['username']}
-    switch_page('profile_render')
+        st.error("No tienes permisos para acceder a esta página")
+        st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+        st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+        st.stop()
 
 
+    over_theme = {'txc_inactive': '#FFFFFF','menu_background':'#3670a0'}
+    menu_id = hc.nav_bar(
+        menu_definition=menu_data,
+        override_theme=over_theme,
+        home_name="Inicio",
+        login_name=None,
+        hide_streamlit_markers=False,  # will show the st hamburger as well as the navbar now!
+        sticky_nav=True,  # at the top or not
+        sticky_mode="sticky",  # jumpy or not-jumpy, but sticky or pinned
+        first_select=20,
+    )
+
+
+    if menu_id == 'Inicio':
+        st.switch_page('pages/app.py')
+
+    if menu_id == 'subid00':
+        st.switch_page('pages/problems_home.py')
+
+    if menu_id == 'docshome':
+        st.switch_page('pages/docs_home.py')
+
+    if menu_id == 'doceditor':
+        st.switch_page('pages/doc_editor.py')
+
+    if menu_id == 'code':
+        st.switch_page('pages/code_editor.py')
+
+    if menu_id == 'subid144':
+        st.switch_page('pages/test_editor.py')
+
+    if menu_id == 'logout':
+        st.session_state.auth_state = False
+        st.session_state.userinfo = None
+        st.session_state.user = None
+        st.session_state.username = None
+        cookie_manager.delete('Validado')
+        st.session_state.logout = True
+
+    if menu_id == st.session_state.user.usuario:
+        if 'query' not in st.session_state:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+        else:
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+        st.switch_page('pages/profile_render.py')
+else:
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    st.stop()
 
 
 #------------------------------------- body ---------------------------------------------------------
