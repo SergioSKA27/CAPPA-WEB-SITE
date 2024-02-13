@@ -45,7 +45,6 @@ st.markdown('''
 
 #--------------------------------- Funciones ---------------------------------
 async def get_random_image():
-    await asyncio.sleep(0.1)
     return requests.get('https://source.unsplash.com/random/600x400?programming,python',timeout=5).content
 
 
@@ -89,7 +88,7 @@ def switch_torender(idd):
         state.query['id'] = idd
 
 
-def render_problem(problem: dict,k : int):
+async def render_problem(problem: dict,k : int):
     COLORS = ['blue', 'yellow', 'purple', 'cyan', 'pink', 'brown', 'gray','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
 
     tags = [
@@ -183,7 +182,7 @@ def render_problem(problem: dict,k : int):
 
 
     with st.container(border=True):
-        img = state.problemimages[k]
+        img = await get_random_image()
         st.image(img, use_column_width=True)
         st.markdown(f'### {problem["nombre"]}')
         pls = []
@@ -532,7 +531,7 @@ with st.spinner('Cargando Problemas...'):
             pcol = 0
 
         with problemscols[pcol]:
-            render_problem(state.problems[state.pageproblems]['records'][problem],problem)
+            asyncio.run(render_problem(state.problems[state.pageproblems]['records'][problem],problem))
         pcol += 1
 
 pgcols = st.columns([0.8,0.1,0.1])
