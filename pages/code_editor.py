@@ -18,7 +18,7 @@ import extra_streamlit_components as stx
 from st_xatadb_connection import XataConnection
 
 from modules import Card, Dashboard, Editor, Timer
-from Clases import Usuario,Autenticador
+from Clases import Usuario,Autenticador,Runner
 
 # Autor: Sergio Lopez
 
@@ -85,61 +85,10 @@ def stream_text():
         sleep(0.05)
 
 
-def measure_performance(func):
-    """Measure performance of a function"""
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        tracemalloc.start()
-        start_time = perf_counter()
-        func(*args, **kwargs)
-        current, peak = tracemalloc.get_traced_memory()
-        finish_time = perf_counter()
-        st.write(f"Function: {func.__name__}")
-        st.write(f"Method: {func.__doc__}")
-        st.write(
-            f"Memory usage:\t\t {current / 10**6:.6f} MB \n"
-            f"Peak memory usage:\t {peak / 10**6:.6f} MB "
-        )
-        st.write(f"Time elapsed is seconds: {finish_time - start_time:.6f}")
-        st.write(f'{"-"*40}')
-        tracemalloc.stop()
-
-    return wrapper
-
 
 @st.cache_resource
 def load_genmodel():
     return genai.GenerativeModel("gemini-pro")
-
-
-def run_code(code, timeout=1, test_file: bytes = None):
-    """Run code and capture the output"""
-    try:
-        if test_file:
-            result = subprocess.run(
-                ["python", "-c", code],
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-                stdin=test_file,
-            )
-        else:
-            result = subprocess.run(
-                ["python", "-c", code], capture_output=True, text=True, timeout=timeout
-            )
-        return result.stdout, result.stderr
-    except subprocess.TimeoutExpired or Exception as e:
-        return "", "TimeoutExpired"
-
-
-def execute_code(code, timeout=1, test_file: bytes = None):
-    s = perf_counter()
-    result = run_code(code, timeout, test_file)
-    cu, p = tracemalloc.get_traced_memory()
-    e = perf_counter()
-    return result, e - s, cu, p
-
 
 async def generate_explanation(prompt):
     """Generate an explanation for the code"""
@@ -315,7 +264,7 @@ else:
     st.stop()
 
 # ---------------------------------Body---------------------------------
-
+runner = Runner()
 
 if "w_code" not in state:
     board = Dashboard()
@@ -354,10 +303,9 @@ with elements("editorcodigo"):
     event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
     with w.dashboard(rowHeight=57):
         w.editor()
-        content = w.editor.get_content("Code")
-        result = execute_code(w.editor.get_content("Code"), timeout=3)
+        runner.run(w.editor.get_content("Code"))
         w.timer(
-            result[0], str(result[1]), result[2], result[3], set_explanin, set_reruncode
+            [runner.stdout, runner.stderr],runner.time,runner.memory,runner.peakmemory,set_explanin,set_reruncode
         )
         w.card(
             "Editor de Código",
@@ -365,7 +313,7 @@ with elements("editorcodigo"):
         )
     if st.session_state.explanin:
         model = load_genmodel()
-        prompt = f"Explica el error {result[0][1]}, este es el código: {w.editor.get_content('Code')}"
+        prompt = f"Explica el error {runner.stderr}, este es el código: {w.editor.get_content('Code')}"
         with st.spinner("🧠 Generando explicación..."):
             response = asyncio.run(generate_explanation(prompt))
 
@@ -376,14 +324,18 @@ with elements("editorcodigo"):
         st.session_state.explanin = False
 
 
+
+
+
+
 with st.expander("Salida"):
-    if len(result[0][0]) > 1000:
-        st.write(result[0][0][:1000])
+    if len(runner.stdout) > 1000:
+        st.write(runner.stdout[:1000])
         st.write("...")
     else:
-        st.text(result[0][0])
+        st.text(runner.stdout)
 
-    st.write(f":red[{result[0][1]}]")
+    st.write(f":red[{runner.stderr}]")
 
 st.caption(
     "Si el editor no se muestra correctamente, por favor recargue la página. Disculpe las molestias."
