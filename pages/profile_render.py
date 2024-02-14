@@ -290,7 +290,7 @@ with cols[0]:
         **Puntos:** {st.session_state.profile_data['score']}
     """)
     #-------------------------------Editar perfil---------------------------------
-    if st.session_state.profile_data['id'] == st.session_state.user.key:
+    if st.session_state.user is not None and st.session_state.profile_data['id'] == st.session_state.user.key:
         if st.checkbox("Editar perfil"):
             with st.form(key='profile_edit_form'):
                 st.caption('Edite los campos que desee cambiar')
@@ -322,7 +322,7 @@ with cols[0]:
                         except Exception as e:
                             st.error(f"Error al actualizar avatar: {e}")
 
-    if st.session_state.userinfo['rol'] == 'Administrador' and st.session_state.profile_data['rol'] != 'Administrador':
+    if st.session_state.user is not None and st.session_state.user.is_admin() and st.session_state.profile_data['rol'] != 'Administrador' :
         nrol = st.selectbox("Editar Rol", options=['Moderador','Profesor','Estudiante'])
 
 #---------------------------------Biografía---------------------------------
@@ -332,7 +332,7 @@ with cols[1]:
 
         c0[0].subheader("Biografía")
 
-        if st.session_state.profile_data['id'] == st.session_state.user.key:
+        if st.session_state.user is not None and st.session_state.profile_data['id'] == st.session_state.user.key:
             #-------------------------------Editar biografía---------------------------------
             if c0[1].checkbox("Editar biografía"):
                 tabs = st.tabs(["Editor de texto", 'Markdown'])
