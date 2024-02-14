@@ -381,7 +381,9 @@ with st.expander("Salida"):
 
     st.write(f":red[{result[0][1]}]")
 
-
+st.caption(
+    "Si el editor no se muestra correctamente, por favor recargue la página. Disculpe las molestias."
+)
 # ---------------------------------Footer---------------------------------
 with open("rsc/html/minimal_footer.html") as f:
     st.markdown(f.read(), unsafe_allow_html=True)

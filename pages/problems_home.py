@@ -86,7 +86,7 @@ def switch_torender(idd):
         state.query['id'] = idd
 
 
-async def render_problem(problem: dict,k : int):
+def render_problem(problem: dict,k : int):
     COLORS = ['blue', 'yellow', 'purple', 'cyan', 'pink', 'brown', 'gray','magenta', 'teal', 'lime', 'lavender', 'turquoise', 'darkblue', 'darkgreen', 'darkred', 'lightblue', 'lightgreen', 'lightred', 'gold', 'lightgray']
 
     tags = [
@@ -182,9 +182,8 @@ async def render_problem(problem: dict,k : int):
     with st.container(border=True):
         with st.spinner(f'Cargando Problema...'):
             if len(state.pimages) < k+1:
-                img = await asyncio.to_thread(requests.get, f'https://source.unsplash.com/random/600x400?programming,python,code')
-                state.pimages.append(img.content)
-                img = img.content
+                img = asyncio.run(get_random_image())
+                state.pimages.append(img)
             else:
                 img = state.pimages[k]
         st.image(img, use_column_width=True)
@@ -533,7 +532,7 @@ for problem in range(len(state.problems[state.pageproblems]['records'])):
     if pcol == 3:
         pcol = 0
     with problemscols[pcol]:
-        asyncio.run(render_problem(state.problems[state.pageproblems]['records'][problem],problem))
+        render_problem(state.problems[state.pageproblems]['records'][problem],problem)
     pcol += 1
 
 pgcols = st.columns([0.8,0.1,0.1])
