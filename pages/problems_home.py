@@ -44,8 +44,10 @@ st.markdown('''
 
 
 #--------------------------------- Funciones ---------------------------------
+
 async def get_random_image():
-    return requests.get('https://source.unsplash.com/random/600x400?programming,python',timeout=5).content
+    result = await asyncio.to_thread(requests.get, 'https://source.unsplash.com/random/600x400?programming,python,code')
+    return result.content
 
 
 def search_problem(s: str):
@@ -73,6 +75,7 @@ def update_problems():
       }})
     ]
     state.pageproblems = 0
+    state.pimages = []
 
 
 def switch_torender(idd):
@@ -177,7 +180,13 @@ async def render_problem(problem: dict,k : int):
 
 
     with st.container(border=True):
-        img = await get_random_image()
+        with st.spinner(f'Cargando Problema...'):
+            if len(state.pimages) < k+1:
+                img = await asyncio.to_thread(requests.get, f'https://source.unsplash.com/random/600x400?programming,python,code')
+                state.pimages.append(img.content)
+                img = img.content
+            else:
+                img = state.pimages[k]
         st.image(img, use_column_width=True)
         st.markdown(f'### {problem["nombre"]}')
         pls = []
@@ -251,6 +260,9 @@ if 'problems' not in state or state.problems is None:
     }
 })]
 
+
+if 'pimages' not in state:
+    state.pimages = []
 
 def get_manager():
     return stx.CookieManager()
@@ -516,16 +528,18 @@ sac.divider('',icon='hypnotize',align='center',)
 
 problemscols = st.columns(3)
 pcol = 0
-with st.spinner('Cargando Problemas...'):
-    for problem in range(len(state.problems[state.pageproblems]['records'])):
-        if pcol == 3:
-            pcol = 0
 
-        with problemscols[pcol]:
-            asyncio.run(render_problem(state.problems[state.pageproblems]['records'][problem],problem))
-        pcol += 1
+for problem in range(len(state.problems[state.pageproblems]['records'])):
+    if pcol == 3:
+        pcol = 0
+    with problemscols[pcol]:
+        asyncio.run(render_problem(state.problems[state.pageproblems]['records'][problem],problem))
+    pcol += 1
 
 pgcols = st.columns([0.8,0.1,0.1])
+
+with pgcols[0]:
+    st.caption(f'Página {state.pageproblems+1} de {len(state.problems)}')
 
 if pgcols[1].button('<',use_container_width=True,disabled=state.pageproblems == 0):
     if state.pageproblems > 0:
@@ -533,11 +547,15 @@ if pgcols[1].button('<',use_container_width=True,disabled=state.pageproblems == 
         st.rerun()
 
 if pgcols[2].button('\>',use_container_width=True):
-    nxt = xata.next_page("Problema",state.problems[state.pageproblems],pagesize=6)
-    if nxt is not None:
+    if state.pageproblems < len(state.problems)-1:
         state.pageproblems += 1
-        state.problems.append(nxt)
         st.rerun()
+    else:
+        nxt = xata.next_page("Problema",state.problems[state.pageproblems],pagesize=6)
+        if nxt is not None:
+            state.pageproblems += 1
+            state.problems.append(nxt)
+            st.rerun()
 
 
 
