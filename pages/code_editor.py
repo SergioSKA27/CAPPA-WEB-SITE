@@ -346,7 +346,7 @@ if "w_code" not in state:
 else:
     w = state.w_code
 
-with elements("workspace"):
+with elements("editorcodigo"):
     event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
     with w.dashboard(rowHeight=57):
         w.editor()

@@ -371,7 +371,7 @@ with cols[1]:
                     else:
                         w = state.w_profile
 
-                    with elements("workspace"):
+                    with elements("profile_editor"):
                         event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
                         with w.dashboard(rowHeight=57):
                             w.editor()

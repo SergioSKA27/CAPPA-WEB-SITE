@@ -124,29 +124,6 @@ def execute_code(code, timeout=1, test_file: bytes = None):
     return result, e - s, cu, p
 
 
-if "query" not in state or state.query["Table"] != "Problema":
-    st.switch_page("pages/problems_home.py")
-else:
-    # st.write(state.query)
-    if "current_problem" not in state:
-        state.current_problem = xata.get("Problema", state.query["id"])
-    else:
-        if state.current_problem["id"] != state.query["id"]:
-            state.current_problem = xata.get(
-                "Problema",
-                state.query["id"],
-                columns=[
-                    "nombre",
-                    "dificultad",
-                    "score",
-                    "time_limit",
-                    "tags",
-                    "desc",
-                    "creador.nombre_completo",
-                    "correct_ans",
-                    "graph_code",
-                ],
-            )
 
 # st.write(state.current_problem)
 
@@ -206,6 +183,53 @@ if auth() == False and valcookie is not None:
     auth.validate_cookie(valcookie)
     st.rerun()
 
+
+cookie = cookie_manager.get('query')
+
+if cookie is None and ('query' in st.session_state and cookie != st.session_state.query) :
+    cookie_manager.set('query',st.session_state.query)
+    with st.spinner('Cargando Problema...'):
+        time.sleep(5)
+
+if "query" in state and state.query["Table"] != "Problema":
+    st.switch_page("pages/problems_home.py")
+elif "query" not in state:
+    if cookie is not None and cookie['Table'] == "Problema":
+        state.query = cookie_manager.get('query')
+        try:
+            state.current_problem = xata.get("Problema", state.query["id"])
+        except Exception as e:
+            st.error(f"Error: {e}")
+            st.stop()
+else:
+    if 'query' in state:
+        if "current_problem" not in state:
+            try:
+                state.current_problem = xata.get("Problema", state.query["id"])
+            except Exception as e:
+                st.error(f"Error: {e}")
+                st.stop()
+        else:
+            if state.current_problem["id"] != state.query["id"]:
+                try:
+                    state.current_problem = xata.get(
+                        "Problema",
+                        state.query["id"],
+                        columns=[
+                            "nombre",
+                            "dificultad",
+                            "score",
+                            "time_limit",
+                            "tags",
+                            "desc",
+                            "creador.nombre_completo",
+                            "correct_ans",
+                            "graph_code",
+                        ],
+                    )
+                except Exception as e:
+                    st.error(f"Error: {e}")
+                    st.stop()
 
 # ---------------------------------Navbar---------------------------------
 if auth():
@@ -478,7 +502,7 @@ if "w_prender" not in state:
 else:
     w = state.w_prender
 
-with elements("workspace"):
+with elements("problemsovlereditor"):
     event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
     with w.dashboard(rowHeight=57):
         w.editor()

@@ -313,7 +313,7 @@ with tabs[1]:
     with st.container(border=True):
         cols= st.columns([0.8,0.2])
         with cols[0]:
-            with elements("workspace"):
+            with elements("editordocuments"):
                 event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
                 with w.dashboard(rowHeight=57):
                     w.editor()
@@ -412,7 +412,7 @@ with tabs[2]:
         wv = state.w_video
 
     with st.container(border=True):
-        with elements("video"):
+        with elements("videodocuments"):
             with wv.dashboard(rowHeight=57):
                 wv.player()
         st.caption("Para añadir un video, copia el link del video y reprodúcelo en el reproductor para tener una vista previa.")
