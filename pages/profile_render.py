@@ -97,7 +97,7 @@ if cookie is None or ('query' in st.session_state and cookie != st.session_state
 
 if auth():
     #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+    if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -121,7 +121,7 @@ if auth():
         ]}
 
     ]
-    else:
+    elif st.session_state.user is not None:
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
         {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
@@ -168,7 +168,7 @@ if auth():
 
 
 
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+    if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         if menu_id == 'subid144':
             st.switch_page('pages/test_editor.py')
 

@@ -207,7 +207,7 @@ if auth() == False and valcookie is not None:
 
 if auth():
     #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher() :
+    if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -231,7 +231,7 @@ if auth():
         ]}
 
     ]
-    else:
+    elif st.session_state.user is not None:
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
         {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
@@ -245,7 +245,7 @@ if auth():
 
             {"id": "logout", "icon": "bi bi-door-open", "label": "Cerrar Sesión"},
         ]}
-    ]
+        ]
 
     over_theme = {"txc_inactive": "#FFFFFF", "menu_background": "#3670a0"}
     menu_id = hc.nav_bar(
@@ -272,14 +272,14 @@ if auth():
         st.session_state.logout = True
 
 
-    if menu_id == st.session_state.user.usuario:
+    if st.session_state.user is not None and menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         st.switch_page('pages/profile_render.py')
 
-    if (
+    if st.session_state.user is not None and (
         st.session_state.user.is_admin()
         or st.session_state.user.is_professor()
         or st.session_state.user.is_moderator()

@@ -195,7 +195,7 @@ if auth() == False and valcookie is not None:
 
 ##---------------------------------Navbar---------------------------------
 if auth():
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+    if st.session_state.user is not None and  (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'subid00'},
         {'id':'subid44','icon': "bi bi-journal-code", 'label':"Editor"},
@@ -216,7 +216,7 @@ if auth():
         ]}
 
     ]
-    else:
+    elif st.session_state.user is not None:
         st.error("403 No tienes permisos para acceder a esta página")
         st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
         st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
@@ -262,7 +262,7 @@ if auth():
         cookie_manager.delete('Validado')
         st.session_state.logout = True
 
-    if menu_id == st.session_state.user.usuario:
+    if st.session_state.user is not None and menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:

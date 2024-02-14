@@ -290,7 +290,7 @@ if auth() == False and valcookie is not None:
 
 if auth():
     #st.session_state['userinfo']
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+    if st.session_state.user is not None and  (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -314,7 +314,7 @@ if auth():
         ]}
 
     ]
-    else:
+    elif st.session_state.user is not None:
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
         {'id':'courses','icon': "bi bi-journal-bookmark", 'label':"Cursos",'ttip':"Cursos de Programación y Ciencia de Datos en CAPPA"},
@@ -359,7 +359,7 @@ if auth():
         cookie_manager.delete('Validado')
         st.session_state.logout = True
 
-    if menu_id == st.session_state.user.usuario:
+    if st.session_state.user is not None and  menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:
@@ -368,7 +368,7 @@ if auth():
 
 
 
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+    if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         if menu_id == 'subid144':
             st.switch_page('pages/test_editor.py')
 

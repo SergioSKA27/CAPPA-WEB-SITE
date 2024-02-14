@@ -209,7 +209,7 @@ if auth() == False and valcookie is not None:
 
 # ---------------------------------Navbar---------------------------------
 if auth():
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+    if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",
         'submenu':[
@@ -234,7 +234,7 @@ if auth():
         ]}
 
     ]
-    else:
+    elif st.session_state.user is not None:
         menu_data = [
         {'icon': "bi bi-cpu",'label':"Problemas",'ttip':"Problemas de Programación",'id':'Problemas'},
         {"id": "prender","icon": "bi bi-lightbulb","label": "Problema","ttip": "Visualizar Problema"},
@@ -280,14 +280,14 @@ if auth():
         st.session_state.logout = True
 
 
-    if menu_id == st.session_state.user.usuario:
+    if st.session_state.user is not None and menu_id == st.session_state.user.usuario:
         if 'query' not in st.session_state:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         else:
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         st.switch_page('pages/profile_render.py')
 
-    if st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+    if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         if menu_id == "subid144":
             st.switch_page("pages/test_editor.py")
 
