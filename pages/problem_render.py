@@ -3,6 +3,7 @@ import tracemalloc
 from time import perf_counter, sleep
 from types import SimpleNamespace
 import time
+import asyncio
 import extra_streamlit_components as stx
 import google.generativeai as genai
 import hydralit_components as hc
@@ -126,6 +127,11 @@ def execute_code(code, timeout=1, test_file: bytes = None):
 
 
 # st.write(state.current_problem)
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 
 def set_explanin():
@@ -333,9 +339,7 @@ if auth():
         if menu_id == "Problemas":
             st.switch_page("pages/problems_home.py")
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 
 # ---------------------------------Main---------------------------------#

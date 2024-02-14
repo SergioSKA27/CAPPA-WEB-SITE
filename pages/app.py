@@ -9,6 +9,7 @@ from Clases import Autenticador, Usuario
 import extra_streamlit_components as stx
 from st_xatadb_connection import XataConnection
 import time
+import asyncio
 
 #Autor: Sergio Demis Lopez Martinez
 #This is the main file for the CAPPA project and will contain the landing page
@@ -45,6 +46,13 @@ xata = st.connection('xata',type=XataConnection)
 
 
 #---------------------------------  Variables de Sesión ---------------------------------------------------------
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+
+
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
 
@@ -187,9 +195,7 @@ if auth():
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         st.switch_page('pages/profile_render.py')
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 st.write('Bienvenido a CAPPA, el Centro de Aprendizaje y Programación para Programadores Avanzados')
 

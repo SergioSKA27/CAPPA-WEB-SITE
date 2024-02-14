@@ -159,6 +159,12 @@ def set_explanin():
 def set_reruncode():
     st.session_state.reruncode = True
 
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+
 
 if "explainstr" not in st.session_state:
     st.session_state.explainstr = ""
@@ -305,9 +311,7 @@ if auth():
         if menu_id == "Problemas":
             st.switch_page("pages/problems_home.py")
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 
 # ---------------------------------Body---------------------------------

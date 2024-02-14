@@ -6,6 +6,7 @@ import extra_streamlit_components as stx
 from Clases import Usuario,Autenticador
 import time
 from st_xatadb_connection import XataConnection
+import asyncio
 
 # Adjust the width of the Streamlit page
 st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg', initial_sidebar_state='collapsed')
@@ -39,6 +40,11 @@ background-color: #f4ebe8;
 </style>
 """,unsafe_allow_html=True)
 
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 
 def get_manager():
@@ -180,9 +186,7 @@ if auth():
         if menu_id == 'Problemas':
             st.switch_page('pages/problems_home.py')
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 
 #---------------------------------Body---------------------------------

@@ -7,7 +7,7 @@ from streamlit_lottie import st_lottie
 import streamlit_antd_components as sac
 import extra_streamlit_components as stx
 from st_xatadb_connection import XataConnection
-
+import asyncio
 
 from Clases import Usuario,Autenticador
 # Adjust the width of the Streamlit page
@@ -46,6 +46,11 @@ xata = st.connection('xata',type=XataConnection)
 def get_manager():
     return stx.CookieManager()
 
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 
 if 'auth_state' not in st.session_state:
@@ -181,9 +186,7 @@ if auth():
         if menu_id == 'Problemas':
             st.switch_page('pages/problems_home.py')
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 
 

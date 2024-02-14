@@ -6,6 +6,7 @@ from Clases import Autenticador, Usuario
 import extra_streamlit_components as stx
 from st_xatadb_connection import XataConnection
 import time
+import asyncio
 #Autor: Sergio Lopez
 
 
@@ -68,6 +69,12 @@ if 'user' not in st.session_state:
 if 'logout' not in st.session_state:
     st.session_state.logout = False
 
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+
 def get_manager():
     return stx.CookieManager()
 
@@ -128,7 +135,9 @@ if auth():
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
         first_select=60,
     )
-
+else:
+    asyncio.run(show_message_error())
+    st.stop()
 
 if menu_id == 'Inicio':
   	st.switch_page('pages/app.py')

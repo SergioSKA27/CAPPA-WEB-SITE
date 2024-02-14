@@ -49,6 +49,12 @@ async def get_random_image():
     result = await asyncio.to_thread(requests.get, 'https://source.unsplash.com/random/600x400?programming,python,code')
     return result.content
 
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+
 
 def search_problem(s: str):
     try:
@@ -395,9 +401,7 @@ if auth():
         if menu_id == 'docs':
             st.switch_page('pages/docs_home.py')
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 
 

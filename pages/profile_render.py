@@ -9,6 +9,7 @@ from modules import Card, Dashboard, DataGrid, Editor, Pie, Player, Radar, Timer
 import hydralit_components as hc
 import extra_streamlit_components as stx
 import time
+import asyncio
 from Clases import Usuario,Autenticador
 
 
@@ -55,6 +56,11 @@ def get_user(idd):
 def get_manager():
     return stx.CookieManager()
 
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 
 if 'auth_state' not in st.session_state:
@@ -87,7 +93,7 @@ if auth() == False and valcookie is not None:
 
 cookie = cookie_manager.get('query')
 
-if cookie is None or ('query' in st.session_state and cookie != st.session_state.query) :
+if cookie is None and ('query' in st.session_state and cookie != st.session_state.query) :
     cookie_manager.set('query',st.session_state.query)
     with st.spinner('Cargando Perfil...'):
         time.sleep(5)
@@ -191,9 +197,7 @@ if auth():
         if menu_id == 'Problemas':
             st.switch_page('pages/problems_home.py')
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 
 

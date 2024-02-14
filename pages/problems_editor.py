@@ -3,6 +3,7 @@ import tracemalloc
 from time import perf_counter, sleep
 from types import SimpleNamespace
 import time
+import asyncio
 import hydralit_components as hc
 import streamlit as st
 from st_xatadb_connection import XataConnection
@@ -72,6 +73,12 @@ def stream_text():
 @st.cache_resource
 def load_genmodel():
     return genai.GenerativeModel("gemini-pro")
+
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 
 def run_code(code, timeout=1, test_file: bytes = None):
@@ -269,9 +276,7 @@ if auth():
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
         st.switch_page('pages/profile_render.py')
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 
 

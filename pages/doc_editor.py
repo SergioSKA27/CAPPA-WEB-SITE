@@ -1,4 +1,5 @@
 import time
+import asyncio
 import streamlit as st
 import hydralit_components as hc
 from types import SimpleNamespace
@@ -73,6 +74,11 @@ def ask_AI():
                 response = model.generate_content(question)
     return response
 
+async def show_message_error():
+    await asyncio.sleep(1)
+    st.error("Inicia Sesión para acceder a esta página")
+    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
+    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 
 def merge_text(text: list):
@@ -84,8 +90,7 @@ def format_code(code: str, lang: str):
 def format_video(url: str):
     return f"```video\n{url}\n```"
 
-st.title('Editor de Documentos')
-st.divider()
+
 
 
 if 'gtoast' not in state:
@@ -138,11 +143,6 @@ if auth() == False and valcookie is not None:
     auth.validate_cookie(valcookie)
     st.rerun()
 
-
-if st.session_state.user.is_student():
-    st.error("No tienes permisos para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/app.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 ##---------------------------------Navbar---------------------------------
 if auth():
@@ -233,9 +233,7 @@ if auth():
         if menu_id == "Problemas":
             st.switch_page("pages/problems_home.py")
 else:
-    st.error("Inicia Sesión para acceder a esta página")
-    st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
-    st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+    asyncio.run(show_message_error())
     st.stop()
 
 
@@ -253,6 +251,8 @@ if state.aitoast == 1:
 
 
 #---------------------------------Body---------------------------------
+st.title('Editor de Documentos')
+st.divider()
 pname =st.text_input('Titulo del Documento',placeholder="Principios de Programación en Python")
 
 tags = st_tags([], suggestions=['Python', 'Básico', 'Intermedio', 'Avanzado'],
