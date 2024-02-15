@@ -13,7 +13,7 @@ from streamlit_elements import elements, event, lazy, mui, sync,partial
 from streamlit_quill import st_quill
 import google.generativeai as genai
 from modules import Card, Dashboard, Editor, Timer
-from Clases import Usuario,Autenticador
+from Clases import Usuario,Autenticador,Runner
 
 
 #Autor: Sergio Lopez
@@ -426,6 +426,7 @@ if graph:
 
   st.graphviz_chart(g_desc)
 
+runner = Runner()
 
 
 if "w_editorp" not in state:
@@ -465,14 +466,15 @@ with elements("workspace"):
     event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
     with w.dashboard(rowHeight=57):
         w.editor()
-        content = w.editor.get_content("Code")
-        result =  execute_code(w.editor.get_content("Code"), timeout=3)
-        w.timer(result[0],str(result[1]),result[2],result[3],set_explanin,set_reruncode)
+        runner.run(w.editor.get_content("Code"))
+        w.timer(
+            [runner.stdout, runner.stderr],runner.time,runner.memory,runner.peakmemory,set_explanin,set_reruncode
+        )
         w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
 
     if st.session_state.explanin:
         model = load_genmodel()
-        prompt = f"Explica el error {result[0][1]} del código: {w.editor.get_content('Code')}"
+        prompt = f"Explica el error {runner.stderr} del código: {w.editor.get_content('Code')}"
         with st.spinner("🧠 Generando explicación..."):
             response =  model.generate_content(prompt)
 
@@ -482,10 +484,14 @@ with elements("workspace"):
 
         st.session_state.explanin = False
 
-with st.container(height=200):
-    st.write('### Salida')
-    st.text(result[0][0])
-    st.write(f":red[{result[0][1]}]")
+with st.expander("Salida"):
+    if len(runner.stdout) > 1000:
+        st.write(runner.stdout[:1000])
+        st.write("...")
+    else:
+        st.text(runner.stdout)
+
+    st.write(f":red[{runner.stderr}]")
 
 st.write('### Ingrese la respuesta correcta')
 useoutput = st.checkbox('Usar la salida del código como respuesta correcta(Maximo 250 caracteres)')
@@ -518,7 +524,7 @@ if upcols[1].button('Subir Problema 🚀',use_container_width=True):
     "time_limit": int(st.session_state.timelimit),
     "desc": desc,
     "graph_code": g_desc,
-    "correct_ans": str(result[0]) if useoutput else cans,
+    "correct_ans": str(runner.stdout) if useoutput else cans,
     "creador": st.session_state['username'],
   })
     st.success('Problema subido correctamente')

@@ -1,6 +1,4 @@
-import subprocess
-import tracemalloc
-from time import perf_counter, sleep
+
 from types import SimpleNamespace
 import time
 import asyncio
@@ -12,8 +10,7 @@ from st_xatadb_connection import XataConnection
 from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync
 from streamlit_pills import pills
-from streamlit_profiler import Profiler
-from Clases import Usuario,Autenticador
+from Clases import Usuario,Autenticador,Runner
 
 from modules import Card, Dashboard, DataGrid, Editor, Pie, Player, Radar, Timer
 
@@ -69,7 +66,7 @@ def stream_text():
     """Stream text to the app"""
     for w in st.session_state.explainstr.split(" "):
         yield w + " "
-        sleep(0.05)
+        time.sleep(0.05)
 
 
 def format_date(date: str):
@@ -95,34 +92,6 @@ def format_date(date: str):
 @st.cache_resource
 def load_genmodel():
     return genai.GenerativeModel("gemini-pro")
-
-
-def run_code(code, timeout=1, test_file: bytes = None):
-    """Run code and capture the output"""
-    try:
-        if test_file:
-            result = subprocess.run(
-                ["python", "-c", code],
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-                stdin=test_file,
-            )
-        else:
-            result = subprocess.run(
-                ["python", "-c", code], capture_output=True, text=True, timeout=timeout
-            )
-        return result.stdout, result.stderr
-    except subprocess.TimeoutExpired or Exception as e:
-        return "", "TimeoutExpired"
-
-
-def execute_code(code, timeout=1, test_file: bytes = None):
-    s = perf_counter()
-    result = run_code(code, timeout, test_file)
-    cu, p = tracemalloc.get_traced_memory()
-    e = perf_counter()
-    return result, e - s, cu, p
 
 
 
@@ -472,6 +441,7 @@ with cols[1]:
         useeditorcode = st.checkbox("Enviar código desde el editor")
         st.button("Enviar Solución", use_container_width=True)
 
+runner = Runner()
 
 if "w_prender" not in state:
     board = Dashboard()
@@ -510,10 +480,9 @@ with elements("problemsovlereditor"):
     event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
     with w.dashboard(rowHeight=57):
         w.editor()
-        content = w.editor.get_content("Code")
-        result = execute_code(w.editor.get_content("Code"), timeout=3)
+        runner.run(w.editor.get_content("Code"))
         w.timer(
-            result[0], str(result[1]), result[2], result[3], set_explanin, set_reruncode
+            [runner.stdout, runner.stderr],runner.time,runner.memory,runner.peakmemory,set_explanin,set_reruncode
         )
         w.card(
             "Editor de Código",
@@ -521,7 +490,7 @@ with elements("problemsovlereditor"):
         )
     if st.session_state.explanin:
         model = load_genmodel()
-        prompt = f"Explica el error {result[0][1]} del código: {w.editor.get_content('Code')}"
+        prompt = f"Explica el error {runner.stderr} del código: {w.editor.get_content('Code')}"
         with st.spinner("🧠 Generando explicación..."):
             response = model.generate_content(prompt)
 
@@ -530,6 +499,21 @@ with elements("problemsovlereditor"):
             st.write_stream(stream_text)
 
         st.session_state.explanin = False
+
+
+
+with st.expander("Salida"):
+    if len(runner.stdout) > 1000:
+        st.write(runner.stdout[:1000])
+        st.write("...")
+    else:
+        st.text(runner.stdout)
+
+    st.write(f":red[{runner.stderr}]")
+
+st.caption(
+    "Si el editor no se muestra correctamente, por favor recargue la página. Disculpe las molestias."
+)
 
 with cols[0]:
     st.markdown(state.current_problem["desc"], unsafe_allow_html=True)
