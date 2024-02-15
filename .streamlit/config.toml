@@ -7,6 +7,7 @@ font="monospace"
 
 [server]
 maxUploadSize = 5
+enableXsrfProtection=false # IMPORTANTE FALLO STREAMLIT ELIMINAR CUANDO SEA CORREGIDO
 
 [client]
 showSidebarNavigation = false
