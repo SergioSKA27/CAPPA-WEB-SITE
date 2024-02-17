@@ -6,8 +6,8 @@ from threading import Timer
 
 class Runner(threading.Thread):
     def __init__(self):
-        self.stdout = ''
-        self.stderr = 'Tiempo de ejecución excedido'
+        self.stdout = None
+        self.stderr = None
         self.time = None
         self.memory = None
         self.peakmemory = None
@@ -23,9 +23,9 @@ class Runner(threading.Thread):
             self.stdout = self.stdout.decode("utf-8")
             self.stderr = self.stderr.decode("utf-8")
         finally:
-            print("Proceso terminado")
-            self.stderr = "Tiempo de ejecución excedido"
-            self.stdout = ""
+            if self.stdout is None and self.stderr is None:
+                self.stdout = ""
+                self.stderr = "Time limit exceeded"
             timer.cancel()
         cu, peak = tracemalloc.get_traced_memory()
         e = perf_counter()
