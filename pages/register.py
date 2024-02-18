@@ -61,31 +61,10 @@ data = {
 if st.button(label='Registrarme',help='Regístrate para poder acceder a la plataforma',  use_container_width=True):
     try:
         with st.spinner("Registrando..."):
-            ans = xata.insert("Usuario", {
-    "username": "string",
-    "password": "string",
-    "correo": "a@b.com",
-    "avatar": {
-        "base64Content": "SGVsbG8gV29ybGQ=",
-        "enablePublicUrl": False,
-        "mediaType": "application/octet-stream",
-        "name": "upload.txt",
-        "signedUrlTimeout": 300
-    },
-    "rol": "string",
-    "verificado": True,
-    "rango": "string",
-    "score": 3,
-    "nombre_completo": "string",
-    "fechaNacimiento": "2000-01-01T00:00:00Z",
-    "sociaLinks": [
-        "string"
-    ],
-    "feed": "longer text"
-})
+            ans = xata.insert("Usuario", data)
             st.success('Usuario registrado con éxito')
             st.balloons()
-            #st.switch_page('pages/login.py')
+            st.switch_page('pages/login.py')
     except Exception as e:
         st.error('Error al registrar usuario')
         st.error(e)

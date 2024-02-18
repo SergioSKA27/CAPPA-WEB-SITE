@@ -5,7 +5,7 @@ import streamlit_antd_components as sac
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_calendar import calendar
 import datetime
-from Clases import Autenticador, Usuario
+from Clases import Autenticador, Usuario,DBmanager
 import extra_streamlit_components as stx
 from st_xatadb_connection import XataConnection
 import time
