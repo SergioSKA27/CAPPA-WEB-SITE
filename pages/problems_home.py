@@ -652,7 +652,7 @@ if tagss != state.ptags:
 
 colls = st.columns([0.7,0.1,0.2])
 
-colls[1].button('🔄',key='refresh',on_click=update_problems,use_container_width=True)
+colls[1].button('🔄',key='refresh',on_click=update_problems,use_container_width=True,kwargs={'orderquery': state.porderquery})
 order = colls[2].selectbox('Ordenar',['Ordenar por',
 'Más Recientes','Más Antiguos','Score ↑','Score ↓',
 'Dificultad ↑','Dificultad ↓'],
@@ -662,32 +662,32 @@ if order != state.porder and order != 'Ordenar por':
     if order == 'Más Recientes':
         state.porder = order
         state.porderquery = {'type':'date','order':'desc'}
-        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        update_problems(orderquery=state.porderquery,query={'type':'tags','tag':state.ptags} if state.ptags != 'Todos' else None)
         st.rerun()
     elif order == 'Más Antiguos':
         state.porder = order
         state.porderquery = {'type':'date','order':'asc'}
-        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        update_problems(orderquery=state.porderquery,query={'type':'tags','tag':state.ptags} if state.ptags != 'Todos' else None)
         st.rerun()
     elif order == 'Score ↑':
         state.porder = order
         state.porderquery = {'type':'score','order':'asc'}
-        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        update_problems(orderquery=state.porderquery,query={'type':'tags','tag':state.ptags} if state.ptags != 'Todos' else None)
         st.rerun()
     elif order == 'Score ↓':
         state.porder = order
         state.porderquery = {'type':'score','order':'desc'}
-        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        update_problems(orderquery=state.porderquery,query={'type':'tags','tag':state.ptags} if state.ptags != 'Todos' else None)
         st.rerun()
     elif order == 'Dificultad ↑':
         state.porder = order
         state.porderquery = {'type':'dificultad','order':'asc'}
-        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        update_problems(orderquery=state.porderquery,query={'type':'tags','tag':state.ptags} if state.ptags != 'Todos' else None)
         st.rerun()
     elif order == 'Dificultad ↓':
         state.porder = order
         state.porderquery = {'type':'dificultad','order':'desc'}
-        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        update_problems(orderquery=state.porderquery,query={'type':'tags','tag':state.ptags} if state.ptags != 'Todos' else None)
         st.rerun()
 elif order == 'Ordenar por':
     state.porder = order
