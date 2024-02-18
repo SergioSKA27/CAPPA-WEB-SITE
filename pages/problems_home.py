@@ -326,7 +326,7 @@ def render_problem(problem: dict,k : int):
         st.markdown(f'''
         **Score:** {problem['score']}
 
-        **Creador:** @{problem['creador']['username'] if 'creador' in problem else 'Anónimo'}
+        **Creador:** @{problem['creador']['username'] if 'creador' in problem and 'username' in problem['creador'] else 'Anónimo'}
 
         **Fecha de Creación:** {format_date(problem['xata']['createdAt'][:10])}
         ''')
@@ -713,7 +713,7 @@ with pgcols[0]:
     st.caption(f'Página {state.pageproblems+1} de {len(state.problems)}')
 
 if pgcols[1].button('<',use_container_width=True,disabled=state.pageproblems == 0):
-    if state.pageproblems > 0:
+    if state.pageproblems > 0 and len(state.problems) > 1:
         state.pageproblems -= 1
         st.rerun()
 
