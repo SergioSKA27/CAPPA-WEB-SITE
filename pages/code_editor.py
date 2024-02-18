@@ -236,8 +236,7 @@ if auth():
 
     if st.session_state.user is not None and (
         st.session_state.user.is_admin()
-        or st.session_state.user.is_professor()
-        or st.session_state.user.is_moderator()
+        or st.session_state.user.is_teacher()
     ):
         if menu_id == "subid144":
             st.switch_page("pages/test_editor.py")

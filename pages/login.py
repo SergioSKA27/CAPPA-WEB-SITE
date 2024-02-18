@@ -223,6 +223,7 @@ if opt == 3:
     switch_page('Main')
 
 if opt == 2:
+    st.switch_page('pages/register.py')
     with st.form(key='register_form'):
       no_cuenta = st.text_input('Número de cuenta',placeholder='Número de cuenta')
       username = st.text_input('Usuario',placeholder='Usuario')
