@@ -383,7 +383,7 @@ if 'ptags' not in state:
     state.ptags = 'Todos'
 
 if 'porder' not in state:
-    state.porder = 'Más Recientes'
+    state.porder = 'Ordenar por'
 
 if 'porderquery' not in state:
     state.porderquery = {'type':'date','order':'desc'}
