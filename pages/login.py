@@ -48,8 +48,10 @@ st.markdown('''
   right:-50%;
   top:0;
   z-index:0;
-  ackground-size: cover;
+  background-size: cover;
   background-position: center center;
+  width: 149%;
+height: 100%;
 }
 </style>
 <div class="bg"></div>

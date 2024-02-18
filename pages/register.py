@@ -29,6 +29,8 @@ st.markdown("""
         background-size: cover;
         background-position: center center;
         background-repeat: repeat;
+        width: 149%;
+        height: 100%;
     }
 </style>
 <div class="bg"></div>
