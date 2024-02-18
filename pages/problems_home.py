@@ -66,9 +66,33 @@ def search_problem(s: str):
     except:
         return []
 
-def update_problems(query: dict = None):
+def update_problems(query: dict = None,orderquery: dict = None):
     if query is not None:
         if query['type'] == 'tags':
+            if orderquery['type'] == 'date':
+                state.problems = [xata.query("Problema", {
+                "columns": [
+                    "id",
+                    "nombre",
+                    "tags",
+                    "dificultad",
+                    "score",
+                    "creador.username"
+                ],
+
+                "filter": {
+                    "tags": {'$includes': query['tag']}
+                },
+                "page": {
+                    "size": 6
+                },
+                "sort": {
+                    "xata.createdAt": orderquery['order']
+                }
+                })]
+
+    else:
+        if orderquery['type'] == 'date':
             state.problems = [xata.query("Problema", {
             "columns": [
                 "id",
@@ -77,29 +101,15 @@ def update_problems(query: dict = None):
                 "dificultad",
                 "score",
                 "creador.username"
-            ],
-
-            "filter": {
-                "tags": {'$includes': query['tag']}
-            },
+              ],
             "page": {
                 "size": 6
-            }
-            })]
-    else:
-        state.problems = [xata.query("Problema", {
-    "columns": [
-        "id",
-        "nombre",
-        "tags",
-        "dificultad",
-        "score",
-        "creador.username"
-      ],
-    "page": {
-        "size": 6
-      }})
-    ]
+              },
+              "sort": {
+                "xata.createdAt": orderquery['order']
+              }
+              })
+            ]
     state.pageproblems = 0
     state.pimages = []
 
@@ -293,6 +303,12 @@ if 'problemquery' not in state:
 
 if 'ptags' not in state:
     state.ptags = 'Todos'
+
+if 'porder' not in state:
+    state.porder = 'Más Recientes'
+
+if 'porderquery' not in state:
+    state.porderquery = {'type':'date','order':'desc'}
 
 if 'pimages' not in state:
     state.pimages = []
@@ -547,16 +563,37 @@ emojis_tags = [
 tagss = pills('Categorías',tags, emojis_tags)
 
 if tagss != state.ptags:
-    state.ptags = tagss
-    update_problems({'type':'tags','tag':tagss})
-    st.rerun()
+    if tagss == 'Todos':
+        state.ptags = tagss
+        update_problems(orderquery=state.porderquery)
+        st.rerun()
+    else:
+        state.ptags = tagss
+        update_problems({'type':'tags','tag':tagss},state.porderquery)
+        st.rerun()
 
 colls = st.columns([0.7,0.1,0.2])
 
 colls[1].button('🔄',key='refresh',on_click=update_problems,use_container_width=True)
-order = colls[2].selectbox('Ordenar',['Más Recientes','Más Antiguos','Score ↑','Score ↓',
+order = colls[2].selectbox('Ordenar',['Ordenar por',
+'Más Recientes','Más Antiguos','Score ↑','Score ↓',
 'Dificultad ↑','Dificultad ↓'],
 index=0,placeholder='Ordenar por',label_visibility='collapsed')
+
+if order != state.porder and order != 'Ordenar por':
+    if order == 'Más Recientes':
+        state.porder = order
+        state.porderquery = {'type':'date','order':'desc'}
+        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        st.rerun()
+    elif order == 'Más Antiguos':
+        state.porder = order
+        state.porderquery = {'type':'date','order':'asc'}
+        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        st.rerun()
+elif order == 'Ordenar por':
+    state.porder = order
+
 
 sac.divider('',icon='hypnotize',align='center',)
 
