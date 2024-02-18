@@ -90,6 +90,48 @@ def update_problems(query: dict = None,orderquery: dict = None):
                     "xata.createdAt": orderquery['order']
                 }
                 })]
+            elif orderquery['type'] == 'score':
+                state.problems = [xata.query("Problema", {
+                "columns": [
+                    "id",
+                    "nombre",
+                    "tags",
+                    "dificultad",
+                    "score",
+                    "creador.username"
+                ],
+
+                "filter": {
+                    "tags": {'$includes': query['tag']}
+                },
+                "page": {
+                    "size": 6
+                },
+                "sort": {
+                    "score": orderquery['order']
+                }
+                })]
+            elif orderquery['type'] == 'dificultad':
+                state.problems = [xata.query("Problema", {
+                "columns": [
+                    "id",
+                    "nombre",
+                    "tags",
+                    "dificultad",
+                    "score",
+                    "creador.username"
+                ],
+
+                "filter": {
+                    "tags": {'$includes': query['tag']}
+                },
+                "page": {
+                    "size": 6
+                },
+                "sort": {
+                    "dificultad": orderquery['order']
+                }
+                })]
 
     else:
         if orderquery['type'] == 'date':
@@ -107,6 +149,42 @@ def update_problems(query: dict = None,orderquery: dict = None):
               },
               "sort": {
                 "xata.createdAt": orderquery['order']
+              }
+              })
+            ]
+        elif orderquery['type'] == 'score':
+            state.problems = [xata.query("Problema", {
+            "columns": [
+                "id",
+                "nombre",
+                "tags",
+                "dificultad",
+                "score",
+                "creador.username"
+              ],
+            "page": {
+                "size": 6
+              },
+              "sort": {
+                "score": orderquery['order']
+              }
+              })
+            ]
+        elif orderquery['type'] == 'dificultad':
+            state.problems = [xata.query("Problema", {
+            "columns": [
+                "id",
+                "nombre",
+                "tags",
+                "dificultad",
+                "score",
+                "creador.username"
+              ],
+            "page": {
+                "size": 6
+              },
+              "sort": {
+                "dificultad": orderquery['order']
               }
               })
             ]
@@ -589,6 +667,26 @@ if order != state.porder and order != 'Ordenar por':
     elif order == 'Más Antiguos':
         state.porder = order
         state.porderquery = {'type':'date','order':'asc'}
+        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        st.rerun()
+    elif order == 'Score ↑':
+        state.porder = order
+        state.porderquery = {'type':'score','order':'asc'}
+        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        st.rerun()
+    elif order == 'Score ↓':
+        state.porder = order
+        state.porderquery = {'type':'score','order':'desc'}
+        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        st.rerun()
+    elif order == 'Dificultad ↑':
+        state.porder = order
+        state.porderquery = {'type':'dificultad','order':'asc'}
+        update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
+        st.rerun()
+    elif order == 'Dificultad ↓':
+        state.porder = order
+        state.porderquery = {'type':'dificultad','order':'desc'}
         update_problems(orderquery=state.porderquery,query=state.ptags if state.ptags != 'Todos' else None)
         st.rerun()
 elif order == 'Ordenar por':
