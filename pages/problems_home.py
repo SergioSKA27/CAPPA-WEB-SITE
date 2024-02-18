@@ -66,8 +66,28 @@ def search_problem(s: str):
     except:
         return []
 
-def update_problems():
-    state.problems = [xata.query("Problema", {
+def update_problems(query: dict = None):
+    if query is not None:
+        if query['type'] == 'tags':
+            state.problems = [xata.query("Problema", {
+            "columns": [
+                "id",
+                "nombre",
+                "tags",
+                "dificultad",
+                "score",
+                "creador.username"
+            ],
+
+            "filter": {
+                "tags": {'$includes': query['tag']}
+            },
+            "page": {
+                "size": 6
+            }
+            })]
+    else:
+        state.problems = [xata.query("Problema", {
     "columns": [
         "id",
         "nombre",
@@ -185,6 +205,7 @@ def render_problem(problem: dict,k : int):
 
 
 
+
     with st.container(border=True):
         with st.spinner(f'Cargando Problema...'):
             if len(state.pimages) < k+1:
@@ -197,13 +218,13 @@ def render_problem(problem: dict,k : int):
         pls = []
         pls_icon = []
         if problem["dificultad"] == 1:
-            pls.append("Fácil")
+            pls.append(":green[Fácil]")
             pls_icon.append("🐛")
         elif problem["dificultad"] == 2:
-            pls.append("Intermedio")
+            pls.append(":blue[Intermedio]")
             pls_icon.append("🐍")
         else:
-            pls.append("Difícil")
+            pls.append(":red[Difícil]")
             pls_icon.append("🐉")
         for tag in problem["tags"]:
             if tag not in tags:
@@ -212,7 +233,8 @@ def render_problem(problem: dict,k : int):
             else:
                 pls.append(tag)
                 pls_icon.append(emojis_tags[tags.index(tag)])
-        pills('Etiquetas', pls, pls_icon,key=f'pills{k}')
+        tagss = [f"{pls_icon[i]} {pls[i]}" for i in range(len(pls))]
+        st.write(', '.join(tagss))
         st.markdown(f'''
         **Score:** {problem['score']}
 
@@ -265,6 +287,12 @@ if 'problems' not in state or state.problems is None:
     }
 })]
 
+
+if 'problemquery' not in state:
+    state.problemquery  = {}
+
+if 'ptags' not in state:
+    state.ptags = 'Todos'
 
 if 'pimages' not in state:
     state.pimages = []
@@ -518,7 +546,10 @@ emojis_tags = [
 
 tagss = pills('Categorías',tags, emojis_tags)
 
-
+if tagss != state.ptags:
+    state.ptags = tagss
+    update_problems({'type':'tags','tag':tagss})
+    st.rerun()
 
 colls = st.columns([0.7,0.1,0.2])
 
@@ -529,6 +560,8 @@ index=0,placeholder='Ordenar por',label_visibility='collapsed')
 
 sac.divider('',icon='hypnotize',align='center',)
 
+if len(state.problems[state.pageproblems]['records']) == 0:
+    st.warning('No hay problemas que mostrar')
 problemscols = st.columns(3)
 pcol = 0
 
