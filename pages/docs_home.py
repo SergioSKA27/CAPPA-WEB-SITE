@@ -10,7 +10,7 @@ import streamlit_antd_components as sac
 from st_xatadb_connection import XataConnection
 from streamlit_searchbox import st_searchbox
 import extra_streamlit_components as stx
-
+import asyncio
 from Clases import Usuario,Autenticador
 # --------------------------------------------- page config ---------------------------------------------
 # basic page configuration
@@ -243,7 +243,7 @@ img.left {
 
 .right li {
     text-align: justify;
-    font-size: 0.6rem;
+    font-size: 0.7rem;
 }
 /* Floating action button */
 .fab {
@@ -537,14 +537,17 @@ def update_pagedocs():
     st.rerun()
 
 
-def update_daylycard():
+async def update_daylycard():
     model = load_genmodel()
-    title = model.generate_content(
-        "Dame un solo titulo para un articulo de blog sobre algun tema de programacion en python o algun tip, en texto plano sin nada adicional"
-    )
-    bdy = model.generate_content(
-        f"Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo"
-    )
+    with st.spinner("Generando contenido..."):
+        await asyncio.sleep(2)
+        title = model.generate_content(
+            "Dame un solo titulo para un articulo de blog sobre algun tema de programacion en python o algun tip, en texto plano sin nada adicional"
+        )
+        await asyncio.sleep(3)
+        bdy = model.generate_content(
+            f"Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo"
+        )
     st.session_state.daylycard = {
         "title": title.text,
         "body": bdy.text,
@@ -577,19 +580,31 @@ if "pagenumdocs" not in st.session_state:
     st.session_state.pagenumdocs = 0
 
 if "daylycard" not in st.session_state:
-    model = load_genmodel()
-    title = model.generate_content(
-        "Dame un solo titulo para un articulo de blog sobre algun tema de programacion en python o algun tip, en texto plano sin nada adicional"
-    )
-    bdy = model.generate_content(
-        f"Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo"
-    )
-    st.session_state.daylycard = {
+    with st.status("Cargando contenido...",expanded=True):
+        st.write('Obteniendo contenido del día...')
+        model = load_genmodel()
+        try:
+            title = model.generate_content(
+            "Dame un solo titulo para un articulo de blog sobre algun tema de programacion en python o algun tip, en texto plano sin nada adicional"
+            )
+            st.write('Preparando contenido...')
+            time.sleep(2)
+            bdy = model.generate_content(
+            f"Dame un articulo de blog sobre {title.text} de no mas de 40 palabras en texto plano solo el cuerpo del articulo sin el titulo"
+            )
+            st.write('Casí listo...')
+            st.session_state.daylycard = {
         "title": title.text,
         "body": bdy.text,
         "day": datetime.date.today().day,
         "month": datetime.date.today().strftime("%B"),
-    }
+        }
+            st.write(':green[Listo]')
+        except:
+            st.write(':red[Error]')
+            st.write('No se pudo obtener el contenido del día,Por recargue la página')
+            st.write('Si el problema persiste, contacte al administrador del sitio')
+            st.stop()
 
 
 
@@ -908,20 +923,24 @@ pagecols = st.columns([0.7, 0.1, 0.1, 0.1])
 
 with pagecols[1]:
     if st.button("<", use_container_width=True):
-        if st.session_state.pagenumdocs > 0:
+        if st.session_state.pagenumdocs > 0 and len(st.session_state.docspage) > 1:
             st.session_state.pagenumdocs -= 1
             st.rerun()
 with pagecols[2]:
     if st.button("\>", use_container_width=True):
-        result = xata.next_page(
-            "Documento",
-            st.session_state.docspage[st.session_state.pagenumdocs],
-            pagesize=6,
-        )
-        if result is not None:
-            st.session_state.docspage.append(result)
+        if st.session_state.pagenumdocs < len(st.session_state.docspage) - 1:
             st.session_state.pagenumdocs += 1
             st.rerun()
+        else:
+            result = xata.next_page(
+                "Documento",
+                st.session_state.docspage[st.session_state.pagenumdocs],
+                pagesize=6,
+            )
+            if result is not None:
+                st.session_state.docspage.append(result)
+                st.session_state.pagenumdocs += 1
+                st.rerun()
 
 with pagecols[3]:
     if st.button("Actualizar", use_container_width=True):
@@ -959,7 +978,7 @@ render_daylycard(
 daylycardcols = st.columns([0.6, 0.2, 0.2])
 with daylycardcols[1]:
     if st.button("Generar otro tip del dia 💡", use_container_width=True):
-        update_daylycard()
+        asyncio.run(update_daylycard())
 
 
 # ---------------------------------Footer---------------------------------
