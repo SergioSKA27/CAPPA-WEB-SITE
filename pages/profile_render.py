@@ -275,12 +275,12 @@ else:
 #---------------------------------Body---------------------------------
 
 
-_,returnprofile = st.columns([0.7,0.3])
+_,returnprofile = st.columns([0.8,0.2])
 
 with returnprofile:
     bplace = st.empty()
     if st.session_state.profile_data['id'] != st.session_state.user.key:
-        if bplace.button("Regresar a mi perfil"):
+        if bplace.button("Regresar a mi perfil",use_container_width=True):
             st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
             st.rerun()
 
