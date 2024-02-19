@@ -154,7 +154,7 @@ if auth():
             hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
             sticky_nav=True, #at the top or not
             sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
-            first_select=80
+            first_select=60
         )
 
 

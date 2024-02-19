@@ -37,8 +37,11 @@ background-color: #f4ebe8;
 xata = st.connection('xata',type=XataConnection)
 
 async def get_random_image():
-    result = await asyncio.to_thread(requests.get, 'https://source.unsplash.com/random/600x400?school,machine-learning,programming,python')
-    return result.content
+    try:
+        result = await asyncio.to_thread(requests.get, 'https://source.unsplash.com/random/600x400?machine-learning,programming,python,mathematics',timeout=1)
+        return result.content
+    except Exception as e:
+        return "https://source.unsplash.com/random/600x400?machine-learning,programming,python,mathematics"
 
 async def show_message_error():
     await asyncio.sleep(1)
@@ -60,7 +63,12 @@ def update_courses():
     'filter':{
         'publico': {'$is': True}
     }
-})]
+    })]
+    st.session_state.mycourses = [xata.query('Curso',{
+    'filter':{
+        'propietario': {'$is': st.session_state.user.key}
+    }})]
+
 
 @st.cache_data
 def get_propietario(key):
@@ -70,30 +78,40 @@ def get_propietario(key):
     except:
         return "Desconocido"
 
-def render_public_courses(course,indx ):
+async def render_public_courses(course,indx ):
     with st.spinner(f'Cargando Curso {course["nombre"]}'):
+        img = await get_random_image()
         with st.container(border=True):
-            cols = st.columns([0.2,0.8])
+            cols = st.columns([0.4,0.6])
             with cols[0]:
-                st.image(asyncio.run(get_random_image()),use_column_width=True)
+                st.image(img,use_column_width=True)
             with cols[1]:
                 st.write(f'#### {course["nombre"]}')
-                st.write(get_propietario(course['propietario']['id']))
+                st.write(f"**Inscritos**: {course['inscritos']}")
+                st.write(f"**Capacidad**: {str(course['capacidad'])+' Inscritos' if course['capacidad'] > 0 else 'Ilimitada'}")
+                st.write(f"**Propietario**: {get_propietario(course['propietario']['id'])}")
                 _,bcol = st.columns([0.8,0.2])
-                inscribir = bcol.button('Inscribirme',key=f'inscribir{indx}',use_container_width=True)
+                inscribir = bcol.button('Inscribirme',key=f'inscribir{indx}',
+                use_container_width=True,
+                disabled=course['propietario']['id'] == st.session_state.user.key or course['inscritos'] >= course['capacidad'])
 
-def render_my_courses(course,indx ):
+async def render_my_courses(course,indx ):
+    img = await get_random_image()
     with st.spinner(f'Cargando Curso {course["nombre"]}'):
         with st.container(border=True):
-            cols = st.columns([0.2,0.8])
+            cols = st.columns([0.4,0.6])
             with cols[0]:
-                st.image(asyncio.run(get_random_image()),use_column_width=True)
+                st.image(img,use_column_width=True)
             with cols[1]:
                 st.write(f'#### {course["nombre"]}')
-                st.write(get_propietario(course['propietario']['id']))
+                st.write(f"**Inscritos**: {course['inscritos']}")
+                st.write(f"**Capacidad**: {str(course['capacidad'])+' Inscritos' if course['capacidad'] > 0 else 'Ilimitada'}")
+                st.write(f"**Eres el Propietario**" if course['propietario']['id'] == st.session_state.user.key else f"**Propietario**: {get_propietario(course['propietario']['id'])}")
+                st.write(f"**Visibilidad**: {'Público' if course['publico'] else 'Privado'}")
                 _,bcol = st.columns([0.8,0.2])
                 if bcol.button('Ver curso',key=f'ircuros{indx}',use_container_width=True,on_click=switch_to_render,args=[course['id']]):
                     st.switch_page('pages/Course_render.py')
+
 
 
 
@@ -143,6 +161,7 @@ valcookie = cookie_manager.get('Validado')
 if auth() == False and valcookie is not None:
     auth.validate_cookie(valcookie)
     st.rerun()
+
 
 
 
@@ -259,29 +278,34 @@ else:
 
 
 
-st.title('🗃️ Cursos')
+st.title('🗃️Cursos')
+
+
+titlecols = st.columns([0.6,0.2,0.2])
 st.divider()
-titlecols = st.columns([0.8,0.2])
+
+with titlecols[2]:
+    if st.button('Actualizar',on_click=update_courses,use_container_width=True):
+            st.rerun()
 if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
     with titlecols[1]:
-        st.page_link('pages/CourseEditor.py',label='Crear Curso',icon='📚')
+        st.page_link('pages/CourseEditor.py',label='Crear Curso',icon='📚',use_container_width=True)
 
-st.subheader('Mis Cursos')
+st.subheader('🌟Mis Cursos')
 st.divider()
 
-st.write(st.session_state.mycourses)
+#st.write(st.session_state.mycourses)
 
 for i,mycourse in enumerate(st.session_state.mycourses[0]['records']):
-    render_my_courses(mycourse,i)
-
-st.subheader('Cursos Públicos')
+    asyncio.run(render_my_courses(mycourse,i))
 st.divider()
-st.button('Actualizar',on_click=update_courses)
-st.write(st.session_state.cursos)
+st.subheader('🌐Cursos Públicos')
+st.divider()
+#st.write(st.session_state.cursos)
 
 
 for i,course in enumerate(st.session_state.cursos[0]['records']):
-    render_public_courses(course,i)
+    asyncio.run(render_public_courses(course,i))
 
 
 
