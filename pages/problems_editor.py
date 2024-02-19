@@ -252,6 +252,9 @@ if auth():
     if menu_id == 'docshome':
         st.switch_page('pages/docs_home.py')
 
+    if  menu_id == 'courses':
+        st.switch_page('pages/CoursesHome.py')
+
     if menu_id == 'doceditor':
         st.switch_page('pages/doc_editor.py')
 

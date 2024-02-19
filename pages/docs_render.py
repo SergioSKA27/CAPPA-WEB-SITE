@@ -250,6 +250,8 @@ if menu_id == 'logout':
 if auth() :
     if menu_id == "Inicio":
         st.switch_page("pages/app.py")
+    if  menu_id == 'courses':
+        st.switch_page('pages/CoursesHome.py')
     if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
         if menu_id == 'subid00':
             st.switch_page('pages/problems_home.py')

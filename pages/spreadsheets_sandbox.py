@@ -148,6 +148,8 @@ if auth():
 
     if menu_id == 'code':
         st.switch_page('pages/code_editor.py')
+    if  menu_id == 'courses':
+        st.switch_page('pages/CoursesHome.py')
 
     if menu_id == 'logout':
         st.session_state.auth_state = False

@@ -172,6 +172,9 @@ if auth():
         cookie_manager.delete('Validado')
         st.session_state.logout = True
 
+    if  menu_id == 'courses':
+        st.switch_page('pages/CoursesHome.py')
+
 
 
     if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):

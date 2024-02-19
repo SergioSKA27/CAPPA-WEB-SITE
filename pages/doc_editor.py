@@ -197,6 +197,9 @@ if auth():
     if menu_id == "docs":
         st.switch_page("pages/docs_home.py")
 
+    if  menu_id == 'courses':
+        st.switch_page('pages/CoursesHome.py')
+
     if menu_id == 'logout':
         st.session_state.auth_state = False
         st.session_state.userinfo = None
