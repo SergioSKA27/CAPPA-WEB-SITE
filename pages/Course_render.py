@@ -45,6 +45,19 @@ background-color: #f4ebe8;
 
 xata = st.connection('xata',type=XataConnection)
 
+def previus_inscription(user,curso):
+    try:
+        result = xata.query('Inscripcion',{
+            'filter':{
+                'user': {'$is': user},
+                'cursoInscrito': {'$is': curso}
+            }
+        })
+        return result['records']
+    except:
+        return []
+
+
 
 def get_adjunto(idd):
     try:
@@ -69,6 +82,13 @@ def update_course():
         st.session_state.currentcourse = xata.get('Curso',st.session_state.query['id'])
     except Exception as e:
         st.error(f'Error al obtener el curso: {e}')
+        st.stop()
+
+def update_inscriptions():
+    try:
+        st.session_state.usrinscritos = xata.query('Inscripcion',{"columns": [],"filter":{"cursoInscrito": {"$is": st.session_state.query['id']}}})
+    except Exception as e:
+        st.error(f'Error al obtener los inscritos: {e}')
         st.stop()
 
 def update_resources():
@@ -128,6 +148,12 @@ def render_recurso(recurso):
                 st.rerun()
 
 
+def search_usuario(s: str):
+    try:
+        result = xata.search_on_table('Usuario',{"query": s, "fuzziness": 0, "prefix": "phrase"})
+        return result['records']
+    except:
+        return []
 
 
 def del_recurso(idd):
@@ -140,10 +166,38 @@ def del_recurso(idd):
         st.error(f'Error al eliminar el recurso: {e}')
 
 
+def inscribir_curso(curso,user):
+    try:
+        if len(previus_inscription(user,curso['id'])) == 0:
+            xata.insert("Inscripcion", {
+            "user": user,
+            "cursoInscrito": curso['id']
+            })
+            xata.update('Curso',curso['id'],{'inscritos': {'$increment': 1}})
+            st.toast("Inscrito Correctamente",icon="🎉")
+            time.sleep(2)
+            update_course()
+        else:
+            st.toast("Ya está inscrito en este curso",icon="🤔")
+            time.sleep(2)
+    except:
+        st.error("Error al inscribirse")
+
+
+def eliminar_inscripcion(idinsc):
+    try:
+        xa = xata.delete('Inscripcion',idinsc)
+        st.toast('Inscripción Eliminada',icon='🎉')
+        time.sleep(2)
+        update_course()
+    except Exception as e:
+        st.error(f'Error al eliminar la inscripción: {e}')
+
 if 'ayudantes' not in st.session_state:
     st.session_state.ayudantes = []
 
-
+if 'usrinscritos' not in st.session_state:
+    st.session_state.usrinscritos = xata.query('Inscripcion',{"columns": [],"filter":{"cursoInscrito": {"$is": st.session_state.query['id']}}})
 
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
@@ -183,7 +237,7 @@ if auth() == False and valcookie is not None:
 cookie = cookie_manager.get('query')
 if cookie is None and ('query' in st.session_state and cookie != st.session_state.query) :
     cookie_manager.set('query',st.session_state.query)
-    with st.spinner('Cargando Problema...'):
+    with st.spinner('Cargando Curso...'):
         time.sleep(5)
 
 if "query" in st.session_state and st.session_state.query["Table"] != "Curso":
@@ -411,7 +465,56 @@ if is_owner():
                     except Exception as e:
                         st.error(f'Error al guardar los cambios: {e}')
 
+        if addcols[0].toggle('Administrar Inscripciones',help='Añaade o elimina estudiantes del curso'):
 
+            search = None
+            with st.form(key='search_form',clear_on_submit=True):
+                seacols = st.columns([0.8,0.2],gap='large')
+                with seacols[0]:
+                    search = st.text_input("Buscar Usuario",placeholder="Buscar Usuario",label_visibility='collapsed',key='search')
+                with seacols[1]:
+                    searchbtn = st.form_submit_button("Buscar",use_container_width=True)
+
+            if search is not None and search != '':
+                results = search_usuario(search)
+                #st.write(results)
+            else:
+                results =  []
+
+
+            placeholres= st.empty()
+            with placeholres.container():
+                for result in results:
+                    with st.expander(f"{result['username']}"):
+                        prfvols  = st.columns([0.8,0.2],gap='large')
+                        with prfvols[0]:
+                            st.write(f"**Nombre**: {result['nombre_completo']}")
+                            st.write(f"**Rol**: {result['rol']}")
+                        with prfvols[1]:
+                            if st.button('Inscribir',key=f'finscribir{result["id"]}',
+                                use_container_width=True,
+                                disabled=result['id'] == st.session_state.user.key or st.session_state.currentcourse['inscritos'] >= st.session_state.currentcourse['capacidad'],
+                            ):
+                                inscribir_curso(st.session_state.currentcourse,result['id'])
+                                update_inscriptions()
+                                update_course()
+                                st.rerun()
+
+            if st.session_state.currentcourse['inscritos'] > 0:
+                st.write(f'**Estudiantes Inscritos:**')
+                for ins in st.session_state.usrinscritos['records']:
+                    with st.expander(f"{get_user(ins['user']['id'])}"):
+                        prfcols = st.columns([0.8,0.2],gap='large')
+                        with prfcols[0]:
+                            st.write(f"**Nombre**: {get_user(ins['user']['id'])}")
+                        with prfcols[1]:
+                            if st.button('Eliminar',key=f'fdelete{ins["id"]}',use_container_width=True):
+                                eliminar_inscripcion(ins['id'])
+                                update_inscriptions()
+                                update_course()
+                                st.rerun()
+
+            #st.write(st.session_state.usrinscritos)
 with maincols[1]:
     if 'bio_curso' in st.session_state.currentcourse:
         st.markdown(st.session_state.currentcourse['bio_curso'],unsafe_allow_html=True)

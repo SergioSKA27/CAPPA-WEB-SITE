@@ -92,7 +92,7 @@ def update_courses():
 
 def inscribir_curso(curso,user):
     try:
-        if len(previus_inscription(st.session_state.user.key,course['id'])) == 0:
+        if len(previus_inscription(st.session_state.user.key,curso['id'])) == 0:
             xata.insert("Inscripcion", {
             "user": user,
             "cursoInscrito": curso
@@ -151,9 +151,9 @@ async def render_my_courses(course,indx ):
                 st.write(f"**Capacidad**: {str(course['capacidad'])+' Inscritos' if course['capacidad'] > 0 else 'Ilimitada'}")
                 st.write(f"**Eres el Propietario**" if course['propietario']['id'] == st.session_state.user.key else f"**Propietario**: {get_propietario(course['propietario']['id'])}")
                 st.write(f"**Visibilidad**: {'Público' if course['publico'] else 'Privado'}")
-                _,bcol = st.columns([0.8,0.2])
-                if bcol.button('Ver curso',key=f'ircuros{indx}',use_container_width=True,on_click=switch_to_render,args=[course['id']]):
-                    st.switch_page('pages/Course_render.py')
+            _,bcol = st.columns([0.8,0.2])
+            if bcol.button('Ver curso',key=f'ircuros{indx}',use_container_width=True,on_click=switch_to_render,args=[course['id']]):
+                st.switch_page('pages/Course_render.py')
 
 async def render_inscription(ins,index):
     with st.spinner(f'Cargando Curso...'):
