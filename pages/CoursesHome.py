@@ -50,6 +50,19 @@ async def show_message_error():
     st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 
+def previus_inscription(user,curso):
+    try:
+        result = xata.query('Inscripcion',{
+            'filter':{
+                'user': {'$is': user},
+                'cursoInscrito': {'$is': curso}
+            }
+        })
+        return result['records']
+    except:
+        return []
+
+
 def switch_to_render(key):
     if 'query' not in st.session_state:
         st.session_state.query = {'Table': 'Curso', 'id': key}
@@ -65,10 +78,34 @@ def update_courses():
     }
     })]
     st.session_state.mycourses = [xata.query('Curso',{
+    "columns": [],
     'filter':{
         'propietario': {'$is': st.session_state.user.key}
     }})]
+    st.session_state.inscritos =  xata.query('Inscripcion',{"columns": [],'filter':{
+        'user': {'$is': st.session_state.user.key}
+    }})
 
+
+
+
+
+def inscribir_curso(curso,user):
+    try:
+        if len(previus_inscription(st.session_state.user.key,course['id'])) == 0:
+            xata.insert("Inscripcion", {
+            "user": user,
+            "cursoInscrito": curso
+            })
+            xata.update('Curso',curso,{'inscritos': {'$increment': 1}})
+            st.toast("Inscrito Correctamente",icon="🎉")
+            time.sleep(2)
+            update_courses()
+        else:
+            st.toast("Ya estás inscrito en este curso",icon="🤔")
+            time.sleep(2)
+    except:
+        st.error("Error al inscribirse")
 
 @st.cache_data
 def get_propietario(key):
@@ -90,10 +127,16 @@ async def render_public_courses(course,indx ):
                 st.write(f"**Inscritos**: {course['inscritos']}")
                 st.write(f"**Capacidad**: {str(course['capacidad'])+' Inscritos' if course['capacidad'] > 0 else 'Ilimitada'}")
                 st.write(f"**Propietario**: {get_propietario(course['propietario']['id'])}")
-                _,bcol = st.columns([0.8,0.2])
-                inscribir = bcol.button('Inscribirme',key=f'inscribir{indx}',
-                use_container_width=True,
-                disabled=course['propietario']['id'] == st.session_state.user.key or course['inscritos'] >= course['capacidad'])
+            _,bcol = st.columns([0.8,0.2])
+            bcol.button('Inscribirme',key=f'inscribir{indx}',
+            use_container_width=True,
+            disabled=course['propietario']['id'] == st.session_state.user.key or course['inscritos'] >= course['capacidad'],
+            on_click=inscribir_curso,args=[course['id'],st.session_state.user.key]
+            )
+
+
+
+
 
 async def render_my_courses(course,indx ):
     img = await get_random_image()
@@ -112,8 +155,27 @@ async def render_my_courses(course,indx ):
                 if bcol.button('Ver curso',key=f'ircuros{indx}',use_container_width=True,on_click=switch_to_render,args=[course['id']]):
                     st.switch_page('pages/Course_render.py')
 
+async def render_inscription(ins,index):
+    with st.spinner(f'Cargando Curso...'):
+        img = await get_random_image()
+        data = xata.get('Curso',ins['cursoInscrito']['id'])
+        with st.container(border=True):
+            cols = st.columns([0.4,0.6])
+            with cols[0]:
+                st.image(img,use_column_width=True)
+            with cols[1]:
+                st.write(f'#### {data["nombre"]}')
+                st.write(f"**Inscritos**: {data['inscritos']}")
+                st.write(f"**Capacidad**: {str(data['capacidad'])+' Inscritos' if data['capacidad'] > 0 else 'Ilimitada'}")
+                st.write(f"**Propietario**: {get_propietario(data['propietario']['id'])}")
+            _,bcol = st.columns([0.8,0.2])
+            if bcol.button('Ver curso',key=f'ircuros{index}',use_container_width=True,on_click=switch_to_render,args=[data['id']]):
+                st.switch_page('pages/Course_render.py')
 
-
+if 'inscritos' not in st.session_state and 'user' in st.session_state and st.session_state.user is not None:
+    st.session_state.inscritos =  xata.query('Inscripcion',{"columns": [],'filter':{
+        'user': {'$is': st.session_state.user.key}
+    }})
 
 if 'cursos' not in st.session_state:
     st.session_state.cursos = [xata.query('Curso',{
@@ -125,6 +187,7 @@ if 'cursos' not in st.session_state:
 
 if 'mycourses' not in st.session_state and 'user' in st.session_state and st.session_state.user is not None:
     st.session_state.mycourses = [xata.query('Curso',{
+    "columns": [],
     'filter':{
         'propietario': {'$is': st.session_state.user.key}
     }})]
@@ -294,10 +357,13 @@ if st.session_state.user is not None and (st.session_state.user.is_admin() or st
 st.subheader('🌟Mis Cursos')
 st.divider()
 
-#st.write(st.session_state.mycourses)
+#st.write(st.session_state.inscritos)
 
 for i,mycourse in enumerate(st.session_state.mycourses[0]['records']):
     asyncio.run(render_my_courses(mycourse,i))
+
+for j,ins in enumerate(st.session_state.inscritos['records']):
+    asyncio.run(render_inscription(ins,j))
 st.divider()
 st.subheader('🌐Cursos Públicos')
 st.divider()
