@@ -9,6 +9,7 @@ import extra_streamlit_components as stx
 from st_xatadb_connection import XataConnection
 import time
 import asyncio
+import requests
 
 #Autor: Sergio Demis Lopez Martinez
 #This is the main file for the CAPPA project and will contain the landing page
@@ -50,7 +51,86 @@ async def show_message_error():
     st.error("Inicia Sesión para acceder a esta página")
     st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
     st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+async def get_random_image():
+    try:
+        result = await asyncio.to_thread(requests.get, 'https://source.unsplash.com/random/600x400?machine-learning,programming,python,mathematics',timeout=1)
+        return result.content
+    except Exception as e:
+        return "https://source.unsplash.com/random/600x400?machine-learning,programming,python,mathematics"
 
+@st.cache_data
+def get_propietario(key):
+    try:
+        result = xata.get('Usuario',key)
+        return result['nombre_completo']
+    except:
+        return "Desconocido"
+
+
+def update_courses():
+    st.session_state.mycourses = [xata.query('Curso',{
+    "columns": [],
+    'filter':{
+        'propietario': {'$is': st.session_state.user.key}
+    }})]
+    st.session_state.inscritos =  xata.query('Inscripcion',{"columns": [],'filter':{
+        'user': {'$is': st.session_state.user.key}
+    }})
+
+
+def switch_to_render(key):
+    if 'query' not in st.session_state:
+        st.session_state.query = {'Table': 'Curso', 'id': key}
+    else:
+        st.session_state.query['Table'] = 'Curso'
+        st.session_state.query['id'] = key
+
+async def render_my_courses(course,indx ):
+    img = await get_random_image()
+    with st.spinner(f'Cargando Curso {course["nombre"]}'):
+        with st.container(border=True):
+            cols = st.columns([0.4,0.6])
+            with cols[0]:
+                st.image(img,use_column_width=True)
+            with cols[1]:
+                st.write(f'#### {course["nombre"]}')
+                st.write(f"**Inscritos**: {course['inscritos']}")
+                st.write(f"**Capacidad**: {str(course['capacidad'])+' Inscritos' if course['capacidad'] > 0 else 'Ilimitada'}")
+                st.write(f"**Eres el Propietario**" if course['propietario']['id'] == st.session_state.user.key else f"**Propietario**: {get_propietario(course['propietario']['id'])}")
+                st.write(f"**Visibilidad**: {'Público' if course['publico'] else 'Privado'}")
+                _,bcol = st.columns([0.8,0.2])
+                if bcol.button('Ver curso',key=f'ircuros{indx}',use_container_width=True,on_click=switch_to_render,args=[course['id']]):
+                    st.switch_page('pages/Course_render.py')
+
+async def render_inscription(ins,index):
+    with st.spinner(f'Cargando Curso...'):
+        img = await get_random_image()
+        data = xata.get('Curso',ins['cursoInscrito']['id'])
+        with st.container(border=True):
+            cols = st.columns([0.4,0.6])
+            with cols[0]:
+                st.image(img,use_column_width=True)
+            with cols[1]:
+                st.write(f'#### {data["nombre"]}')
+                st.write(f"**Inscritos**: {data['inscritos']}")
+                st.write(f"**Capacidad**: {str(data['capacidad'])+' Inscritos' if data['capacidad'] > 0 else 'Ilimitada'}")
+                st.write(f"**Propietario**: {get_propietario(data['propietario']['id'])}")
+            _,bcol = st.columns([0.8,0.2])
+            if bcol.button('Ver curso',key=f'ircuros{index}',use_container_width=True,on_click=switch_to_render,args=[data['id']]):
+                st.switch_page('pages/Course_render.py')
+
+
+if 'inscritos' not in st.session_state and 'user' in st.session_state and st.session_state.user is not None:
+    st.session_state.inscritos =  xata.query('Inscripcion',{"columns": [],'filter':{
+        'user': {'$is': st.session_state.user.key}
+    }})
+
+if 'mycourses' not in st.session_state and 'user' in st.session_state and st.session_state.user is not None:
+    st.session_state.mycourses = [xata.query('Curso',{
+    "columns": [],
+    'filter':{
+        'propietario': {'$is': st.session_state.user.key}
+    }})]
 
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
@@ -215,6 +295,18 @@ with featurescols[0]:
                 help='Interactua con nuestro chatbot para obtener ayuda con tus dudas de programación')
         st.page_link('pages/problems_home.py',label='Foro',icon='📚',use_container_width=True,disabled=True,
                 help='Participa en nuestro foro para compartir tus conocimientos y aprender de otros')
+
+with featurescols[1]:
+    st.subheader('🌟Mis Cursos')
+    st.divider()
+    _,upd = st.columns([0.8,0.2])
+    upd.button('Actualizar Cursos',on_click=update_courses,use_container_width=True)
+
+    for i,mycourse in enumerate(st.session_state.mycourses[0]['records']):
+        asyncio.run(render_my_courses(mycourse,i))
+
+    for j,ins in enumerate(st.session_state.inscritos['records']):
+        asyncio.run(render_inscription(ins,j))
 
 
 
