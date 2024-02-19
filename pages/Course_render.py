@@ -407,8 +407,9 @@ with maincols[0]:
             if 'ayudante2' in st.session_state.currentcourse:
                 st.write(f'- {get_user(st.session_state.currentcourse["ayudante2"]["id"])}')
         if is_owner():
-            if st.button('Editar',use_container_width=True):
-                pass
+            if st.button('Actualizar Curso',use_container_width=True):
+                update_course()
+                update_inscriptions()
 
 
 
@@ -494,7 +495,7 @@ if is_owner():
                         with prfvols[1]:
                             if st.button('Inscribir',key=f'finscribir{result["id"]}',
                                 use_container_width=True,
-                                disabled=result['id'] == st.session_state.user.key or st.session_state.currentcourse['inscritos'] >= st.session_state.currentcourse['capacidad'],
+                                disabled=result['id'] == st.session_state.user.key or (st.session_state.currentcourse['inscritos'] >= st.session_state.currentcourse['capacidad'] and st.session_state.currentcourse['capacidad'] != 0),
                             ):
                                 inscribir_curso(st.session_state.currentcourse,result['id'])
                                 update_inscriptions()

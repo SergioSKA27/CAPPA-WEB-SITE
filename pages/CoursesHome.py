@@ -130,7 +130,7 @@ async def render_public_courses(course,indx ):
             _,bcol = st.columns([0.8,0.2])
             bcol.button('Inscribirme',key=f'inscribir{indx}',
             use_container_width=True,
-            disabled=course['propietario']['id'] == st.session_state.user.key or course['inscritos'] >= course['capacidad'],
+            disabled=course['propietario']['id'] == st.session_state.user.key or (course['inscritos'] >= course['capacidad'] and course['capacidad'] != 0),
             on_click=inscribir_curso,args=[course['id'],st.session_state.user.key]
             )
 
