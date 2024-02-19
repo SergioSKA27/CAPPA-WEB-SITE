@@ -174,15 +174,28 @@ if st.session_state.logout:
 
 cookie_manager = get_manager()
 auth = Autenticador(xata,cookie_manager)
+#st.write(cookie_manager.get_all())
 valcookie = cookie_manager.get('Validado')
 if auth() == False and valcookie is not None:
     auth.validate_cookie(valcookie)
     st.rerun()
 
+cookie = cookie_manager.get('query')
+if cookie is None and ('query' in st.session_state and cookie != st.session_state.query) :
+    cookie_manager.set('query',st.session_state.query)
+    with st.spinner('Cargando Problema...'):
+        time.sleep(5)
+
 if "query" in st.session_state and st.session_state.query["Table"] != "Curso":
     st.switch_page("pages/problems_home.py")
 elif "query" not in st.session_state:
-    pass
+    if cookie is not None and cookie['Table'] == "Curso":
+        st.session_state.query = cookie_manager.get('query')
+        try:
+            st.session_state.currentcourse = xata.get('Curso',st.session_state.query['id'])
+        except Exception as e:
+            st.error(f"Error: {e}")
+            st.stop()
 else:
     if 'query' in st.session_state:
         if 'currentcourse' not in st.session_state:
@@ -322,12 +335,11 @@ else:
 #st.write(st.session_state.currentcourse)
 #st.write(st.session_state.recursos)
 
-
 maincols = st.columns([0.3,0.7])
 
 with maincols[0]:
     with st.container(border=True):
-        st.image('https://source.unsplash.com/random/600x400?school,machine-learning,programming,python',use_column_width=True)
+        st.image('https://source.unsplash.com/random/600x400?school,programming,python',use_column_width=True)
         st.write(f'### {st.session_state.currentcourse["nombre"]}')
         st.write(f'**Maximo de Estudiantes:** {st.session_state.currentcourse["capacidad"] if st.session_state.currentcourse["capacidad"] > 0 else "Sin límite"}')
         st.write(f'**Profesor:** {get_user(st.session_state.currentcourse["propietario"]["id"])}')
