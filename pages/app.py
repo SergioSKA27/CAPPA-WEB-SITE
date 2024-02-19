@@ -215,3 +215,14 @@ with featurescols[0]:
                 help='Interactua con nuestro chatbot para obtener ayuda con tus dudas de programación')
         st.page_link('pages/problems_home.py',label='Foro',icon='📚',use_container_width=True,disabled=True,
                 help='Participa en nuestro foro para compartir tus conocimientos y aprender de otros')
+
+
+
+#--------------------------------- Anuncios ---------------------------------
+st.markdown('''
+<h1 style="font-family: 'Roboto', sans-serif; color: #787878; font-size: 2.5em; text-align: left;padding-bottom: 0;">Anuncios
+<hr style="border: 1px solid #C7C7C7; width: 50%; margin-top: 0.5em; margin-bottom: 0.5em;"/>
+</h1>
+
+
+''', unsafe_allow_html=True)
