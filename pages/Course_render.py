@@ -398,6 +398,7 @@ with maincols[0]:
         st.write(f'**Maximo de Estudiantes:** {st.session_state.currentcourse["capacidad"] if st.session_state.currentcourse["capacidad"] > 0 else "Sin límite"}')
         st.write(f'**Profesor:** {get_user(st.session_state.currentcourse["propietario"]["id"])}')
         st.write(f'**Visibilidad:** {"Público" if st.session_state.currentcourse["publico"] else "Privado"}')
+        st.write(f'**Inscritos:** {st.session_state.currentcourse["inscritos"]}')
 
         if 'ayudante1' in st.session_state.currentcourse or 'ayudante2' in st.session_state.currentcourse:
             st.write(f'**Ayudantes:**')
