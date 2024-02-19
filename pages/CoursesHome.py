@@ -1,18 +1,11 @@
+from st_xatadb_connection import XataConnection
 import streamlit as st
 import hydralit_components as hc
-from streamlit_lottie import st_lottie
-import streamlit_antd_components as sac
-from streamlit_calendar import calendar
-import datetime
 from Clases import Autenticador, Usuario,DBmanager
 import extra_streamlit_components as stx
-from st_xatadb_connection import XataConnection
-import time
 import asyncio
-
-#Autor: Sergio Demis Lopez Martinez
-#This is the main file for the CAPPA project and will contain the landing page
-
+import time
+import requests
 
 st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg', initial_sidebar_state='collapsed')
 st.markdown("""
@@ -43,14 +36,80 @@ background-color: #f4ebe8;
 
 xata = st.connection('xata',type=XataConnection)
 
+async def get_random_image():
+    result = await asyncio.to_thread(requests.get, 'https://source.unsplash.com/random/600x400?school,machine-learning,programming,python')
+    return result.content
 
-#---------------------------------  Variables de Sesión ---------------------------------------------------------
 async def show_message_error():
     await asyncio.sleep(1)
     st.error("Inicia Sesión para acceder a esta página")
     st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
     st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
+
+def switch_to_render(key):
+    if 'query' not in st.session_state:
+        st.session_state.query = {'Table': 'Curso', 'id': key}
+    else:
+        st.session_state.query['Table'] = 'Curso'
+        st.session_state.query['id'] = key
+
+
+def update_courses():
+    st.session_state.cursos = [xata.query('Curso',{
+    'filter':{
+        'publico': {'$is': True}
+    }
+})]
+
+@st.cache_data
+def get_propietario(key):
+    try:
+        result = xata.get('Usuario',key)
+        return result['nombre_completo']
+    except:
+        return "Desconocido"
+
+def render_public_courses(course,indx ):
+    with st.spinner(f'Cargando Curso {course["nombre"]}'):
+        with st.container(border=True):
+            cols = st.columns([0.2,0.8])
+            with cols[0]:
+                st.image(asyncio.run(get_random_image()),use_column_width=True)
+            with cols[1]:
+                st.write(f'#### {course["nombre"]}')
+                st.write(get_propietario(course['propietario']['id']))
+                _,bcol = st.columns([0.8,0.2])
+                inscribir = bcol.button('Inscribirme',key=f'inscribir{indx}',use_container_width=True)
+
+def render_my_courses(course,indx ):
+    with st.spinner(f'Cargando Curso {course["nombre"]}'):
+        with st.container(border=True):
+            cols = st.columns([0.2,0.8])
+            with cols[0]:
+                st.image(asyncio.run(get_random_image()),use_column_width=True)
+            with cols[1]:
+                st.write(f'#### {course["nombre"]}')
+                st.write(get_propietario(course['propietario']['id']))
+                _,bcol = st.columns([0.8,0.2])
+                if bcol.button('Ver curso',key=f'ircuros{indx}',use_container_width=True,on_click=switch_to_render,args=[course['id']]):
+                    st.switch_page('pages/Course_render.py')
+
+
+
+if 'cursos' not in st.session_state:
+    st.session_state.cursos = [xata.query('Curso',{
+    'filter':{
+        'publico': {'$is': True}
+    }
+})]
+
+
+if 'mycourses' not in st.session_state and 'user' in st.session_state and st.session_state.user is not None:
+    st.session_state.mycourses = [xata.query('Curso',{
+    'filter':{
+        'propietario': {'$is': st.session_state.user.key}
+    }})]
 
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
@@ -140,6 +199,7 @@ if auth():
         hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
         sticky_nav=True, #at the top or not
         sticky_mode='sticky', #jumpy or not-jumpy, but sticky or pinned
+        first_select=20
     )
 
     if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
@@ -164,7 +224,8 @@ if auth():
 
         if menu_id == 'Blog':
             st.switch_page('pages/docs_home.py')
-
+    if menu_id == 'Inicio':
+        st.switch_page('pages/app.py')
 
     if menu_id == 'Analisis de Datos':
         st.switch_page('pages/data_analysis_home.py')
@@ -174,9 +235,6 @@ if auth():
 
     if menu_id == 'code':
         st.switch_page('pages/code_editor.py')
-
-    if  menu_id == 'courses':
-        st.switch_page('pages/CoursesHome.py')
 
     if menu_id == 'logout':
         st.session_state.auth_state = False
@@ -197,21 +255,37 @@ if auth():
 else:
     asyncio.run(show_message_error())
     st.stop()
-st.write('Bienvenido a CAPPA, el Centro de Aprendizaje y Programación para Programadores Avanzados')
 
 
-featurescols = st.columns([0.2,0.8])
 
-with featurescols[0]:
-    with st.container(border=True):
-        st.markdown(':gear: **Herramientas**')
-        st.page_link('pages/data_analysis_home.py',label='Analisis de Datos',icon='📊',
-            use_container_width=True,help='Herramientas de Analisis de Datos para el desarrollo de proyectos de programación y ciencia de datos')
 
-        st.caption('Proximamente')
-        st.page_link('pages/problems_home.py',label='Concursos',icon='🏆',use_container_width=True,disabled=True,
-            help='Participa en concursos de programación y demuestra tus habilidades')
-        st.page_link('pages/problems_home.py',label='Chatbot',icon='🤖',use_container_width=True,disabled=True,
-                help='Interactua con nuestro chatbot para obtener ayuda con tus dudas de programación')
-        st.page_link('pages/problems_home.py',label='Foro',icon='📚',use_container_width=True,disabled=True,
-                help='Participa en nuestro foro para compartir tus conocimientos y aprender de otros')
+st.title('🗃️ Cursos')
+st.divider()
+titlecols = st.columns([0.8,0.2])
+if st.session_state.user is not None and (st.session_state.user.is_admin() or st.session_state.user.is_teacher()):
+    with titlecols[1]:
+        st.page_link('pages/CourseEditor.py',label='Crear Curso',icon='📚')
+
+st.subheader('Mis Cursos')
+st.divider()
+
+st.write(st.session_state.mycourses)
+
+for i,mycourse in enumerate(st.session_state.mycourses[0]['records']):
+    render_my_courses(mycourse,i)
+
+st.subheader('Cursos Públicos')
+st.divider()
+st.button('Actualizar',on_click=update_courses)
+st.write(st.session_state.cursos)
+
+
+for i,course in enumerate(st.session_state.cursos[0]['records']):
+    render_public_courses(course,i)
+
+
+
+
+#---------------------------------Footer---------------------------------#
+with open('rsc/html/minimal_footer.html') as f:
+    st.markdown(f.read(), unsafe_allow_html=True)
