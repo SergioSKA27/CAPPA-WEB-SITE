@@ -196,7 +196,7 @@ def eliminar_inscripcion(idinsc):
 if 'ayudantes' not in st.session_state:
     st.session_state.ayudantes = []
 
-if 'usrinscritos' not in st.session_state:
+if 'usrinscritos' not in st.session_state and 'query' in st.session_state:
     st.session_state.usrinscritos = xata.query('Inscripcion',{"columns": [],"filter":{"cursoInscrito": {"$is": st.session_state.query['id']}}})
 
 if 'auth_state' not in st.session_state:
