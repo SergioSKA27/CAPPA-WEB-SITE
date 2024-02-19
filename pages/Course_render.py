@@ -74,7 +74,7 @@ def update_course():
 def update_resources():
     try:
         st.session_state.recursos = xata.query('Recurso',{"columns": ["*"],
-        "filter":{ "curso": {"$is": st.session_state.currentcourse['id']}},
+        "filter":{ "curso": {"$is": st.session_state.query['id']}},
         "page": {"size": 1000}
 
         })
@@ -218,7 +218,7 @@ else:
 if 'recursos' not in st.session_state:
     if 'currentcourse' in st.session_state:
         st.session_state.recursos = xata.query('Recurso',{"columns": ["*"],
-        "filter":{ "curso": {"$is": st.session_state.currentcourse['id']}},
+        "filter":{ "curso": {"$is": st.session_state.query['id']}},
         "page": {"size": 1000}
 
         })
@@ -421,76 +421,77 @@ if 'secciones' in st.session_state.currentcourse:
     sectabs = st.tabs(st.session_state.currentcourse['secciones'])
 
 
-for sec in range(0,len(st.session_state.currentcourse['secciones'])):
-    with sectabs[sec]:
-        resources = get_resources_section(st.session_state.currentcourse['secciones'][sec])
-        #st.write(resources)
-        for rec in resources:
-            render_recurso(rec)
+    for sec in range(0,len(st.session_state.currentcourse['secciones'])):
+        with sectabs[sec]:
+            resources = get_resources_section(st.session_state.currentcourse['secciones'][sec])
+            #st.write(resources)
+            for rec in resources:
+                render_recurso(rec)
 
-        if is_owner():
-            secoptions = st.columns([0.6,0.2,0.2])
+            if is_owner():
+                secoptions = st.columns([0.6,0.2,0.2])
 
-            if secoptions[1].toggle('Añadir Recurso',help='Añade un recurso a la sección',key=f'addrec{sec}'):
-                with st.container(border=True):
-                    recname = st.text_input('Nombre del Recurso', key=f'recname{sec}')
-                    adj = st.file_uploader('Archivo',type=['pdf','png','jpg','jpeg','gif','mp4','mp3','wav','ogg'],key=f'adj{sec}')
-                    desc = st.text_area('Descripción',height=100,help='Escibe una descripción del recurso puedes usar Markdown',key=f'desc{sec}')
-                    if st.toggle('Añadir video de YouTube',key=f'yt{sec}'):
-                        if "w_videocourses" not in st.session_state:
-                            board = Dashboard()
-                            wv = SimpleNamespace(
-                                dashboard=board,
-                                player=Player(
-                                    board,
-                                    0,
-                                    0,
-                                    10,
-                                    6,
+                if secoptions[1].toggle('Añadir Recurso',help='Añade un recurso a la sección',key=f'addrec{sec}'):
+                    with st.container(border=True):
+                        recname = st.text_input('Nombre del Recurso', key=f'recname{sec}')
+                        adj = st.file_uploader('Archivo',type=['pdf','png','jpg','jpeg','gif','mp4','mp3','wav','ogg'],key=f'adj{sec}')
+                        desc = st.text_area('Descripción',height=100,help='Escibe una descripción del recurso puedes usar Markdown',key=f'desc{sec}')
+                        if st.toggle('Añadir video de YouTube',key=f'yt{sec}'):
+                            if "w_videocourses" not in st.session_state:
+                                board = Dashboard()
+                                wv = SimpleNamespace(
+                                    dashboard=board,
+                                    player=Player(
+                                        board,
+                                        0,
+                                        0,
+                                        10,
+                                        6,
+                                    )
                                 )
-                            )
-                            st.session_state.w_videocourses = wv
-                        else:
-                            wv = st.session_state.w_videocourses
+                                st.session_state.w_videocourses = wv
+                            else:
+                                wv = st.session_state.w_videocourses
 
 
-                        with elements("videodocuments"):
-                            with wv.dashboard(rowHeight=57):
-                                wv.player()
-                                st.caption("Para añadir un video, copia el link del video y reprodúcelo en el reproductor para tener una vista previa.")
-                                st.caption("Una vez que estés satisfecho con el video, presiona el botón de añadir video para añadirlo al recurso.")
+                            with elements("videodocuments"):
+                                with wv.dashboard(rowHeight=57):
+                                    wv.player()
+                                    st.caption("Para añadir un video, copia el link del video y reprodúcelo en el reproductor para tener una vista previa.")
+                                    st.caption("Una vez que estés satisfecho con el video, presiona el botón de añadir video para añadirlo al recurso.")
 
-                        addv = st.checkbox("Añadir Video")
+                            addv = st.checkbox("Añadir Video")
 
 
 
-                    if st.button('Añadir',key=f'addbtn{sec}'):
-                        if recname != ""  or adj is not None:
-                            reid = None
-                            try:
-                                payload = {
-                                    "nombre": recname,
-                                    "seccion": st.session_state.currentcourse['secciones'][sec],
-                                    "desc": desc if desc != "" else 'Recurso sin descripción',
-                                    "curso": st.session_state.currentcourse['id']
-                                }
-                                if addv:
-                                    payload['video_url'] = wv.player._url
-
-                                reid = xata.insert('Recurso',payload)
-                            except Exception as e:
-                                st.error(f'Error al añadir el recurso: {e}')
-
-                            if adj is not None and reid is not None:
+                        if st.button('Añadir',key=f'addbtn{sec}'):
+                            if recname != ""  or adj is not None:
+                                reid = None
                                 try:
-                                    xata.upload_file('Recurso',reid['id'],'adjunto',adj.read(),content_type=adj.type)
-                                except Exception as e:
-                                    st.error(f'Error al añadir el archivo adjunto: {e}')
-                            st.toast('Recurso Añadido',icon='🎉')
-                            update_resources()
-                            time.sleep(2)
-                            st.rerun()
+                                    payload = {
+                                        "nombre": recname,
+                                        "seccion": st.session_state.currentcourse['secciones'][sec],
+                                        "desc": desc if desc != "" else 'Recurso sin descripción',
+                                        "curso": st.session_state.currentcourse['id']
+                                    }
+                                    if addv:
+                                        payload['video_url'] = wv.player._url
 
+                                    reid = xata.insert('Recurso',payload)
+                                except Exception as e:
+                                    st.error(f'Error al añadir el recurso: {e}')
+
+                                if adj is not None and reid is not None:
+                                    try:
+                                        xata.upload_file('Recurso',reid['id'],'adjunto',adj.read(),content_type=adj.type)
+                                    except Exception as e:
+                                        st.error(f'Error al añadir el archivo adjunto: {e}')
+                                st.toast('Recurso Añadido',icon='🎉')
+                                update_resources()
+                                time.sleep(2)
+                                st.rerun()
+else:
+    st.warning('No hay secciones en el curso',icon='👀')
 
 
 
