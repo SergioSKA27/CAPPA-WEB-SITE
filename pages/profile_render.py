@@ -11,6 +11,7 @@ import extra_streamlit_components as stx
 import time
 import asyncio
 from Clases import Usuario,Autenticador
+from streamlit_searchbox import st_searchbox
 
 
 #---------------------------------Page config---------------------------------
@@ -52,6 +53,17 @@ st.markdown('''
 def get_user(idd):
     return xata.get("Usuario", idd)
 
+def search_usuario(s: str):
+    try:
+        result = xata.search_on_table('Usuario',{"query": s, "fuzziness": 0, "prefix": "phrase"})
+        return result['records']
+    except:
+        return []
+
+def get_username(user):
+    idf = xata.query("Usuario",{"columns":["id"],"filter":{"username":{"$is" : user}}})
+    if 'records' in idf and len(idf['records']) > 0:
+        return idf['records'][0]['id']
 
 def get_manager():
     return stx.CookieManager()
@@ -261,6 +273,18 @@ else:
 
 
 #---------------------------------Body---------------------------------
+
+
+_,returnprofile = st.columns([0.7,0.3])
+
+with returnprofile:
+    bplace = st.empty()
+    if st.session_state.profile_data['id'] != st.session_state.user.key:
+        if bplace.button("Regresar a mi perfil"):
+            st.session_state.query = {'Table':'Usuario','id':st.session_state.user.key}
+            st.rerun()
+
+
 cols = st.columns([0.3,0.7])
 
 
@@ -330,7 +354,15 @@ with cols[0]:
                             st.error(f"Error al actualizar avatar: {e}")
 
     if st.session_state.user is not None and st.session_state.user.is_admin() and st.session_state.profile_data['rol'] != 'Administrador' :
-        nrol = st.selectbox("Editar Rol", options=['Moderador','Profesor','Estudiante'])
+        nrol = st.selectbox("Editar Rol", options=['Moderador','Profesor','Estudiante'],index=2)
+
+        if nrol != st.session_state.profile_data['rol']:
+            if st.button("Cambiar Rol"):
+                try:
+                    res = xata.update("Usuario", st.session_state.profile_data['id'], {"rol": nrol})
+                    st.success("Rol actualizado")
+                except Exception as e:
+                    st.error(f"Error al actualizar rol: {e}")
 
 #---------------------------------Biografía---------------------------------
 with cols[1]:
@@ -409,6 +441,38 @@ with cols[1]:
 
 
 
+_,searchcol = st.columns([0.3,0.7])
+with searchcol:
+    search = None
+    with st.form(key='search_form',clear_on_submit=True):
+        seacols = st.columns([0.8,0.2],gap='large')
+        with seacols[0]:
+            search = st.text_input("Buscar Usuario",placeholder="Buscar Usuario",label_visibility='collapsed',key='search')
+        with seacols[1]:
+            searchbtn = st.form_submit_button("Buscar",use_container_width=True)
+
+    if search is not None and search != '':
+        results = search_usuario(search)
+        #st.write(results)
+    else:
+        results =  []
+
+
+    placeholres= st.empty()
+    with placeholres.container():
+        for result in results:
+            with st.expander(f"{result['username']}"):
+                prfvols  = st.columns([0.8,0.2],gap='large')
+                with prfvols[0]:
+                    st.write(f"**Nombre**: {result['nombre_completo']}")
+                    st.write(f"**Rol**: {result['rol']}")
+                with prfvols[1]:
+                    if st.button("Ver perfil",key=result['id'],use_container_width=True):
+                        st.session_state.query = {'Table':'Usuario','id':result['id']}
+                        st.rerun()
+        if len(results) > 0:
+            if st.button('Cerrar',use_container_width=True):
+                placeholres.empty()
 
 #---------------------------------Footer---------------------------------
 with open('rsc/html/minimal_footer.html') as f:
