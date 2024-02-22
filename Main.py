@@ -13,26 +13,16 @@ import datetime
 st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg', initial_sidebar_state='collapsed')
 st.markdown("""
 <style>
-body {
-background-color: #f4ebe8;
-
-}
-
 [data-testid="collapsedControl"] {
         display: none
     }
-
 #MainMenu, header, footer {visibility: hidden;}
-
-.st-emotion-cache-z5fcl4 {
-  width: 100%;
-  padding: 0rem 1rem 1rem;
-    padding-right: 0.5rem;
+.appview-container .main .block-container
+{
+    padding-top: 0px;
     padding-left: 0.5rem;
-    padding-bottom: 0.5rem;
-  min-width: auto;
-  max-width: initial;
-
+    padding-right: 0.5rem;
+    padding-bottom: 0px;
 }
 </style>
 """,unsafe_allow_html=True)
@@ -121,7 +111,7 @@ st.markdown('''
 </style>
 <div style="padding-top: 1rem; padding-bottom: 1rem;">
 <h4>
-Descubre la Esencia de Nuestra Plataforma<br> Características que Transforman tu Experiencia de Programación
+Descubre la Esencia de Nuestra Plataforma<br> Características que Transforman tu Experiencia de Programación e incrementan tus Habilidades Matemáticas
 </h4>
 </div>
 ''',unsafe_allow_html=True)
