@@ -6,7 +6,7 @@ import time
 import asyncio
 import hydralit_components as hc
 import streamlit as st
-from st_xatadb_connection import XataConnection
+from st_xatadb_connection import XataConnection,XataClient
 import extra_streamlit_components as stx
 from streamlit import session_state as state
 from streamlit_elements import elements, event, lazy, mui, sync,partial
@@ -14,6 +14,7 @@ from streamlit_quill import st_quill
 import google.generativeai as genai
 from modules import Card, Dashboard, Editor, Timer
 from Clases import Usuario,Autenticador,Runner
+from st_tiny_editor import  tiny_editor
 
 
 #Autor: Sergio Lopez
@@ -35,6 +36,7 @@ st.set_page_config(
     }
 )
 xata = st.connection('xata',type=XataConnection)
+client = XataClient(st.secrets["XATA_API_KEY"],db_url=st.secrets["XATA_DB_URL"])
 genai.configure(api_key=st.secrets["GEN_AI_KEY"])
 
 st.markdown('''
@@ -126,25 +128,6 @@ def update_score(event):
 
 def update_timelimit(event):
 	st.session_state.timelimit = event.target.value
-
-if 'pname' not in st.session_state:
-	st.session_state.pname = ""
-
-if 'difficulty' not in st.session_state:
-	st.session_state.difficulty = None
-
-
-if 'ptags' not in st.session_state:
-	st.session_state.ptags = []
-
-if 'tagslist' not in st.session_state:
-	st.session_state.tagslist = []
-
-if 'pscore' not in st.session_state:
-	st.session_state.pscore = 0
-
-if 'timelimit' not in st.session_state:
-	st.session_state.timelimit = 0
 
 
 def set_explanin():
@@ -328,63 +311,47 @@ tags = [
 
 ]
 
-with elements("header"):
-	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center", "justifyContent": "center"}):
-		mui.icon.IntegrationInstructions(sx={"fontSize": "4.2vw","color": "#36A0A0"})
-		mui.Typography("Editor de Problemas", sx={"fontFamily": "Monospace","fontSize": "4.2vw","fontWeight": "bold","letterSpacing": 10})
-
-	mui.Divider()
+st.title('🔧Editor de Problemas')
+st.divider()
 
 
-desc = ""
-with st.form(key='my_form'):
-  desc = st_quill(placeholder='Descripción del Problema', html=True,key='quill1')
-  editcols = st.columns([0.8,0.2])
 
-  with editcols[1]:
-    savedesc = st.form_submit_button(label='Guardar Descripción 💾',use_container_width=True)
-  if savedesc:
+
+name = st.text_input('Nombre del Problema',key='pname')
+
+
+
+cols0 = st.columns(2)
+difficulty = cols0[0].selectbox('Dificultad',['Basico','Intermedio','Avanzado'],key='difficulty')
+
+tagss = cols0[1].multiselect('Etiquetas',tags,key='tags',placeholder='Seleccione una o más etiquetas')
+
+cols1 = st.columns(2)
+score = cols1[0].number_input('Puntaje',key='pscore',min_value=10,max_value=1000)
+tlimit = cols1[1].number_input('Tiempo Limite(Segundos)',key='timelimit',min_value=1,max_value=5)
+
+
+
+
+desc = tiny_editor(st.secrets['TINY_API_KEY'],
+  height=600,
+  key='desc',
+  toolbar = 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+  plugins = [
+    "advlist", "anchor", "autolink", "charmap", "code",
+    "help", "image", "insertdatetime", "link", "lists", "media",
+    "preview", "searchreplace", "table", "visualblocks", "accordion",'emoticons',
+    ]
+  )
+editcols = st.columns([0.8,0.2])
+
+with editcols[1]:
+    savedesc = st.button(label='Guardar Descripción',use_container_width=True)
+
+if savedesc and desc is not None:
     st.markdown("##### Preview")
     st.markdown(desc, unsafe_allow_html=True)
 
-
-with elements("new_element"):
-	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
-		mui.icon.Abc()
-		mui.TextField(id="problem_name", label="Nombre del Problema", sx={"margin": "10px","width":"100%"},variant="filled",onChange=lazy(update_pname))
-
-		mui.icon.Upgrade()
-		with mui.FormControl(sx={"width":"100%", "margin": "10px"}):
-			mui.InputLabel("Dificultad",id="Difficulty")
-			mui.Select(mui.MenuItem("Basico", value="1"),
-						mui.MenuItem("Intermedio", value="2"),
-						mui.MenuItem("Avanzado", value="3"),
-						labelId="Difficulty", id="difficulty",
-						label="Dificultad", value=st.session_state.difficulty.props.value if st.session_state.difficulty else "Basico",
-						onChange=sync(None,'difficulty'),
-						)
-
-	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
-		mui.icon.Tag()
-		with mui.FormControl(sx={"width":"100%", "margin": "10px"}):
-			mui.InputLabel("Etiquetas",id="Tags")
-			with mui.Select(value=st.session_state.tagslist, multiple=True,
-			labelId="Tags", id="tags", label="Etiquetas", sx={"width":"100%"}, onChange=partial(update_tags)) :
-				for tag in tags:
-					mui.MenuItem(tag, value=tag)
-
-	with mui.Box(sx={"display": "flex", "flexDirection": "row", "alignItems": "center"}):
-		mui.icon.Star()
-		mui.TextField(id="score", label="Puntaje", sx={"margin": "10px","width":"50%"},
-						variant="filled", type="number",InputLabelProps={"shrink":True},
-						onChange=lazy(update_score))
-
-		mui.icon.Timer()
-		mui.TextField(id="time_limit", label="Tiempo Limite(Segundos)", sx={"margin": "10px","width":"50%"},
-						variant="filled", type="number",InputLabelProps={"shrink":True},onChange=lazy(update_timelimit))
-
-	with mui.Box(sx={"display": "flex", "alignItems": "left", "justifyContent": "flex-end"}):
-		mui.Button(mui.icon.Save,"Guardar", sx={"margin": "10px"}, variant="contained", color="primary",onClick=sync())
 
 
 
@@ -432,6 +399,8 @@ if graph:
 runner = Runner()
 
 
+codeeditcols = st.columns([0.8,0.2])
+codeeditcols[0].subheader('Editor de Código')
 if "w_editorp" not in state:
     board = Dashboard()
     w = SimpleNamespace(
@@ -460,20 +429,53 @@ if "w_editorp" not in state:
     )
     state.w_editorp = w
     w.editor.add_tab("Code", "print('Hello world!')", "python")
-
-
 else:
     w = state.w_editorp
 
-with elements("workspace"):
-    event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
-    with w.dashboard(rowHeight=57):
-        w.editor()
-        runner.run(w.editor.get_content("Code"))
-        w.timer(
-            [runner.stdout, runner.stderr],runner.time,runner.memory,runner.peakmemory,set_explanin,set_reruncode
-        )
-        w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
+
+
+if codeeditcols[1].toggle('Usar Editor legacy',False,help='Si el editor de código no funciona correctamente, activa esta opción'):
+    code = st.text_area('Código',key='code',value="print('Hello world!')")
+    _,execol = st.columns([0.8,0.2])
+    if execol.button('Ejecutar',use_container_width=True):
+        runner.run(code)
+        if len(runner.stdout) > 1000:
+            st.write(f'Salida: {runner.stdout[:1000]}')
+            st.write("...")
+        else:
+            st.text(f'Salida: {runner.stdout}')
+        if runner.stderr != "" and runner.stderr is not None:
+            st.write(f':red[{runner.stderr}]')
+            st.button('Explicar' ,on_click=set_explanin)
+
+
+
+        st.write(f'Tiempo: {runner.time} segundos')
+        st.write(f'Memoria: {runner.memory} bytes')
+        st.write(f'Memoria Pico: {runner.peakmemory} bytes')
+
+    if st.session_state.explanin:
+        model = load_genmodel()
+        prompt = f"Explica el error {runner.stderr} del código: {code}"
+        with st.spinner("🧠 Generando Explicación"):
+            response =  model.generate_content(prompt)
+        with st.expander("💡 Explicación",expanded=True):
+            st.session_state.explainstr = response.text
+            st.write_stream(stream_text)
+            st.button('Reintentar',on_click=set_explanin)
+        st.session_state.explanin = False
+
+
+else:
+    with elements("workspace"):
+        event.Hotkey("ctrl+s", sync(), bindInputs=True, overrideDefault=True)
+        with w.dashboard(rowHeight=57):
+            w.editor()
+            runner.run(w.editor.get_content("Code"))
+            w.timer(
+                [runner.stdout, runner.stderr],runner.time,runner.memory,runner.peakmemory,set_explanin,set_reruncode
+            )
+            w.card("Editor de Código","https://assets.digitalocean.com/articles/how-to-code-in-python-banner/how-to-code-in-python.png")
 
     if st.session_state.explanin:
         model = load_genmodel()
@@ -487,14 +489,8 @@ with elements("workspace"):
 
         st.session_state.explanin = False
 
-with st.expander("Salida"):
-    if len(runner.stdout) > 1000:
-        st.write(runner.stdout[:1000])
-        st.write("...")
-    else:
-        st.text(runner.stdout)
 
-    st.write(f":red[{runner.stderr}]")
+
 
 st.write('### Ingrese la respuesta correcta')
 useoutput = st.checkbox('Usar la salida del código como respuesta correcta(Maximo 250 caracteres)')
@@ -502,33 +498,20 @@ cans = st.text_area('Respuesta correcta(250 caracteres maximo)','**Respuesta cor
 
 upcols = st.columns([0.3,0.4,0.3])
 
+dfdic = {'Basico':1,'Intermedio':2,'Avanzado':3}
+
 if upcols[1].button('Subir Problema 🚀',use_container_width=True):
-  if desc == "":
-    st.warning('Debe ingresar una descripción y guardarla antes de subir el problema')
-    st.stop()
-  if st.session_state.pname == "":
-    st.warning('Debe ingresar un nombre para el problema')
-    st.stop()
-  if useoutput and cans == "":
-    st.warning('El codigo no tiene salida, por favor ingrese una respuesta correcta')
-    st.stop()
-  if st.session_state.tagslist == []:
-    st.warning('Debe ingresar al menos una etiqueta')
-    st.stop()
-  if cans == "" and not useoutput:
-    st.warning('Debe ingresar una respuesta correcta')
-    st.stop()
   try:
     r = xata.insert("Problema", {
-    "nombre": st.session_state.pname,
-    "tags": st.session_state.tagslist,
-    "dificultad": int(st.session_state.difficulty.props.value),
-    "score": int(st.session_state.pscore),
-    "time_limit": int(st.session_state.timelimit),
-    "desc": desc,
+    "nombre": name,
+    "tags": tagss,
+    "dificultad": int(dfdic[difficulty]),
+    "score": int(score),
+    "time_limit": int(tlimit),
+    "desc": desc if desc is not None else "",
     "graph_code": g_desc,
     "correct_ans": str(runner.stdout) if useoutput else cans,
-    "creador": st.session_state['username'],
+    "creador": st.session_state.user.key,
   })
     st.success('Problema subido correctamente')
     st.write(r)
