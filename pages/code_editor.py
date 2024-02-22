@@ -44,9 +44,7 @@ st.markdown(
 [data-testid="collapsedControl"] {
         display: none
     }
-
 #MainMenu, header, footer {visibility: hidden;}
-
 .appview-container .main .block-container
 {
     padding-top: 0px;
@@ -54,7 +52,6 @@ st.markdown(
     padding-right: 0.5rem;
     padding-bottom: 0px;
 }
-
 div.stSpinner > div {
     text-align:right;
     align-items: right;

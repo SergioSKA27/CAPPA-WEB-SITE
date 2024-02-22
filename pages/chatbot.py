@@ -14,22 +14,17 @@ import time
 st.set_page_config(layout="wide", page_title='CAPPA', page_icon='rsc/Logos/LOGO_CAPPA.jpg', initial_sidebar_state='collapsed')
 st.markdown("""
 <style>
-body {
-background-color: #f4ebe8;
-
-}
 [data-testid="collapsedControl"] {
         display: none
     }
 #MainMenu, header, footer {visibility: hidden;}
 .appview-container .main .block-container
 {
-    padding-top: 0px;
+    padding-top: 10vh;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     padding-bottom: 0px;
 }
-
 </style>
 """,unsafe_allow_html=True)
 
