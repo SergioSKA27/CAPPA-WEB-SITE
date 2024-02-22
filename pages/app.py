@@ -51,6 +51,8 @@ async def show_message_error():
     st.error("Inicia Sesión para acceder a esta página")
     st.image("https://media1.tenor.com/m/e2vs6W_PzLYAAAAd/cat-side-eye.gif")
     st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
+
+
 async def get_random_image():
     try:
         result = await asyncio.to_thread(requests.get, 'https://source.unsplash.com/random/600x400?machine-learning,programming,python,mathematics',timeout=1)
@@ -287,15 +289,17 @@ with featurescols[0]:
         st.markdown(':gear: **Herramientas**')
         st.page_link('pages/data_analysis_home.py',label='Analisis de Datos',icon='📊',
             use_container_width=True,help='Herramientas de Analisis de Datos para el desarrollo de proyectos de programación y ciencia de datos')
-
+        st.page_link('pages/chatbot.py',label='Chatbot',icon='🤖',use_container_width=True,
+                help='Interactua con nuestro chatbot para obtener ayuda con tus dudas de programación')
         st.caption('Proximamente')
         st.page_link('pages/problems_home.py',label='Concursos',icon='🏆',use_container_width=True,disabled=True,
             help='Participa en concursos de programación y demuestra tus habilidades')
-        st.page_link('pages/problems_home.py',label='Chatbot',icon='🤖',use_container_width=True,disabled=True,
-                help='Interactua con nuestro chatbot para obtener ayuda con tus dudas de programación')
         st.page_link('pages/problems_home.py',label='Foro',icon='📚',use_container_width=True,disabled=True,
                 help='Participa en nuestro foro para compartir tus conocimientos y aprender de otros')
-
+        st.page_link('pages/problems_home.py',label='Herramientas Matemáticas',icon='🧮',
+                use_container_width=True,disabled=True,help='Herramientas matemáticas para el desarrollo de proyectos de programación y ciencia de datos')
+        st.page_link('pages/problems_home.py',label='Herramientas Ciencia de Datos',icon='📈',
+                use_container_width=True,disabled=True,help='Herramientas de Ciencia de Datos')
 with featurescols[1]:
     st.subheader('🌟Mis Cursos')
     st.divider()
@@ -318,3 +322,9 @@ st.markdown('''
 
 
 ''', unsafe_allow_html=True)
+
+
+
+# ---------------------------------Footer---------------------------------
+with open("rsc/html/minimal_footer.html") as f:
+    st.markdown(f.read(), unsafe_allow_html=True)
