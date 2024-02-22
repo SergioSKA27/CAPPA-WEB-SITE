@@ -77,8 +77,6 @@ if menu_id == 'Iniciar Sesión':
 if menu_id == 'Blog':
     st.switch_page('pages/docs_home.py')
 
-if st.session_state.auth_state:
-    st.switch_page('pages/app.py')
 #---------------------------------#
 #Welcome Message
 cols0 = st.columns([0.6,0.4])
@@ -516,6 +514,9 @@ sac.TabsItem(label='Política de Privacidad',icon='lock'),
 sac.TabsItem(label='Términos y Condiciones',icon='file-earmark-text'),
 sac.TabsItem(label='FAQ',icon='question-circle'),
 ],position='bottom',align='center',return_index=True)
+
+if opt ==  2:
+    st.switch_page('pages/privacypolicy.py')
 
 
 with open('rsc/html/footer.html') as foo:
