@@ -249,7 +249,7 @@ else:
 
 
 
-prompt = st.chat_input("Escribe tu mensaje",disabled=not st.session_state.user.is_verified())
+prompt = st.chat_input("Escribe tu mensaje",disabled=(st.session_state.user is not None and not st.session_state.user.is_verified()))
 if not st.session_state.user.is_verified():
     st.write("Solo usuarios verificados pueden enviar mensajes")
 
