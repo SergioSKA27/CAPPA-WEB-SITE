@@ -11,6 +11,7 @@ from st_xatadb_connection import XataConnection
 from streamlit_searchbox import st_searchbox
 import extra_streamlit_components as stx
 import asyncio
+import requests
 from Clases import Usuario,Autenticador
 # --------------------------------------------- page config ---------------------------------------------
 # basic page configuration
@@ -60,6 +61,13 @@ em {
     unsafe_allow_html=True,
 )
 
+async def get_random_image():
+    try:
+
+        result = await asyncio.to_thread(requests.get, 'https://source.unsplash.com/random/600x400?programming,python,code',timeout=1)
+        return result.content
+    except:
+        return 'https://source.unsplash.com/random/600x400?programming,python,code'
 
 @st.cache_resource
 def load_genmodel():
@@ -105,7 +113,7 @@ def render_docs(docs: list):
                 st.image(
 					d["banner_pic"]["url"]
 					if "banner_pic" in d
-					else "https://source.unsplash.com/600x400/?code",
+					else asyncio.run(get_random_image()),
 					use_column_width=True,
 				)
                 st.caption(f"{d['tipo']}")
@@ -117,7 +125,7 @@ def render_docs(docs: list):
                     st.write(format_date(d["xata"]["createdAt"][0:10]))
                 with bcols[1]:
                     if st.button(
-						"Leer", key=f"doc{c}", use_container_width=True, on_click=send_query, args=["Documento", d["id"]]
+						"Leer", key=f"doc{d['id']}", use_container_width=True, on_click=send_query, args=["Documento", d["id"]]
 					):
                         st.switch_page("pages/docs_render.py")
         c += 1
@@ -604,8 +612,31 @@ if "daylycard" not in st.session_state:
             st.write(':red[Error]')
             st.write('No se pudo obtener el contenido del día,Por recargue la página')
             st.write('Si el problema persiste, contacte al administrador del sitio')
-            st.stop()
+            st.session_state.daylycard = {
+                "title": "Error al obtener contenido",
+                "body": "No se pudo obtener el contenido del día por favor recargue la página, si el problema persiste contacte al administrador del sitio",
+                "day": datetime.date.today().day,
+                "month": datetime.date.today().strftime("%B"),
+            }
 
+
+
+if 'recent_docs' not in st.session_state:
+    st.session_state.recent_docs = xata.query(
+            "Documento",
+            {
+                "columns": [
+                    "autor",
+                    "titulo",
+                    "banner_pic.url",
+                    "tags",
+                    "tipo",
+                    "shortdesc",
+                    "xata.createdAt",
+                ],
+                "page": {"size": 3},
+                "sort": {"xata.createdAt": "desc"},
+            })
 
 
 
@@ -691,6 +722,7 @@ else:
     fs = 10
 
 
+#st.write(st.session_state.recent_docs)
 
 over_theme = {"txc_inactive": "#FFFFFF", "menu_background": "#3670a0"}
 menu_id = hc.nav_bar(
@@ -960,7 +992,7 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-render_recentdocs(st.session_state.docspage[st.session_state.pagenumdocs]["records"])
+render_recentdocs(st.session_state.recent_docs["records"])
 
 st.markdown(
     """

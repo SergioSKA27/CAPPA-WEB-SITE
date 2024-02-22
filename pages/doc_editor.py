@@ -13,6 +13,7 @@ import google.generativeai as genai
 import extra_streamlit_components as stx
 from st_xatadb_connection import XataConnection
 from Clases import Usuario,Autenticador
+from st_tiny_editor import  tiny_editor
 
 from modules import Card, Dashboard, Editor,  Timer,Player
 #Autor: Sergio Lopez
@@ -280,13 +281,22 @@ with tabs[0]:
 
         editcols = st.columns([0.8,0.2])
         with editcols[0]:
-            desc = st_quill(placeholder='Contenido del Documento',html=True,key='quill-docs')
+            desc = tiny_editor(st.secrets['TINY_API_KEY'],
+                            height=600,
+                            key='welcomeeditor',
+                            toolbar = 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                            plugins = [
+                              "advlist", "anchor", "autolink", "charmap", "code",
+                              "help", "image", "insertdatetime", "link", "lists", "media",
+                              "preview", "searchreplace", "table", "visualblocks", "accordion",'emoticons',
+                              ]
+                            )
         with editcols[1]:
             action = st.selectbox("Acción", ["Preview", "Añadir Sección"])
             savedesc = st.form_submit_button(label=':floppy_disk: '
             ,use_container_width=True)
         if savedesc:
-            if action == "Añadir Sección":
+            if action == "Añadir Sección" and desc != '' and desc is not None:
                 if desc != '':
                     k = 1
                     while f"Sección {k}" in state.doc_sections:
@@ -474,7 +484,7 @@ if layout:
                 "tags": tags,
                 "content": merged,
                 "tipo": doc_type,
-                "autor": st.session_state['username'],
+                "autor": st.session_state.user.key,
                 "shortdesc": desc_basic,
                 })
                 st.success("Documento subido con éxito")
