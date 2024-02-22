@@ -518,6 +518,9 @@ sac.TabsItem(label='FAQ',icon='question-circle'),
 if opt ==  2:
     st.switch_page('pages/privacypolicy.py')
 
+if opt ==  3:
+    st.switch_page('pages/terms.py')
+
 
 with open('rsc/html/footer.html') as foo:
     #components.html(foo.read(),width=1600)
