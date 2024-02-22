@@ -277,7 +277,7 @@ doc_type = st.selectbox("Tipo de Documento", doc_types)
 tabs = st.tabs(state.tabs)
 with tabs[0]:
     desc = ''
-    with st.form(key='my_form'):
+    with st.form(key='doc_editor_form'):
 
         editcols = st.columns([0.8,0.2])
         with editcols[0]:

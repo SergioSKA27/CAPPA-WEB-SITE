@@ -11,7 +11,8 @@ import extra_streamlit_components as stx
 import time
 import asyncio
 from Clases import Usuario,Autenticador
-from streamlit_searchbox import st_searchbox
+from st_tiny_editor import  tiny_editor
+
 
 
 #---------------------------------Page config---------------------------------
@@ -373,18 +374,28 @@ with cols[1]:
 
         if st.session_state.user is not None and st.session_state.profile_data['id'] == st.session_state.user.key:
             #-------------------------------Editar biografía---------------------------------
-            if c0[1].checkbox("Editar biografía"):
+            if c0[1].checkbox("Editar biografía",help="Puedes usar Markdown o HTML para dar formato a tu biografía"):
+                st.caption("Seleccione un editor para editar su biografía, solo puede usar uno a la vez y sus contenidos no se pueden mezclar")
                 tabs = st.tabs(["Editor de texto", 'Markdown'])
                 with tabs[0]:
-                    with st.form(key='my_form'):
-                        desc = st_quill(placeholder='Mi biografía',html=True,key='quill-profile',
-                        value=st.session_state.profile_data['feed'] if 'feed' in st.session_state.profile_data else '')
+                    with st.form(key='edit_profile_form'):
+                        desc =  tiny_editor(st.secrets['TINY_API_KEY'],
+                            height=600,
+                            initialValue=st.session_state.profile_data['feed'] if 'feed' in st.session_state.profile_data else '',
+                            key='welcomeeditor',
+                            toolbar = 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                            plugins = [
+                              "advlist", "anchor", "autolink", "charmap", "code",
+                              "help", "image", "insertdatetime", "link", "lists", "media",
+                              "preview", "searchreplace", "table", "visualblocks", "accordion",'emoticons',
+                              ]
+                            )
                         editcols = st.columns([0.8,0.2])
 
                         with editcols[1]:
                             savedesc = st.form_submit_button(label='Preview',use_container_width=True)
 
-                        if savedesc:
+                        if savedesc and desc is not None:
                             st.markdown("##### Preview")
                             st.markdown(desc, unsafe_allow_html=True)
                 with tabs[1]:
