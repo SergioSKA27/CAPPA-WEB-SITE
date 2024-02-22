@@ -12,6 +12,7 @@ import base64
 from modules import Card, Dashboard, Editor,  Timer,Player
 from streamlit_elements import elements, event, lazy, mui, sync,media
 from types import SimpleNamespace
+from st_tiny_editor import  tiny_editor
 
 
 
@@ -450,7 +451,17 @@ if is_owner():
             welcome = ""
             with st.form(key='editwelcome'):
                 st.write('**Texto de Bienvenida**')
-                welcome = st_quill(value=wwelcome,key='welcomeeditor',html=True)
+                welcome = tiny_editor(st.secrets['TINY_API_KEY'],
+                            initialValue=wwelcome,
+                            height=600,
+                            key='welcomeeditor',
+                            toolbar = 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                            plugins = [
+                              "advlist", "anchor", "autolink", "charmap", "code",
+                              "help", "image", "insertdatetime", "link", "lists", "media",
+                              "preview", "searchreplace", "table", "visualblocks", "accordion",'emoticons',
+                              ]
+                            )
                 if st.form_submit_button('Preview'):
                     st.markdown(welcome,unsafe_allow_html=True)
             if welcome != wwelcome and welcome != "" :
@@ -467,7 +478,7 @@ if is_owner():
                     except Exception as e:
                         st.error(f'Error al guardar los cambios: {e}')
 
-        if addcols[0].toggle('Administrar Inscripciones',help='Añaade o elimina estudiantes del curso'):
+        if addcols[0].toggle('Administrar Inscripciones',help='Añade o elimina estudiantes del curso'):
 
             search = None
             with st.form(key='search_form',clear_on_submit=True):
@@ -530,6 +541,8 @@ if 'secciones' in st.session_state.currentcourse:
         with sectabs[sec]:
             resources = get_resources_section(st.session_state.currentcourse['secciones'][sec])
             #st.write(resources)
+            if len(resources) == 0:
+                st.warning('No hay recursos en esta sección',icon='👀')
             for rec in resources:
                 render_recurso(rec)
 
@@ -540,7 +553,23 @@ if 'secciones' in st.session_state.currentcourse:
                     with st.container(border=True):
                         recname = st.text_input('Nombre del Recurso', key=f'recname{sec}')
                         adj = st.file_uploader('Archivo',type=['pdf','png','jpg','jpeg','gif','mp4','mp3','wav','ogg'],key=f'adj{sec}')
-                        desc = st.text_area('Descripción',height=100,help='Escibe una descripción del recurso puedes usar Markdown',key=f'desc{sec}')
+                        st.write('**Descripción**')
+                        desc = tiny_editor(st.secrets['TINY_API_KEY'],
+                            height=600,
+                            key='desc',
+                            toolbar = 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                            plugins = [
+                              "advlist", "anchor", "autolink", "charmap", "code",
+                              "help", "image", "insertdatetime", "link", "lists", "media",
+                              "preview", "searchreplace", "table", "visualblocks", "accordion",'emoticons',
+                              ]
+                            )
+                        _,prevcols = st.columns([0.8,0.2])
+                        if (desc != "" and desc is not None) and prevcols.button('Vista Previa',key=f'preview{sec}',use_container_width=True):
+                            with st.expander('Vista Previa de la Descripción'):
+                                st.write(desc,unsafe_allow_html=True)
+
+
                         if st.toggle('Añadir video de YouTube',key=f'yt{sec}'):
                             if "w_videocourses" not in st.session_state:
                                 board = Dashboard()
@@ -568,8 +597,8 @@ if 'secciones' in st.session_state.currentcourse:
                             addv = st.checkbox("Añadir Video")
 
 
-
-                        if st.button('Añadir',key=f'addbtn{sec}'):
+                        _,addcol = st.columns([0.8,0.2])
+                        if addcol.button('Añadir',key=f'addbtn{sec}',use_container_width=True):
                             if recname != ""  or adj is not None:
                                 reid = None
                                 try:
@@ -579,8 +608,6 @@ if 'secciones' in st.session_state.currentcourse:
                                         "desc": desc if desc != "" else 'Recurso sin descripción',
                                         "curso": st.session_state.currentcourse['id']
                                     }
-                                    if addv:
-                                        payload['video_url'] = wv.player._url
 
                                     reid = xata.insert('Recurso',payload)
                                 except Exception as e:
