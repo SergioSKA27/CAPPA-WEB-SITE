@@ -113,6 +113,36 @@ async def render_inscription(ins,index):
                 st.switch_page('pages/Course_render.py')
 
 
+def render_anuncio(add):
+    with st.spinner(f'Cargando Anuncio...'):
+
+        cols = st.columns([0.1,0.6,0.1])
+        with cols[1]:
+            with st.container(border=True):
+                st.write(f'#### {add["titulo"]}')
+                st.write(add['content'],unsafe_allow_html=True)
+
+
+
+
+
+if 'anuncios_app' not in st.session_state:
+    st.session_state.anuncios_app = xata.query("Anuncio",
+    {
+        'filter':{
+            'target':{'$is' : 'app'},
+        },
+        'page': {'size': 10},
+        'sort': {'xata.createdAt': 'desc'}
+    }
+    )
+
+
+if 'anuncioIndex' not in st.session_state:
+    st.session_state.anuncioIndex = 0
+
+
+
 if 'inscritos' not in st.session_state and 'user' in st.session_state and st.session_state.user is not None:
     st.session_state.inscritos =  xata.query('Inscripcion',{"columns": [],'filter':{
         'user': {'$is': st.session_state.user.key}
@@ -327,7 +357,20 @@ st.markdown('''
 
 ''', unsafe_allow_html=True)
 
+#st.write(st.session_state.anuncios_app)
 
+
+add = st.session_state.anuncios_app['records'][st.session_state.anuncioIndex]
+render_anuncio(add)
+
+_,prev,nextt,_ = st.columns([0.3,0.2,0.2,0.3])
+
+prev.button('Anterior',key='prev',use_container_width=True,
+on_click=lambda: st.session_state.anuncioIndex - 1 if st.session_state.anuncioIndex > 0 else 0,
+disabled=st.session_state.anuncioIndex == 0)
+nextt.button('Siguiente',key='next',use_container_width=True,
+on_click=lambda: st.session_state.anuncioIndex + 1 if st.session_state.anuncioIndex < len(st.session_state.anuncios_app['records']) else len(st.session_state.anuncios_app['records'])-1,
+disabled=st.session_state.anuncioIndex == len(st.session_state.anuncios_app['records'])-1)
 
 # ---------------------------------Footer---------------------------------
 with open("rsc/html/minimal_footer.html") as f:
