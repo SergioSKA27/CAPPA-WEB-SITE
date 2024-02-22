@@ -84,6 +84,11 @@ if 'stream_last' not in st.session_state:
     st.session_state.stream_last = True
 
 
+if st.session_state.user is not None and not st.session_state.user.is_verified():
+    st.warning("Solo usuarios verificados pueden enviar mensajes",icon='🔒')
+    st.caption("Solicta la verificación a un administrador o profesor")
+
+
 if st.session_state.chatHistory == [] and st.session_state.firstTime == '':
     gretting =  asyncio.run(generate_response("Presentate con el usuario y dale la bienvenida, dale ejemplos de preguntas que puede hacer"))
     st.session_state.firstTime = gretting
@@ -249,9 +254,8 @@ else:
 
 
 
+
 prompt = st.chat_input("Escribe tu mensaje",disabled=(st.session_state.user is not None and not st.session_state.user.is_verified()))
-if not st.session_state.user.is_verified():
-    st.write("Solo usuarios verificados pueden enviar mensajes")
 
 
 for message in st.session_state.chatHistory:

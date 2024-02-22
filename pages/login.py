@@ -115,6 +115,21 @@ with open('rsc/css/backgroundLogin.css') as f:
 </div>''',unsafe_allow_html=True)
 
 
+if 'chatHistory' in st.session_state:
+    del st.session_state['chatHistory']
+
+if 'firstTime' not in st.session_state:
+    del st.session_state['firstTime']
+
+if 'text_stream' not in st.session_state:
+    del st.session_state['text_stream']
+
+if 'stream_last' not in st.session_state:
+    del st.session_state['stream_last']
+
+
+
+
 def validate_login(username, password):
 
     try:
