@@ -282,11 +282,11 @@ else:
 st.write('Bienvenido a CAPPA, el Centro de Aprendizaje y Programación para Programadores Avanzados')
 
 
-featurescols = st.columns([0.2,0.8])
+featurescols = st.columns([0.3,0.7])
 
 with featurescols[0]:
     with st.container(border=True):
-        st.markdown(':gear: **Herramientas**')
+        st.markdown('⚙️**Herramientas**')
         st.page_link('pages/data_analysis_home.py',label='Analisis de Datos',icon='📊',
             use_container_width=True,help='Herramientas de Analisis de Datos para el desarrollo de proyectos de programación y ciencia de datos')
         st.page_link('pages/chatbot.py',label='Chatbot',icon='🤖',use_container_width=True,
@@ -300,6 +300,16 @@ with featurescols[0]:
                 use_container_width=True,disabled=True,help='Herramientas matemáticas para el desarrollo de proyectos de programación y ciencia de datos')
         st.page_link('pages/problems_home.py',label='Herramientas Ciencia de Datos',icon='📈',
                 use_container_width=True,disabled=True,help='Herramientas de Ciencia de Datos')
+
+    with st.container(border=True,height=400):
+        st.markdown('📌**Tareas Pendientes**')
+        st.caption('Proximamente')
+
+    with st.container(border=True,height=400):
+        st.markdown('🔔**Notificaciones**')
+        st.caption('Proximamente')
+
+
 with featurescols[1]:
     st.subheader('🌟Mis Cursos')
     st.divider()
