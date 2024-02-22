@@ -20,7 +20,7 @@ st.markdown("""
 #MainMenu, header, footer {visibility: hidden;}
 .appview-container .main .block-container
 {
-    padding-top: 10vh;
+    padding-top: 5vh;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     padding-bottom: 0px;
@@ -73,21 +73,10 @@ if 'stream_last' not in st.session_state:
     st.session_state.stream_last = True
 
 
-if st.session_state.user is not None and not st.session_state.user.is_verified():
+if 'user'  in st.session_state and st.session_state.user is not None and not st.session_state.user.is_verified():
     st.warning("Solo usuarios verificados pueden enviar mensajes",icon='🔒')
     st.caption("Solicta la verificación a un administrador o profesor")
 
-
-if st.session_state.chatHistory == [] and st.session_state.firstTime == '':
-    gretting =  asyncio.run(generate_response("Presentate con el usuario y dale la bienvenida, dale ejemplos de preguntas que puede hacer"))
-    st.session_state.firstTime = gretting
-    st.session_state.text_stream = gretting
-
-    with st.chat_message("assistant"):
-        st.write_stream(stream_text)
-else:
-    with st.chat_message("assistant"):
-        st.write(st.session_state.firstTime)
 
 
 if 'auth_state' not in st.session_state:
@@ -240,6 +229,19 @@ if auth():
 else:
     asyncio.run(show_message_error())
     st.stop()
+
+
+if st.session_state.chatHistory == [] and st.session_state.firstTime == '':
+    gretting =  asyncio.run(generate_response("Presentate con el usuario y dale la bienvenida, eres un chatbot que responde preguntas sobre programación, ciencia de datos, matemáticas y temas relacionados."))
+    st.session_state.firstTime = gretting
+    st.session_state.text_stream = gretting
+
+    with st.chat_message("assistant"):
+        st.write_stream(stream_text)
+else:
+    with st.chat_message("assistant"):
+        st.write(st.session_state.firstTime)
+
 
 
 
