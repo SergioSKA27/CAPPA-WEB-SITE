@@ -25,23 +25,8 @@ st.markdown('''
         display: none
     }
 #MainMenu, header, footer {visibility: hidden;}
-.st-emotion-cache-ocqkz7 {
-  display: flex;
-  flex-wrap: wrap;
-  -moz-box-flex: 1;
-  flex-grow: 1;
-  -moz-box-align: stretch;
-  align-items: stretch;
-  gap: 0rem;
-  padding-top: 2rem;
-}
-.st-emotion-cache-z5fcl4 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  padding-bottom: 0;
-}
 .appview-container .main .block-container {
-  padding-top: 1rem;
+  padding-top: 0rem;
   padding-right: 0.5rem;
   padding-left: 0.5rem;
   padding-bottom: 0rem;

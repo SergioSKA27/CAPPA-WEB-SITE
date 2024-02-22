@@ -22,20 +22,14 @@ background-color: #f4ebe8;
         display: none
     }
 #MainMenu, header, footer {visibility: hidden;}
-.st-emotion-cache-z5fcl4 {
-  width: 100%;
-  padding: 0rem 1rem 1rem;
-    padding-right: 0.5rem;
+.appview-container .main .block-container
+{
+    padding-top: 0px;
     padding-left: 0.5rem;
-    padding-bottom: 0.5rem;
-  min-width: auto;
-  max-width: initial;
-
+    padding-right: 0.5rem;
+    padding-bottom: 0px;
 }
-.st-emotion-cache-9tg1hl {
-    padding-right: 0.5rem;
-    padding-left: 0.5rem;
-  }
+
 </style>
 """,unsafe_allow_html=True)
 

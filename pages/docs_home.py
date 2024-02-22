@@ -39,22 +39,16 @@ st.markdown(
     }
 
 #MainMenu, header, footer {visibility: hidden;}
-.st-emotion-cache-152jn8i {
-  position: absolute;
-  background: rgb(244, 235, 232);
-  color: rgb(49, 51, 63);
-  inset: 0px;
-    top: 0px;
-  overflow: hidden;
-  top: 0px;
+.appview-container .main .block-container
+{
+    padding-top: 0px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0px;
 }
-.st-emotion-cache-z5fcl4 {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    padding-bottom: 0;
-  }
+
 em {
-	color: #FF0;
+	color: #26CC10;
 }
 </style>
 """,
@@ -110,7 +104,8 @@ def render_docs(docs: list):
             c = 0
         with fc1[c]:
             with st.container(border=True):
-                st.image(
+                placeholder = st.empty()
+                placeholder.image(
 					d["banner_pic"]["url"]
 					if "banner_pic" in d
 					else asyncio.run(get_random_image()),

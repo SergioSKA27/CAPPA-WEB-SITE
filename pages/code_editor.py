@@ -46,25 +46,19 @@ st.markdown(
     }
 
 #MainMenu, header, footer {visibility: hidden;}
-.st-emotion-cache-152jn8i {
-  position: absolute;
-  background: rgb(244, 235, 232);
-  color: rgb(49, 51, 63);
-  inset: 0px;
-    top: 0px;
-  overflow: hidden;
-  top: 0px;
-}
-.st-emotion-cache-z5fcl4 {
+
+.appview-container .main .block-container
+{
+    padding-top: 0px;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    padding-bottom: 0;
-  }
+    padding-bottom: 0px;
+}
 
 div.stSpinner > div {
-    text-align:center;
-    align-items: center;
-    justify-content: center;
+    text-align:right;
+    align-items: right;
+    justify-content: right;
   }
 </style>
 """,
