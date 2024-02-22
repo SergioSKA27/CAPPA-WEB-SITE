@@ -76,6 +76,9 @@ async def show_message_error():
     st.page_link('pages/login.py',label='Regresar a la Página de Inicio',icon='🏠')
 
 
+def update_current_user():
+    st.session_state.profile_data = get_user(st.session_state.query['id'])
+
 if 'auth_state' not in st.session_state:
     st.session_state.auth_state = False
 
@@ -323,7 +326,7 @@ with cols[0]:
     """)
     #-------------------------------Editar perfil---------------------------------
     if st.session_state.user is not None and st.session_state.profile_data['id'] == st.session_state.user.key:
-        if st.checkbox("Editar perfil"):
+        if st.toggle("Editar perfil",help="Edite información básica de su perfil"):
             with st.form(key='profile_edit_form'):
                 st.caption('Edite los campos que desee cambiar')
                 navatar = st.file_uploader("Avatar", type=['png','jpg','jpeg'])
@@ -361,9 +364,24 @@ with cols[0]:
             if st.button("Cambiar Rol"):
                 try:
                     res = xata.update("Usuario", st.session_state.profile_data['id'], {"rol": nrol})
+                    update_current_user()
                     st.success("Rol actualizado")
+                    time.sleep(2)
+                    st.rerun()
                 except Exception as e:
                     st.error(f"Error al actualizar rol: {e}")
+    if st.session_state.user is not None and st.session_state.user.is_admin() or st.session_state.user.is_teacher():
+        if st.button("Verificar",help="Este usuario ya ha sido verificado",
+        disabled=st.session_state.profile_data['verificado'],use_container_width=True):
+            try:
+                res = xata.update("Usuario", st.session_state.profile_data['id'], {"verificado": True})
+                update_current_user()
+                st.success("Usuario verificado")
+                time.sleep(2)
+                st.rerun()
+            except Exception as e:
+                st.error(f"Error al verificar usuario: {e}")
+
 
 #---------------------------------Biografía---------------------------------
 with cols[1]:
@@ -374,7 +392,7 @@ with cols[1]:
 
         if st.session_state.user is not None and st.session_state.profile_data['id'] == st.session_state.user.key:
             #-------------------------------Editar biografía---------------------------------
-            if c0[1].checkbox("Editar biografía",help="Puedes usar Markdown o HTML para dar formato a tu biografía"):
+            if c0[1].toggle("Editar biografía",help="Puedes usar Markdown o HTML para dar formato a tu biografía"):
                 st.caption("Seleccione un editor para editar su biografía, solo puede usar uno a la vez y sus contenidos no se pueden mezclar")
                 tabs = st.tabs(["Editor de texto", 'Markdown'])
                 with tabs[0]:
