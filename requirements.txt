@@ -14,3 +14,4 @@ bcrypt
 pygwalker
 mitosheet
 extra-streamlit-components
+st-tiny-editor
