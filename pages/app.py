@@ -88,12 +88,13 @@ def switch_to_render(key):
         st.session_state.query['id'] = key
 
 async def render_my_courses(course,indx ):
-    img = await get_random_image()
+
     with st.spinner(f'Cargando Curso {course["nombre"]}'):
         with st.container(border=True):
             cols = st.columns([0.4,0.6])
             with cols[0]:
-                st.image(img,use_column_width=True)
+                placeholder = st.empty()
+                placeholder.image(await get_random_image(),use_column_width=True)
             with cols[1]:
                 st.write(f'#### {course["nombre"]}')
                 st.write(f"**Inscritos**: {course['inscritos']}")
@@ -106,12 +107,12 @@ async def render_my_courses(course,indx ):
 
 async def render_inscription(ins,index):
     with st.spinner(f'Cargando Curso...'):
-        img = await get_random_image()
         data = xata.get('Curso',ins['cursoInscrito']['id'])
         with st.container(border=True):
             cols = st.columns([0.4,0.6])
             with cols[0]:
-                st.image(img,use_column_width=True)
+                placeholder = st.empty()
+                placeholder.image(await get_random_image(),use_column_width=True)
             with cols[1]:
                 st.write(f'#### {data["nombre"]}')
                 st.write(f"**Inscritos**: {data['inscritos']}")
@@ -279,7 +280,7 @@ if auth():
 else:
     asyncio.run(show_message_error())
     st.stop()
-st.write('Bienvenido a CAPPA, el Centro de Aprendizaje y Programación para Programadores Avanzados')
+#st.write('Bienvenido a CAPPA, el Centro de Aprendizaje y Programación para Programadores Avanzados')
 
 
 featurescols = st.columns([0.3,0.7])
