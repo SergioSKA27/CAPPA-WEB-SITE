@@ -282,6 +282,9 @@ with featurescols[0]:
             use_container_width=True,help='Herramientas de Analisis de Datos para el desarrollo de proyectos de programación y ciencia de datos')
         st.page_link('pages/chatbot.py',label='Chatbot',icon='🤖',use_container_width=True,
                 help='Interactua con nuestro chatbot para obtener ayuda con tus dudas de programación')
+        if st.session_state.user is not None and st.session_state.user.is_admin():
+            st.page_link('pages/adminPanel.py',label='Panel de Administración',icon='🔧',
+                use_container_width=True,help='Panel de Administración de CAPPA')
         st.caption('Proximamente')
         st.page_link('pages/problems_home.py',label='Concursos',icon='🏆',use_container_width=True,disabled=True,
             help='Participa en concursos de programación y demuestra tus habilidades')

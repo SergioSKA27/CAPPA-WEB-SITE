@@ -118,13 +118,13 @@ with open('rsc/css/backgroundLogin.css') as f:
 if 'chatHistory' in st.session_state:
     del st.session_state['chatHistory']
 
-if 'firstTime' not in st.session_state:
+if 'firstTime'  in st.session_state:
     del st.session_state['firstTime']
 
-if 'text_stream' not in st.session_state:
+if 'text_stream'  in st.session_state:
     del st.session_state['text_stream']
 
-if 'stream_last' not in st.session_state:
+if 'stream_last'  in st.session_state:
     del st.session_state['stream_last']
 
 
