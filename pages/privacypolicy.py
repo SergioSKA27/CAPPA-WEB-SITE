@@ -53,13 +53,15 @@ if menu_id == 'Blog':
     st.switch_page('pages/docs_home.py')
 
 
-st.title('Políticas de Privacidad')
+st.title('🔐Políticas de Privacidad')
+st.divider()
 
 
 st.markdown('''
 
 
-Última actualización: Febrero 22, 2024
+**Última actualización: Febrero 22, 2024**
+
 Nosotros Club Académico de Programación en Python Avanzado opera el sitio web https://cappa-web-site.streamlit.app/ .
 
 Esta página le informa sobre nuestras políticas con respecto a la recopilación, uso y divulgación de datos personales cuando utiliza nuestro Servicio y las opciones que tiene asociadas a esos datos.

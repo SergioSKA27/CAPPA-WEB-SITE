@@ -74,6 +74,9 @@ menu_id = hc.nav_bar(
 if menu_id == 'Iniciar Sesión':
     st.switch_page('pages/login.py')
 
+if menu_id == 'contact':
+    st.switch_page('pages/contact.py')
+
 if menu_id == 'Blog':
     st.switch_page('pages/docs_home.py')
 
@@ -514,6 +517,9 @@ sac.TabsItem(label='Política de Privacidad',icon='lock'),
 sac.TabsItem(label='Términos y Condiciones',icon='file-earmark-text'),
 sac.TabsItem(label='FAQ',icon='question-circle'),
 ],position='bottom',align='center',return_index=True)
+
+if opt ==  1:
+    st.switch_page('pages/contact.py')
 
 if opt ==  2:
     st.switch_page('pages/privacypolicy.py')

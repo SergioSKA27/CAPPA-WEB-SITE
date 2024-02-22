@@ -53,11 +53,12 @@ if menu_id == 'Blog':
     st.switch_page('pages/docs_home.py')
 
 
-st.title('Términos y Condiciones de Uso')
+st.title('🧾Términos y Condiciones de Uso')
+st.divider()
 
 
 st.markdown('''
-Última actualización: Febrero 22, 2024
+**Última actualización: Febrero 22, 2024**
 
 Por favor, lea estos Términos y Condiciones de Uso ("Términos", "Términos y Condiciones") cuidadosamente antes de
 utilizar el sitio web https://cappa-web-site.streamlit.app/ (en adelante, el "Servicio") operado por Club Académico de
